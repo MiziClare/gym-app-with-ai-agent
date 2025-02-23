@@ -1,0 +1,92 @@
+package com.example.service;
+
+import cn.hutool.core.util.ObjectUtil;
+import com.example.common.Constants;
+import com.example.common.enums.ResultCodeEnum;
+import com.example.entity.User;
+import com.example.exception.CustomException;
+import com.example.mapper.UserMapper;
+import com.example.common.enums.RoleEnum;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+@Service
+public class UserService {
+    // UserMapper is a class that maps the user table in the database
+    // 通过 @Resource 注解，将 UserMapper 注入进来，后续所有对数据库的操作都由 userMapper 完成。
+    @Resource
+    private UserMapper userMapper;
+
+    /**
+     * 新增
+     */
+    public void add(User user) {
+        User dbUser = userMapper.selectByUsername(user.getUsername());
+        // check if the username already exists
+        if (ObjectUtil.isNotNull(dbUser)) {
+            throw new CustomException(ResultCodeEnum.USER_EXIST_ERROR);
+        }
+        // if the password is empty, set the default password
+        if (ObjectUtil.isEmpty(user.getPassword())) {
+            user.setPassword(Constants.USER_DEFAULT_PASSWORD);
+        }
+        // if the name is empty, let the name be the same as the username
+        if (ObjectUtil.isEmpty(user.getName())) {
+            user.setName(user.getUsername());
+        }
+        // set the role ‘USER’ to user
+        user.setRole(RoleEnum.USER.name());
+        // insert only when the user does not exist
+        userMapper.insert(user);
+    }
+
+    /**
+     * 删除
+     */
+    public void deleteById(Integer id) {
+        userMapper.deleteById(id);
+    }
+
+    /**
+     * 批量删除
+     */
+    public void deleteBatch(List<Integer> ids) {
+        for (Integer id : ids) {
+            userMapper.deleteById(id);
+        }
+    }
+
+    /**
+     * 修改
+     */
+    public void updateById(User user) {
+        userMapper.updateById(user);
+    }
+
+    /**
+     * 根据ID查询
+     */
+    public User selectById(Integer id) {
+        return userMapper.selectById(id);
+    }
+
+    /**
+     * 查询所有
+     */
+    public List<User> selectAll(User user) {
+        return userMapper.selectAll(user);
+    }
+
+    /**
+     * 分页查询
+     */
+    public PageInfo<User> selectPage(User user, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<User> list = userMapper.selectAll(user);
+        return PageInfo.of(list);
+    }
+}
