@@ -8,12 +8,13 @@ import com.example.common.Constants;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.service.AdminService;
+import com.example.service.CoachService;
+import com.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import java.util.Date;
 
 /**
  * Token工具类
+ * 用于处理 JWT 的工具类，主要用于用户认证和授权
  */
 @Component
 public class TokenUtils {
@@ -28,13 +30,24 @@ public class TokenUtils {
     private static final Logger log = LoggerFactory.getLogger(TokenUtils.class);
 
     private static AdminService staticAdminService;
+    private static CoachService staticCoachService;
+    private static UserService staticUserService;
 
     @Resource
     AdminService adminService;
 
+    @Resource
+    CoachService coachService;
+
+    @Resource
+    UserService userService;
+
     @PostConstruct
     public void setUserService() {
+        // 通过 @PostConstruct 注解，给静态变量赋值，使得静态方法可以调用它们
         staticAdminService = adminService;
+        staticCoachService = coachService;
+        staticUserService = userService;
     }
 
     /**
@@ -59,6 +72,12 @@ public class TokenUtils {
                 String role = userRole.split("-")[1];    // 获取角色
                 if (RoleEnum.ADMIN.name().equals(role)) {
                     return staticAdminService.selectById(Integer.valueOf(userId));
+                }
+                if (RoleEnum.COACH.name().equals(role)) {
+                    return staticCoachService.selectById(Integer.valueOf(userId));
+                }
+                if (RoleEnum.USER.name().equals(role)) {
+                    return staticUserService.selectById(Integer.valueOf(userId));
                 }
             }
         } catch (Exception e) {

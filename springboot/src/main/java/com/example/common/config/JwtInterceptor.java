@@ -11,6 +11,8 @@ import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.exception.CustomException;
 import com.example.service.AdminService;
+import com.example.service.CoachService;
+import com.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,13 +33,14 @@ public class JwtInterceptor implements HandlerInterceptor {
     @Resource
     private AdminService adminService;
 
+    @Resource
+    private CoachService coachService;
+
+    @Resource
+    private UserService userService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-//        // 如果请求路径包含 swagger 或 api-docs，则直接放行
-//        String requestURI = request.getRequestURI();
-//        if (requestURI.contains("swagger") || requestURI.contains("api-docs") || requestURI.contains("webjars")) {
-//            return true;
-//        }
 
         // 1. 从http请求的header中获取token
         String token = request.getHeader(Constants.TOKEN);
@@ -58,6 +61,12 @@ public class JwtInterceptor implements HandlerInterceptor {
             // 根据userId查询数据库
             if (RoleEnum.ADMIN.name().equals(role)) {
                 account = adminService.selectById(Integer.valueOf(userId));
+            }
+            if (RoleEnum.COACH.name().equals(role)) {
+                account = coachService.selectById(Integer.valueOf(userId));
+            }
+            if (RoleEnum.USER.name().equals(role)) {
+                account = userService.selectById(Integer.valueOf(userId));
             }
         } catch (Exception e) {
             throw new CustomException(ResultCodeEnum.TOKEN_CHECK_ERROR);
