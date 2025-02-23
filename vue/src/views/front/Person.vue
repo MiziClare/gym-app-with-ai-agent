@@ -2,7 +2,7 @@
   <div class="main-content">
     <el-card style="width: 50%; margin: 30px auto">
       <div style="text-align: right; margin-bottom: 20px">
-        <el-button type="primary" @click="updatePassword">修改密码</el-button>
+        <el-button type="primary" @click="updatePassword">Change Password</el-button>
       </div>
       <el-form :model="user" label-width="80px" style="padding-right: 20px">
         <div style="margin: 15px; text-align: center">
@@ -16,38 +16,38 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </div>
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="user.username" placeholder="用户名" disabled></el-input>
+        <el-form-item label="Username" prop="username">
+          <el-input v-model="user.username" placeholder="Username" disabled></el-input>
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="user.name" placeholder="姓名"></el-input>
+        <el-form-item label="Name" prop="name">
+          <el-input v-model="user.name" placeholder="Name"></el-input>
         </el-form-item>
-        <el-form-item label="电话" prop="phone">
-          <el-input v-model="user.phone" placeholder="电话"></el-input>
+        <el-form-item label="Phone" prop="phone">
+          <el-input v-model="user.phone" placeholder="Phone"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="user.email" placeholder="邮箱"></el-input>
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="user.email" placeholder="Email"></el-input>
         </el-form-item>
         <div style="text-align: center; margin-bottom: 20px">
-          <el-button type="primary" @click="update">保 存</el-button>
+          <el-button type="primary" @click="update">Save</el-button>
         </div>
       </el-form>
     </el-card>
-    <el-dialog title="修改密码" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Change Password" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" destroy-on-close>
       <el-form :model="user" label-width="80px" style="padding-right: 20px" :rules="rules" ref="formRef">
-        <el-form-item label="原始密码" prop="password">
-          <el-input show-password v-model="user.password" placeholder="原始密码"></el-input>
+        <el-form-item label="Current Password" prop="password">
+          <el-input show-password v-model="user.password" placeholder="Current Password"></el-input>
         </el-form-item>
-        <el-form-item label="新密码" prop="newPassword">
-          <el-input show-password v-model="user.newPassword" placeholder="新密码"></el-input>
+        <el-form-item label="New Password" prop="newPassword">
+          <el-input show-password v-model="user.newPassword" placeholder="New Password"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input show-password v-model="user.confirmPassword" placeholder="确认密码"></el-input>
+        <el-form-item label="Confirm Password" prop="confirmPassword">
+          <el-input show-password v-model="user.confirmPassword" placeholder="Confirm Password"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="fromVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button @click="fromVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="save">Confirm</el-button>
       </div>
     </el-dialog>
   </div>
@@ -58,9 +58,9 @@ export default {
   data() {
     const validatePassword = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请确认密码'))
+        callback(new Error('Please confirm your password'))
       } else if (value !== this.user.newPassword) {
-        callback(new Error('确认密码错误'))
+        callback(new Error('Passwords do not match'))
       } else {
         callback()
       }
@@ -71,10 +71,10 @@ export default {
 
       rules: {
         password: [
-          { required: true, message: '请输入原始密码', trigger: 'blur' },
+          { required: true, message: 'Please enter your current password', trigger: 'blur' },
         ],
         newPassword: [
-          { required: true, message: '请输入新密码', trigger: 'blur' },
+          { required: true, message: 'Please enter your new password', trigger: 'blur' },
         ],
         confirmPassword: [
           { validator: validatePassword, required: true, trigger: 'blur' },
@@ -91,7 +91,7 @@ export default {
       this.$request.put('/user/update', this.user).then(res => {
         if (res.code === '200') {
           // 成功更新
-          this.$message.success('保存成功')
+          this.$message.success('Saved successfully')
           // 更新浏览器缓存里的用户信息
           localStorage.setItem('xm-user', JSON.stringify(this.user))
 
@@ -115,8 +115,7 @@ export default {
         if (valid) {
           this.$request.put('/updatePassword', this.user).then(res => {
             if (res.code === '200') {
-              // 成功更新
-              this.$message.success('修改密码成功')
+              this.$message.success('Password changed successfully')
               this.$router.push('/login')
             } else {
               this.$message.error(res.msg)
