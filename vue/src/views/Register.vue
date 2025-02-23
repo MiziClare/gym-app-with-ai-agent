@@ -1,24 +1,24 @@
 <template>
   <div class="container">
     <div style="width: 400px; padding: 30px; background-color: white; border-radius: 5px;">
-      <div style="text-align: center; font-size: 20px; margin-bottom: 20px; color: #333">欢迎注册</div>
+      <div style="text-align: center; font-size: 20px; margin-bottom: 20px; color: #333">Welcome</div>
       <el-form :model="form" :rules="rules" ref="formRef">
         <el-form-item prop="username">
-          <el-input prefix-icon="el-icon-user" placeholder="请输入账号" v-model="form.username"></el-input>
+          <el-input prefix-icon="el-icon-user" placeholder="Enter the username" v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input prefix-icon="el-icon-lock" placeholder="请输入密码" show-password  v-model="form.password"></el-input>
+          <el-input prefix-icon="el-icon-lock" placeholder="Enter the password" show-password  v-model="form.password"></el-input>
         </el-form-item>
         <el-form-item prop="confirmPass">
-          <el-input prefix-icon="el-icon-lock" placeholder="请确认密码" show-password  v-model="form.confirmPass"></el-input>
+          <el-input prefix-icon="el-icon-lock" placeholder="Confirm the password" show-password  v-model="form.confirmPass"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button style="width: 100%; background-color: #333; border-color: #333; color: white" @click="register">注 册</el-button>
+          <el-button style="width: 100%; background-color: #333; border-color: #333; color: white" @click="register">Register</el-button>
         </el-form-item>
         <div style="display: flex; align-items: center">
           <div style="flex: 1"></div>
           <div style="flex: 1; text-align: right">
-            已有账号？请 <a href="/login">登录</a>
+            Already have an account? Please <a href="/login">Login</a>
           </div>
         </div>
       </el-form>
@@ -33,9 +33,9 @@ export default {
     // 验证码校验
     const validatePassword = (rule, confirmPass, callback) => {
       if (confirmPass === '') {
-        callback(new Error('请确认密码'))
+        callback(new Error('Please enter the password again'))
       } else if (confirmPass !== this.form.password) {
-        callback(new Error('两次输入的密码不一致'))
+        callback(new Error('The two passwords do not match'))
       } else {
         callback()
       }
@@ -44,10 +44,10 @@ export default {
       form: {},
       rules: {
         username: [
-          { required: true, message: '请输入账号', trigger: 'blur' },
+          { required: true, message: 'Please enter the username', trigger: 'blur' },
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: 'Please enter the password', trigger: 'blur' },
         ],
         confirmPass: [
           { validator: validatePassword, trigger: 'blur' }
@@ -66,7 +66,7 @@ export default {
           this.$request.post('/register', this.form).then(res => {
             if (res.code === '200') {
               this.$router.push('/login')  // 跳转登录页面
-              this.$message.success('注册成功')
+              this.$message.success('Register successfully')
             } else {
               this.$message.error(res.msg)
             }

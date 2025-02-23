@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * 操作admin相关数据接口
+ * interface for operations on the admin table
 */
 public interface AdminMapper {
 

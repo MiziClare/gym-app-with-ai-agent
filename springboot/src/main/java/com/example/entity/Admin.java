@@ -1,14 +1,19 @@
 package com.example.entity;
-
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
  * 管理员
 */
+@Entity
+@Table(name = "admin")
 public class Admin extends Account implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** ID */
+    @Id
     private Integer id;
     /** 用户名 */
     private String username;
