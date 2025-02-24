@@ -35,6 +35,7 @@ const routes = [
       { path: 'person', name: 'Person', meta: { name: 'Profile' }, component: () => import('../views/front/Person') },
       { path: 'coachPerson', name: 'CoachPerson', meta: { name: 'Profile' }, component: () => import('../views/front/CoachPerson') },
       { path: 'coach', name: 'Coach', meta: { name: 'Coaches' }, component: () => import('../views/front/Coach') },
+      { path: 'coachDetail', name: 'CoachDetail', meta: { name: 'Coach Detail' }, component: () => import('../views/front/CoachDetail') },
     ]
   },
   { path: '/login', name: 'Login', meta: { name: 'Login' }, component: () => import('../views/Login.vue') },
