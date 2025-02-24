@@ -14,7 +14,7 @@
           <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="item in coachData" :key="item.id">
             <div class="glass-card">
               <div class="card-image">
-                <img :src="item.avatar" :alt="item.name">
+                <img @click="$router.push('/front/coachDetail?id=' + item.id)" :src="item.avatar" :alt="item.name">
               </div>
               <div class="card-content">
                 <h3>{{item.name}}</h3>
@@ -185,9 +185,11 @@ export default {
   overflow: hidden;
   position: relative;
   border-radius: 25px 25px 0 0;
+  cursor: pointer;
 }
 
 .card-image::after {
+  pointer-events: none;
   content: '';
   position: absolute;
   top: 0;
@@ -195,7 +197,6 @@ export default {
   right: 0;
   bottom: 0;
   background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
-  
 }
 
 .card-image img {
@@ -204,10 +205,12 @@ export default {
   object-fit: cover;
   transition: transform 0.5s ease;
   border-radius: 25px 25px 0 0;
+  cursor: pointer;
 }
 
 .glass-card:hover .card-image img {
   transform: scale(1.1);
+  
 }
 
 .card-content {

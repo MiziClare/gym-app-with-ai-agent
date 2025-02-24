@@ -11,6 +11,7 @@ import axios from "axios";
 import request from "@/utils/request";
 import './assets/tailwind.css'  // Tailwind CSS
 
+
 Vue.config.productionTip = false
 
 Vue.prototype.$request = request
