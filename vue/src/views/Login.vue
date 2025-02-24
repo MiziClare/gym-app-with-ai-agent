@@ -14,18 +14,10 @@
             <el-form :model="form" :rules="rules" ref="formRef">
               <div id="input-area">
                 <div class="f-inp">
-                  <input 
-                    type="text" 
-                    placeholder="Username" 
-                    v-model="form.username"
-                  />
+                  <input type="text" placeholder="Username" v-model="form.username" />
                 </div>
                 <div class="f-inp">
-                  <input 
-                    type="password" 
-                    placeholder="Password" 
-                    v-model="form.password"
-                  />
+                  <input type="password" placeholder="Password" v-model="form.password" />
                 </div>
                 <div class="f-inp">
                   <select id="role-select" v-model="form.role">
@@ -56,7 +48,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- <div class="container">
     <div style="width: 400px; padding: 30px; background-color: white; border-radius: 15px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);">
       <div style="text-align: center; font-size: 20px; margin-bottom: 20px; color: #333">Welcome</div>
@@ -147,14 +139,15 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  position: relative; /* 添加定位上下文 */
+  position: relative;
+  /* 添加定位上下文 */
 }
 </style>
 
 <style scoped>
 /* 修改容器样式 */
 .container {
-  position: fixed; /* 改为fixed定位 */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -164,7 +157,7 @@ export default {
   align-items: center;
   justify-content: center;
   color: #666;
-  transform: scale(1.07);
+  transform: scale(1.3);  /* 从1.2增加到1.3 */
 }
 
 /* 添加一个伪元素作为背景 */
@@ -178,9 +171,9 @@ export default {
   background-image: url("@/assets/imgs/bg.jpg");
   background-size: cover;
   background-position: center;
-  transform: scale(1.07);
-  filter: blur(3px) brightness(0.9);  /* 添加模糊和亮度调整 */
-  z-index: -1;  /* 确保背景在内容之后 */
+  transform: scale(1.0);  
+  filter: blur(3px) brightness(1);  
+  z-index: -1;
 }
 
 /* 添加这些全局样式 */
@@ -234,7 +227,8 @@ form {
 .shell {
   display: flex;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 添加更柔和的阴影 */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  /* 添加更柔和的阴影 */
   border-radius: 15px;
   overflow: hidden;
 }
@@ -243,7 +237,8 @@ form {
   width: 562px;
   height: 475px;
   background-color: #fff;
-  box-shadow: none; /* 移除阴影 */
+  box-shadow: none;
+  /* 移除阴影 */
   border-radius: 15px;
   display: flex;
   justify-content: center;
@@ -336,11 +331,13 @@ form {
   cursor: pointer;
   margin-top: 20px;
   margin-bottom: 15px;
-  transition: transform 0.2s ease-in-out;  /* 添加过渡效果 */
+  transition: transform 0.2s ease-in-out;
+  /* 添加过渡效果 */
 }
 
 #submit-button:hover {
-  transform: scale(1.2);  /* 鼠标悬停时放大5% */
+  transform: scale(1.2);
+  /* 鼠标悬停时放大5% */
 }
 
 #role-select {
@@ -404,11 +401,13 @@ form {
 .gdpr-consent input[type="checkbox"] {
   margin-top: 3px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;  /* 添加过渡效果 */
+  transition: transform 0.2s ease-in-out;
+  /* 添加过渡效果 */
 }
 
 .gdpr-consent input[type="checkbox"]:hover {
-  transform: scale(1.5);  /* 鼠标悬停时放大 */
+  transform: scale(1.5);
+  /* 鼠标悬停时放大 */
 }
 
 .gdpr-consent label {
@@ -424,5 +423,4 @@ form {
 .policy-link:hover {
   text-decoration: underline;
 }
-
 </style>

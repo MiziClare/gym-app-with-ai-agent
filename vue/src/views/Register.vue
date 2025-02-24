@@ -121,7 +121,7 @@ export default {
   align-items: center;
   justify-content: center;
   color: #666;
-  transform: scale(1.07);
+  transform: scale(1.3);
 }
 
 .container::before {
@@ -134,7 +134,7 @@ export default {
   background-image: url("@/assets/imgs/bg.jpg");
   background-size: cover;
   background-position: center;
-  transform: scale(1.07);
+  transform: scale(1.0);
   filter: blur(3px) brightness(0.9);
   z-index: -1;
 }
@@ -196,7 +196,8 @@ form {
   margin-bottom: 15px;
 }
 
-.f-inp input, .f-inp select {
+.f-inp input,
+.f-inp select {
   width: 100%;
   font-size: 14px;
   padding: 0;
