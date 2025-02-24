@@ -1,0 +1,9 @@
+# Node
+node_modules
+**/node_modules
+**/node_modules/**
+package-lock.json
+yarn.lock
+
+# 其他忽略规则保持不变
+... 
