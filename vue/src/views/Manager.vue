@@ -4,7 +4,7 @@
     <div class="manager-header">
       <div class="manager-header-left">
         <img src="@/assets/imgs/logo.png" />
-        <div class="title">Gym Admin Dashboard</div>
+        <div class="title">Admin Dashboard</div>
       </div>
 
       <div class="manager-header-center">

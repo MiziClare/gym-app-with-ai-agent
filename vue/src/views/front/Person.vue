@@ -28,6 +28,9 @@
         <el-form-item label="Email" prop="email">
           <el-input v-model="user.email" placeholder="Email"></el-input>
         </el-form-item>
+        <el-form-item label="Balance" prop="account">
+          {{user.account}}
+        </el-form-item>
         <div style="text-align: center; margin-bottom: 20px">
           <el-button type="primary" @click="update">Save</el-button>
         </div>
