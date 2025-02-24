@@ -5,39 +5,5 @@ node_modules
 package-lock.json
 yarn.lock
 
-.idea/
-.vscode/
-*.iml
-*.iws
-*.ipr
-
-# 前端构建输出
-/vue/dist/
-.env.local
-.env.*.local
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Spring Boot
-/target/
-/springboot/target/
-*.class
-*.jar
-*.war
-.classpath
-.project
-.settings/
-
-# 系统文件
-.DS_Store
-Thumbs.db
-
-# 日志和临时文件
-/logs/
-*.log
-.cache/
-.temp/
-
 # 其他忽略规则保持不变
 ... 
