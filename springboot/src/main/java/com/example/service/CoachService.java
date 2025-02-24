@@ -113,4 +113,19 @@ public class CoachService {
         BeanUtils.copyProperties(account, coach);
         add(coach);
     }
+
+    /**
+     * 重置密码
+     */
+    public void updatePassword(Account account) {
+        Coach dbCoach = coachMapper.selectByUsername(account.getUsername());
+        if (ObjectUtil.isNull(dbCoach)) {
+            throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
+        }
+        if (!account.getPassword().equals(dbCoach.getPassword())) {
+            throw new CustomException(ResultCodeEnum.PARAM_PASSWORD_ERROR);
+        }
+        dbCoach.setPassword(account.getNewPassword());
+        coachMapper.updateById(dbCoach);
+    }
 }

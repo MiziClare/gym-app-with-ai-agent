@@ -5,13 +5,13 @@
     <div class="front-header">
       <div class="front-header-left">
         <img src="@/assets/imgs/logo.png" alt="">
-        <div class="title">Portal</div>
+        <div class="title" @click="$router.push('/front/home')">Gym Panel</div>
       </div>
       <div class="front-header-center">
         <div class="front-header-nav">
           <el-menu :default-active="$route.path" mode="horizontal" router>
             <el-menu-item index="/front/home">Home</el-menu-item>
-            <el-menu-item index="/front/person">Profile</el-menu-item>
+            <el-menu-item index="/front/coach">Coaches</el-menu-item>
           </el-menu>
         </div>
       </div>
@@ -29,6 +29,9 @@
               </div>      
             </div>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <div style="text-decoration: none" @click="person">Profile</div>
+              </el-dropdown-item>
               <el-dropdown-item>
                 <div style="text-decoration: none" @click="logout">Logout</div>
               </el-dropdown-item>
@@ -86,6 +89,13 @@ export default {
       localStorage.removeItem("xm-user");
       this.$router.push("/login");
     },
+    person() {
+      if (this.user.role === 'COACH') {
+        this.$router.push('/front/coachPerson')
+      } else {
+        this.$router.push('/front/person')
+      }
+    }
   }
 
 }

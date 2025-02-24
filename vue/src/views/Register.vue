@@ -20,7 +20,7 @@
               </div>
               <div class="f-inp">
                 <select id="role-select" v-model="form.role">
-                  <option value="" disabled selected>Your Role</option>
+                  <option value="" disabled selected>Select Role</option>
                   <option value="COACH">Coach</option>
                   <option value="USER">Member</option>
                 </select>
@@ -44,12 +44,11 @@
 export default {
   name: "Register",
   data() {
-    // 验证码校验
     const validatePassword = (rule, confirmPass, callback) => {
       if (confirmPass === '') {
-        callback(new Error('Please enter the password again'))
+        callback(new Error('Please confirm your password'))
       } else if (confirmPass !== this.form.password) {
-        callback(new Error('The two passwords do not match'))
+        callback(new Error('Passwords do not match'))
       } else {
         callback()
       }
@@ -59,17 +58,21 @@ export default {
         username: '',
         password: '',
         confirmPass: '',
-        role: ''  // 确保初始值为空字符串
-        },
+        role: ''
+      },
       rules: {
         username: [
-          { required: true, message: 'Please enter the username', trigger: 'blur' },
+          { required: true, message: 'Please enter username', trigger: 'blur' },
         ],
         password: [
-          { required: true, message: 'Please enter the password', trigger: 'blur' },
+          { required: true, message: 'Please enter password', trigger: 'blur' },
         ],
         confirmPass: [
+          { required: true, message: 'Please confirm password', trigger: 'blur' },
           { validator: validatePassword, trigger: 'blur' }
+        ],
+        role: [
+          { required: true, message: 'Please select your role', trigger: 'change' }
         ]
       }
     }
@@ -81,17 +84,25 @@ export default {
     register() {
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
-          // 验证通过
           this.$request.post('/register', this.form).then(res => {
             if (res.code === '200') {
-              this.$router.push('/login')  // 跳转登录页面
-              this.$message.success('Register successfully')
+              this.$router.push('/login')
+              this.$message.success('Registration successful')
             } else {
-              this.$message.error(res.msg)
+              const errorMsg = this.getErrorMessage(res.msg)
+              this.$message.error(errorMsg)
             }
           })
         }
       })
+    },
+    getErrorMessage(msg) {
+      const errorMap = {
+        '参数缺失': 'Missing required fields',
+        '用户名已存在': 'Username already exists',
+        '注册失败': 'Registration failed'
+      }
+      return errorMap[msg] || 'Registration error'
     }
   }
 }
