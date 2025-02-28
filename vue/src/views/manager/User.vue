@@ -11,7 +11,7 @@
       <el-button type="danger" plain @click="delBatch">Batch Delete</el-button>
     </div>
 
-    <div class="table">
+    <div class="table" style="width: 100%; margin: 0 auto">
       <el-table :data="tableData" strip @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="id" label="ID" width="70" align="center" sortable></el-table-column>
@@ -19,7 +19,7 @@
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
               <el-image style="width: 40px; height: 40px; border-radius: 50%" v-if="scope.row.avatar"
-                        :src="scope.row.avatar" :preview-src-list="[scope.row.avatar]"></el-image>
+                :src="scope.row.avatar" :preview-src-list="[scope.row.avatar]"></el-image>
             </div>
           </template>
         </el-table-column>
@@ -38,14 +38,8 @@
       </el-table>
 
       <div class="pagination">
-        <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="pageNum"
-            :page-sizes="[5, 10, 20]"
-            :page-size="pageSize"
-            layout="total, prev, pager, next"
-            :total="total">
+        <el-pagination background @current-change="handleCurrentChange" :current-page="pageNum"
+          :page-sizes="[5, 10, 20]" :page-size="pageSize" layout="total, prev, pager, next" :total="total">
         </el-pagination>
       </div>
     </div>
@@ -54,13 +48,8 @@
     <el-dialog title="Admin" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false" destroy-on-close>
       <el-form :model="form" label-width="100px" style="padding-right: 50px" :rules="rules" ref="formRef">
         <el-form-item label="Avatar">
-          <el-upload
-              class="avatar-uploader"
-              :action="$baseUrl + '/files/upload'"
-              :headers="{ token: user.token }"
-              list-type="picture"
-              :on-success="handleAvatarSuccess"
-          >
+          <el-upload class="avatar-uploader" :action="$baseUrl + '/files/upload'" :headers="{ token: user.token }"
+            list-type="picture" :on-success="handleAvatarSuccess">
             <el-button type="primary">Upload Avatar</el-button>
           </el-upload>
         </el-form-item>
@@ -103,7 +92,7 @@ export default {
       user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       rules: {
         username: [
-          {required: true, message: 'Please enter your username', trigger: 'blur'},
+          { required: true, message: 'Please enter your username', trigger: 'blur' },
         ]
       },
       ids: []
@@ -141,7 +130,7 @@ export default {
       })
     },
     del(id) {   // 单个删除
-      this.$confirm('Are you sure about the deletion?', 'Confirm', {type: "warning"}).then(response => {
+      this.$confirm('Are you sure about the deletion?', 'Confirm', { type: "warning" }).then(response => {
         this.$request.delete('/user/delete/' + id).then(res => {
           if (res.code === '200') {   // 表示操作成功
             this.$message.success('Success')
@@ -161,8 +150,8 @@ export default {
         this.$message.warning('Please select the data to be deleted')
         return
       }
-      this.$confirm('Are you sure about the deletion?', 'Confirm', {type: "warning"}).then(response => {
-        this.$request.delete('/user/delete/batch', {data: this.ids}).then(res => {
+      this.$confirm('Are you sure about the deletion?', 'Confirm', { type: "warning" }).then(response => {
+        this.$request.delete('/user/delete/batch', { data: this.ids }).then(res => {
           if (res.code === '200') {   // 表示操作成功
             this.$message.success('Success')
             this.load(1)
@@ -201,6 +190,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

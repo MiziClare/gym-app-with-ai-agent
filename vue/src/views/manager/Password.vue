@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card style="width: 50%">
+    <el-card style="width: 80%; height: 400px">
       <el-form ref="formRef" :model="user" :rules="rules" label-width="100px" style="padding-right: 50px">
         <el-form-item label="Current Password" prop="password">
           <el-input show-password v-model="user.password" placeholder="Enter current password"></el-input>
