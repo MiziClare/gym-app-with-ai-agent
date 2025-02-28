@@ -8,7 +8,7 @@
         </h1>
         <p>Professional and responsible personal trainers, one-on-one customized training.</p>
       </div>
-      
+
       <div class="coach-grid">
         <el-row :gutter="30">
           <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="item in coachData" :key="item.id">
@@ -17,10 +17,13 @@
                 <img @click="$router.push('/front/coachDetail?id=' + item.id)" :src="item.avatar" :alt="item.name">
               </div>
               <div class="card-content">
-                <h3>{{item.name}}</h3>
+                <h3>{{ item.name }}</h3>
                 <div class="card-footer">
-                  <span>{{ item.phone }}</span>
-                  <el-button class="glass-button">Book Now</el-button>
+                  <span class="phone-wrapper">
+                    <img src="../../assets/imgs/icon-phone.png" alt="phone icon" class="phone-icon">
+                    <span>{{ item.phone }}</span>
+                  </span>
+                  <el-button class="glass-button" @click="reserveInit(item.id)">Book Now</el-button>
                 </div>
               </div>
             </div>
@@ -28,6 +31,19 @@
         </el-row>
       </div>
     </div>
+    <!-- 预约信息窗口 -->
+    <el-dialog title="Reservations" :visible.sync="fromVisible" width="40%" top="30vh" :close-on-click-modal="false"
+      destroy-on-close custom-class="glass-dialog">
+      <el-form label-width="100px" style="padding-right: 50px">
+        <el-form-item prop="content" label="Notes">
+          <el-input type="textarea" :rows="5" v-model="content" autocomplete="off" class="glass-input"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="fromVisible = false" class="glass-button cancel-button">Cancel</el-button>
+        <el-button type="primary" @click="submit" class="glass-button submit-button">Submit</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -37,7 +53,11 @@ export default {
 
   data() {
     return {
-      coachData: []
+      user: JSON.parse(localStorage.getItem('xm-user') || '{}'), // Get user info from local storage
+      coachData: [],
+      content: null,
+      coachId: null,
+      fromVisible: false,
     }
   },
   mounted() {
@@ -51,6 +71,29 @@ export default {
           this.coachData = res.data
         } else {
           this.$message.error(res.msg)
+        }
+      })
+    },
+    reserveInit(coachId) {
+      if (this.user.role !== 'USER') {
+        this.$message.warning('You are not a member and cannot make an appointment.')
+        return
+      }
+      this.coachId = coachId
+      this.fromVisible = true
+    },
+    submit() {
+      let data = {
+        userId: this.user.id,
+        coachId: this.coachId,
+        content: this.content,
+      }
+      this.$request.post('/reserve/add', data).then(res => {
+        if (res.code === '200') {
+          this.$message.success('The booking success! Please wait to be contacted by a coach.')
+          this.coachId = null
+          this.content = null
+          this.fromVisible = false
         }
       })
     }
@@ -103,7 +146,7 @@ export default {
   padding: 40px;
   margin-bottom: 60px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 0 32px rgba(255, 255, 255, 0.05);
   text-align: center;
@@ -114,13 +157,13 @@ export default {
 
 .glass-header:hover {
   transform: scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 15px 45px rgba(0, 0, 0, 0.2),
     inset 0 0 45px rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.15);
 }
 
-.glass-header h1, 
+.glass-header h1,
 .glass-header p {
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -167,14 +210,14 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   margin-bottom: 30px;
-  box-shadow: 
+  box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.1),
     inset 0 0 40px rgba(255, 255, 255, 0.05);
 }
 
 .glass-card:hover {
   transform: translateY(-10px);
-  box-shadow: 
+  box-shadow:
     0 15px 50px rgba(0, 0, 0, 0.2),
     0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -196,7 +239,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
 }
 
 .card-image img {
@@ -210,7 +253,7 @@ export default {
 
 .glass-card:hover .card-image img {
   transform: scale(1.1);
-  
+
 }
 
 .card-content {
@@ -241,6 +284,20 @@ export default {
   padding: 0 5px;
 }
 
+.phone-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(0.7);
+  /* 使图标变成浅灰色以匹配文字 */
+  opacity: 0.8;
+}
+
 .glass-button {
   background: rgba(255, 255, 255, 0.15) !important;
   backdrop-filter: blur(15px) !important;
@@ -253,7 +310,7 @@ export default {
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  font-size: 0.75rem !important;
+  font-size: 0.5rem !important;
   border-radius: 20px !important;
   transform-origin: center;
   transform: scale(1.05);
@@ -264,7 +321,7 @@ export default {
 .glass-button:hover {
   background: rgba(255, 255, 255, 0.25) !important;
   transform: scale(1.2);
-  box-shadow: 
+  box-shadow:
     0 4px 15px rgba(0, 0, 0, 0.2),
     inset 0 0 20px rgba(255, 255, 255, 0.1);
 }
@@ -281,12 +338,10 @@ export default {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  background: linear-gradient(45deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
   transform: rotate(45deg);
   transition: all 0.3s ease;
   opacity: 0;
@@ -325,17 +380,100 @@ export default {
 }
 
 .title-icon {
-  width: 32px;  /* 调整图标大小 */
+  width: 32px;
+  /* 调整图标大小 */
   height: 32px;
   vertical-align: middle;
-  margin-right: 12px;  /* 调整图标和文字的间距 */
-  transform: translateY(-2px);  /* 微调图标位置 */
-  filter: brightness(0) invert(1);  /* 将图标改为白色 */
-  opacity: 0.9;  /* 稍微调整透明度 */
+  margin-right: 2px;
+  /* 调整图标和文字的间距 */
+  transform: translateY(-1px);
+  /* 微调图标位置 */
+  filter: brightness(0) invert(1);
+  /* 将图标改为白色 */
+  opacity: 0.9;
+  /* 稍微调整透明度 */
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-header:hover .title-icon {
-  transform: translateY(-2px) scale(1.1);  /* 悬停时图标稍微放大 */
+  transform: translateY(-2px) scale(1.1);
+  /* 悬停时图标稍微放大 */
+}
+
+/* 预约窗口样式 */
+:deep(.glass-dialog) {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 0 32px rgba(255, 255, 255, 0.05) !important;
+  overflow: hidden;
+}
+
+:deep(.glass-dialog .el-dialog__header) {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.glass-dialog .el-dialog__title) {
+  color: #e2e8f0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-family: var(--font-primary);
+}
+
+:deep(.glass-dialog .el-dialog__headerbtn .el-dialog__close) {
+  color: #e2e8f0;
+  font-size: 20px;
+}
+
+:deep(.glass-dialog .el-dialog__body) {
+  padding: 30px;
+  color: #e2e8f0;
+}
+
+:deep(.glass-dialog .el-form-item__label) {
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+:deep(.glass-input .el-textarea__inner) {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+:deep(.glass-input .el-textarea__inner:focus) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+:deep(.glass-dialog .el-dialog__footer) {
+  padding: 20px 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cancel-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #a0aec0 !important;
+}
+
+.submit-button {
+  background: rgba(66, 153, 225, 0.6) !important;
+  border-color: rgba(66, 153, 225, 0.3) !important;
+}
+
+.submit-button:hover {
+  background: rgba(66, 153, 225, 0.8) !important;
+  border-color: rgba(66, 153, 225, 0.5) !important;
 }
 </style>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CourseMapper">
+
+    <sql id="Base_Column_List">
+        <if test="true">
+            id,img,name,time,price,coach_id,content
+        </if>
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Course">
+        select course.*, coach.name as coachName
+        from course
+        left join coach on course.coach_id = coach.id
+        <where>
+            <if test="id != null">and id= #{id}</if>
+            <if test="name != null">and course.name like concat('%', #{name}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Course">
+        select course.*, coach.name as coachName
+        from course
+                 left join coach on course.coach_id = coach.id
+        where course.id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from course
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Course" useGeneratedKeys="true">
+        insert into course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="img != null">img,</if>
+            <if test="content != null">content,</if>
+            <if test="time != null">time,</if>
+            <if test="name != null">name,</if>
+            <if test="price != null">price,</if>
+            <if test="coachId != null">coach_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="img != null">#{img},</if>
+            <if test="content != null">#{content},</if>
+            <if test="time != null">#{time},</if>
+            <if test="name != null">#{name},</if>
+            <if test="price != null">#{price},</if>
+            <if test="coachId != null">#{coachId},</if>
+        </trim>
+    </insert>
+    <!--img,name,time,price,coach_id,content-->
+    <update id="updateById" parameterType="com.example.entity.Course">
+        update course
+        <set>
+            <if test="img != null">
+                img = #{img},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="coachId != null">
+                coach_id = #{coachId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

@@ -11,7 +11,7 @@
       <el-button type="danger" plain @click="delBatch">Batch Delete</el-button>
     </div>
 
-    <div class="table">
+    <div class="table" style="width: 100%; margin: 0 auto">
       <el-table :data="tableData" strip @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="id" label="ID" width="70" align="center" sortable></el-table-column>

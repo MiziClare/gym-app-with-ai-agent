@@ -18,7 +18,7 @@
         <el-dropdown placement="bottom">
           <div class="avatar">
             <img :src="user.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" />
-            <div>{{ user.name ||  'Admin' }}</div>
+            <div>{{ user.name || 'Admin' }}</div>
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item @click.native="goToPerson">Profile</el-dropdown-item>
@@ -40,9 +40,11 @@
           </el-menu-item>
           <el-submenu index="info">
             <template slot="title">
-              <i class="el-icon-menu"></i><span>Dashboard</span>
+              <i class="el-icon-menu"></i><span>Info</span>
             </template>
-            <el-menu-item index="/notice">Bulletin Board</el-menu-item>
+            <el-menu-item index="/notice">Notices</el-menu-item>
+            <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
+            <el-menu-item index="/course">Courses</el-menu-item>
           </el-submenu>
 
           <el-submenu index="user">

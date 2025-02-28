@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ReserveMapper">
+
+    <sql id="Base_Column_List">
+        <if test="true">
+            id,user_id,coach_id,content,time
+        </if>
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Reserve">
+        select reserve.*, user.name as userName, coach.name as coachName
+        from reserve
+        left join user on reserve.user_id = user.id
+        left join coach on reserve.coach_id = coach.id
+        <where>
+            <if test="id != null"> and id= #{id}</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="coachId != null"> and coach_id = #{coachId}</if>
+            <if test="coachName != null"> and coach.name like concat('%', #{coachName}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Reserve">
+        select
+        <include refid="Base_Column_List" />
+        from reserve
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from reserve
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Reserve" useGeneratedKeys="true">
+        insert into reserve
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="content != null">content,</if>
+            <if test="time != null">time,</if>
+            <if test="coachId != null">coach_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="time != null">#{time},</if>
+            <if test="coachId != null">#{coachId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Reserve">
+        update reserve
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="coachId != null">
+                coach_id = #{coachId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

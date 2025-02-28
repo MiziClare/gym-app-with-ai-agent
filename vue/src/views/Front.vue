@@ -2,8 +2,9 @@
   <div>
     <div class="front-notice"><i class="el-icon-bell" style="margin-right: 2px"></i>Notice: {{ top }}</div>
     <!--Header-->
-    <div class="front-header">
-      <div class="front-header-left">
+    <div class="front-header"
+      style="background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;">
+      <div class="front-header-left" >
         <img src="@/assets/imgs/logo.png" alt="">
         <div class="title" @click="$router.push('/front/home')">Gym Panel</div>
       </div>
@@ -26,9 +27,12 @@
               <img :src="user.avatar" alt="">
               <div style="margin-left: 10px">
                 <span>{{ user.name }}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
-              </div>      
+              </div>
             </div>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <div style="text-decoration: none" @click="$router.push('/front/reserve')">Reservations</div>
+              </el-dropdown-item>
               <el-dropdown-item>
                 <div style="text-decoration: none" @click="person">Profile</div>
               </el-dropdown-item>
@@ -53,7 +57,7 @@
 export default {
   name: "FrontLayout",
 
-  data () {
+  data() {
     return {
       top: '',
       notice: [],
@@ -77,7 +81,7 @@ export default {
             if (i === this.notice.length) {
               i = 0
             }
-          }, 2500)
+          }, 3500)
         }
       })
     },
@@ -102,5 +106,5 @@ export default {
 </script>
 
 <style scoped>
-  @import "@/assets/css/front.css";
+@import "@/assets/css/front.css";
 </style>

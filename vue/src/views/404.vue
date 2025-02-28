@@ -3,7 +3,11 @@
     <div class="not-found-card">
       <h1 class="error-code">404</h1>
       <p class="error-message">Page not found</p>
-      <router-link class="inline-block px-6 py-3 bg-blue-500 text-white rounded-md transition-transform duration-300 hover:scale-110 hover:bg-blue-600" to="/">Back to home page</router-link>
+      <router-link
+        class="inline-block px-6 py-3 bg-blue-500 text-white rounded-md transition-transform duration-300 hover:scale-110 hover:bg-blue-600"
+        :to="getHomeRoute">
+        Back to home page
+      </router-link>
     </div>
   </div>
 </template>
@@ -12,9 +16,21 @@
 export default {
   name: "NotFound",
   data() {
-    return {}
+    return {
+      user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
+    }
   },
-  created() {},
+  computed: {
+    getHomeRoute() {
+      const role = this.user.role
+      if (role === 'ADMIN') {
+        return '/home'
+      } else {
+        return '/front/home'
+      }
+    }
+  },
+  created() { },
   methods: {}
 }
 </script>

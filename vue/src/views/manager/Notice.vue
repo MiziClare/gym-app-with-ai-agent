@@ -11,8 +11,8 @@
       <el-button type="danger" plain @click="delBatch">Batch Delete</el-button>
     </div>
 
-    <div class="table">
-      <el-table :data="tableData" stripe  @selection-change="handleSelectionChange">
+    <div class="table" style="width: 100%; margin: 0 auto">
+      <el-table :data="tableData" stripe @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="id" label="ID" width="80" align="center" sortable></el-table-column>
         <el-table-column prop="title" label="Title" show-overflow-tooltip></el-table-column>
@@ -29,19 +29,14 @@
       </el-table>
 
       <div class="pagination">
-        <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="pageNum"
-            :page-sizes="[5, 10, 20]"
-            :page-size="pageSize"
-            layout="total, prev, pager, next"
-            :total="total">
+        <el-pagination background @current-change="handleCurrentChange" :current-page="pageNum"
+          :page-sizes="[5, 10, 20]" :page-size="pageSize" layout="total, prev, pager, next" :total="total">
         </el-pagination>
       </div>
     </div>
 
-    <el-dialog title="Announcement" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Announcement" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
+      destroy-on-close>
       <el-form label-width="100px" style="padding-right: 50px" :model="form" :rules="rules" ref="formRef">
         <el-form-item prop="title" label="Title">
           <el-input v-model="form.title" placeholder="Enter title"></el-input>
@@ -73,10 +68,10 @@ export default {
       user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       rules: {
         title: [
-          {required: true, message: 'Please enter title', trigger: 'blur'},
+          { required: true, message: 'Please enter title', trigger: 'blur' },
         ],
         content: [
-          {required: true, message: 'Please enter content', trigger: 'blur'},
+          { required: true, message: 'Please enter content', trigger: 'blur' },
         ]
       },
       ids: []
@@ -114,7 +109,7 @@ export default {
       })
     },
     del(id) {   // Delete single item
-      this.$confirm('Are you sure you want to delete?', 'Confirm', {type: "warning"}).then(response => {
+      this.$confirm('Are you sure you want to delete?', 'Confirm', { type: "warning" }).then(response => {
         this.$request.delete('/notice/delete/' + id).then(res => {
           if (res.code === '200') {   // Operation successful
             this.$message.success('Deleted successfully')
@@ -134,8 +129,8 @@ export default {
         this.$message.warning('Please select items to delete')
         return
       }
-      this.$confirm('Are you sure you want to delete these items?', 'Confirm', {type: "warning"}).then(response => {
-        this.$request.delete('/notice/delete/batch', {data: this.ids}).then(res => {
+      this.$confirm('Are you sure you want to delete these items?', 'Confirm', { type: "warning" }).then(response => {
+        this.$request.delete('/notice/delete/batch', { data: this.ids }).then(res => {
           if (res.code === '200') {   // Operation successful
             this.$message.success('Deleted successfully')
             this.load(1)
@@ -170,6 +165,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

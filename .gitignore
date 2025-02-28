@@ -5,5 +5,9 @@ node_modules
 package-lock.json
 yarn.lock
 
+.idea/workspace.xml
+.idea/tasks.xml
+*.iml
+
 # 其他忽略规则保持不变
 ... 
