@@ -12,6 +12,7 @@
         <div class="front-header-nav">
           <el-menu :default-active="$route.path" mode="horizontal" router>
             <el-menu-item index="/front/home">Home</el-menu-item>
+            <el-menu-item index="/front/course">Courses</el-menu-item>
             <el-menu-item index="/front/coach">Coaches</el-menu-item>
           </el-menu>
         </div>

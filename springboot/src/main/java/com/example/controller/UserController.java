@@ -91,4 +91,10 @@ public class UserController {
         PageInfo<User> page = userService.selectPage(user, pageNum, pageSize);
         return Result.success(page);
     }
+
+    @GetMapping("/recharge/{account}")
+    public Result recharge(@PathVariable Double account) {
+        userService.recharge(account);
+        return Result.success();
+    }
 }

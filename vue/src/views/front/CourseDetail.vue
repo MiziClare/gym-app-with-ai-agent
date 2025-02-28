@@ -4,16 +4,18 @@
       <div>
         <el-row :gutter="50">
           <el-col :span="6">
-            <img :src="courseData.img" alt="" style="width: 100%; height: 220px; border-radius: 5px">
+            <img :src="courseData.img" alt=""
+              style="width: 100%; height: 220px; border-radius: 5px; object-fit: cover;">
           </el-col>
           <el-col :span="18">
-            <div style="margin-bottom: 20px; font-size: 18px; color: #666666; font-weight: bold">课程名称：{{ courseData.name
+            <div style="margin-bottom: 20px; font-size: 18px; font-weight: bold">Course: {{
+              courseData.name
               }}</div>
-            <div style="margin-bottom: 20px; font-size: 18px; color: #666666">课程教练：{{ courseData.coachName }}</div>
-            <div style="margin-bottom: 20px; font-size: 18px; color: #666666">课程周期：{{ courseData.time }}</div>
-            <div style="margin-bottom: 20px; font-size: 18px; color: #666666">课程价格：<span style="color: red">￥{{
+            <div style="margin-bottom: 20px; font-size: 18px">Coach: {{ courseData.coachName }}</div>
+            <div style="margin-bottom: 20px; font-size: 18px; color: #333333">Duration: {{ courseData.time }}</div>
+            <div style="margin-bottom: 20px; font-size: 18px; color: #222222">Price: <span style="color: red">￡{{
               courseData.price }}</span></div>
-            <div style="margin-top: 30px"><el-button type="primary" @click="buy">我要购买</el-button></div>
+            <div style="margin-top: 30px"><el-button type="primary" @click="buy">Buy Now</el-button></div>
           </el-col>
         </el-row>
       </div>
