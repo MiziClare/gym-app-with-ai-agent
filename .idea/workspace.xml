@@ -4,58 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/CommentController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/CourseController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/ReserveController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/Comment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/Course.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/Reserve.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/mapper/CommentMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/mapper/CourseMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/mapper/ReserveMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/CommentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/CourseService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/ReserveService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/resources/mapper/CommentMapper.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/resources/mapper/CourseMapper.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/resources/mapper/ReserveMapper.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/assets/imgs/icon-phone.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/Reserve.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/Course.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/EqReserve.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/Equipment.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/Experience.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/ExperienceDetail.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/Menu.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/MyExperience.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/Orders.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/front/Reserve.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/EqReserve.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/Equipment.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/Experience.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/Menu.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/Orders.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/src/views/manager/Reserve.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Complete the back-end development of the course.">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/assets/css/front.css" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/assets/css/front.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/assets/imgs/logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/assets/imgs/logo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/404.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/404.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/Front.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Front.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/Manager.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Manager.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Coach.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Coach.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/front/CoachDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/CoachDetail.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Admin.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Admin.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Coach.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Coach.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Notice.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Notice.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Password.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Password.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/User.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/User.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Course.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Course.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Person.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Person.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,8 +124,17 @@
       <option name="presentableId" value="Default" />
       <updated>1740394540469</updated>
       <workItem from="1740394541832" duration="2301000" />
-      <workItem from="1740674376229" duration="19439000" />
+      <workItem from="1740674376229" duration="26813000" />
     </task>
+    <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
+      <option name="closed" value="true" />
+      <created>1740703553809</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1740703553809</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,5 +150,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Complete the back-end development of the course." />
+    <option name="LAST_COMMIT_MESSAGE" value="Complete the back-end development of the course." />
   </component>
 </project>

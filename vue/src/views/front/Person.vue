@@ -2,16 +2,13 @@
   <div class="main-content">
     <el-card style="width: 50%; margin: 30px auto">
       <div style="text-align: right; margin-bottom: 20px">
+        <el-button type="info" @click="rechargeInit">Top Up</el-button>
         <el-button type="primary" @click="updatePassword">Change Password</el-button>
       </div>
       <el-form :model="user" label-width="80px" style="padding-right: 20px">
         <div style="margin: 15px; text-align: center">
-          <el-upload
-              class="avatar-uploader"
-              :action="$baseUrl + '/files/upload'"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-          >
+          <el-upload class="avatar-uploader" :action="$baseUrl + '/files/upload'" :show-file-list="false"
+            :on-success="handleAvatarSuccess">
             <img v-if="user.avatar" :src="user.avatar" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -29,14 +26,15 @@
           <el-input v-model="user.email" placeholder="Email"></el-input>
         </el-form-item>
         <el-form-item label="Balance" prop="account">
-          {{user.account}}
+          {{ user.account }}
         </el-form-item>
         <div style="text-align: center; margin-bottom: 20px">
           <el-button type="primary" @click="update">Save</el-button>
         </div>
       </el-form>
     </el-card>
-    <el-dialog title="Change Password" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Change Password" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false"
+      destroy-on-close>
       <el-form :model="user" label-width="80px" style="padding-right: 20px" :rules="rules" ref="formRef">
         <el-form-item label="Current Password" prop="password">
           <el-input show-password v-model="user.password" placeholder="Current Password"></el-input>
@@ -51,6 +49,24 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="fromVisible = false">Cancel</el-button>
         <el-button type="primary" @click="save">Confirm</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- Top Up Dialog -->
+    <el-dialog title="Top Up" :visible.sync="rechargeVisible" width="30%" :close-on-click-modal="false"
+      destroy-on-close>
+      <el-form label-width="80px" style="padding-right: 20px">
+        <el-form-item label="Top-Up " prop="account">
+          <el-input v-model="account" placeholder="Amount"></el-input>
+        </el-form-item>
+        <el-form-item label="Payment Methods" prop="account">
+          <el-radio v-model="type" label="cardpay">Card</el-radio>
+          <el-radio v-model="type" label="ewalletpay">E-Wallets</el-radio>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="rechargeVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="recharge">Confirm</el-button>
       </div>
     </el-dialog>
   </div>
@@ -71,6 +87,9 @@ export default {
     return {
       user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       dialogVisible: false,
+      rechargeVisible: false,
+      account: null,
+      type: 'cardpay',
 
       rules: {
         password: [
@@ -86,9 +105,36 @@ export default {
     }
   },
   created() {
-
+    this.loadUser()
   },
   methods: {
+    loadUser() {
+      this.$request.get('/user/selectById/' + this.user.id).then(res => {
+        if (res.code === '200') {
+          this.user = res.data
+          localStorage.setItem('xm-user', JSON.stringify(this.user))
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    rechargeInit() {
+      this.account = 50
+      this.rechargeVisible = true
+    },
+    recharge() {
+      if (!this.account) {
+        this.$message.warning('Please enter the amount to top up')
+        return
+      }
+      this.$request.get('/user/recharge/' + this.account).then(res => {
+        if (res.code === '200') {
+          this.$message.success('Top up successfully')
+          this.loadUser()
+          this.rechargeVisible = false
+        }
+      })
+    },
     update() {
       // 保存当前的用户信息到数据库
       this.$request.put('/user/update', this.user).then(res => {
@@ -135,9 +181,11 @@ export default {
 /deep/.el-form-item__label {
   font-weight: bold;
 }
+
 /deep/.el-upload {
   border-radius: 50%;
 }
+
 /deep/.avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   cursor: pointer;
@@ -145,9 +193,11 @@ export default {
   overflow: hidden;
   border-radius: 50%;
 }
+
 /deep/.avatar-uploader .el-upload:hover {
   border-color: #409EFF;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -157,6 +207,7 @@ export default {
   text-align: center;
   border-radius: 50%;
 }
+
 .avatar {
   width: 120px;
   height: 120px;

@@ -154,6 +154,9 @@ export default {
     save() {   // 保存按钮触发的逻辑  它会触发新增或者更新
       this.$refs.formRef.validate((valid) => {
         if (valid) {
+          if (this.form.price) {
+            this.form.price = Number(this.form.price);
+          }
           this.form.content = this.editor.txt.html()
           this.$request({
             url: this.form.id ? '/course/update' : '/course/add',

@@ -134,4 +134,16 @@ public class UserService {
         dbUser.setPassword(account.getNewPassword());
         userMapper.updateById(dbUser);
     }
+
+    /**
+     * 重置密码
+     */
+    public void recharge(Double account) {
+        Account currentUser = TokenUtils.getCurrentUser();
+        // 1.根据用户id从数据库中查询出用户的详细信息
+        User user = userMapper.selectById(currentUser.getId());
+        // 2. 更新用户的余额
+        user.setAccount(user.getAccount() + account);
+        userMapper.updateById(user);
+    }
 }
