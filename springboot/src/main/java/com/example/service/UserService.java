@@ -74,7 +74,12 @@ public class UserService {
      * 根据ID查询
      */
     public User selectById(Integer id) {
-        return userMapper.selectById(id);
+        User dbUser = userMapper.selectById(id);
+        // Regenerate the token every time because the token is invalid after the user information is modified
+        String tokenData = dbUser.getId() + "-" + RoleEnum.USER.name();
+        String token = TokenUtils.createToken(tokenData, dbUser.getPassword());
+        dbUser.setToken(token);
+        return dbUser;
     }
 
     /**

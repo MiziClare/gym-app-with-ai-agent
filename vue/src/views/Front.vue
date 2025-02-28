@@ -4,7 +4,7 @@
     <!--Header-->
     <div class="front-header"
       style="background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;">
-      <div class="front-header-left" >
+      <div class="front-header-left">
         <img src="@/assets/imgs/logo.png" alt="">
         <div class="title" @click="$router.push('/front/home')">Gym Panel</div>
       </div>
@@ -32,10 +32,13 @@
             </div>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
-                <div style="text-decoration: none" @click="$router.push('/front/reserve')">Reservations</div>
+                <div style="text-decoration: none" @click="person">Account</div>
               </el-dropdown-item>
               <el-dropdown-item>
-                <div style="text-decoration: none" @click="person">Profile</div>
+                <div style="text-decoration: none" @click="$router.push('/front/orders')">Orders</div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div style="text-decoration: none" @click="$router.push('/front/reserve')">Reservations</div>
               </el-dropdown-item>
               <el-dropdown-item>
                 <div style="text-decoration: none" @click="logout">Logout</div>

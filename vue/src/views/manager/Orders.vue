@@ -1,42 +1,36 @@
 <template>
   <div>
     <div class="search">
-      <el-input placeholder="请输入订单编号" style="width: 200px" v-model="orderNo"></el-input>
-      <el-button type="info" plain style="margin-left: 10px" @click="load(1)">查询</el-button>
-      <el-button type="warning" plain style="margin-left: 10px" @click="reset">重置</el-button>
+      <el-input placeholder="Please enter order number" style="width: 200px" v-model="orderNo"></el-input>
+      <el-button type="info" plain style="margin-left: 10px" @click="load(1)">Search</el-button>
+      <el-button type="warning" plain style="margin-left: 10px" @click="reset">Reset</el-button>
     </div>
 
     <div class="operation">
-      <el-button type="danger" plain @click="delBatch">批量删除</el-button>
+      <el-button type="danger" plain @click="delBatch">Batch Delete</el-button>
     </div>
 
-    <div class="table">
-      <el-table :data="tableData" stripe  @selection-change="handleSelectionChange">
+    <div class="table" style="width: 100%; margin: 0 auto">
+      <el-table :data="tableData" stripe @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
-        <el-table-column prop="courseName" label="课程名称" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="coachName" label="教练姓名" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="userName" label="下单用户" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="orderNo" label="订单编号" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="price" label="课程价格" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="time" label="下单时间"></el-table-column>
+        <el-table-column prop="id" label="No." width="80" align="center" sortable></el-table-column>
+        <el-table-column prop="courseName" label="Course Name" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="coachName" label="Coach Name" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="userName" label="Customer" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="orderNo" label="Order No." show-overflow-tooltip></el-table-column>
+        <el-table-column prop="price" label="Course Price" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="time" label="Order Time"></el-table-column>
 
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="Actions" width="180" align="center">
           <template v-slot="scope">
-            <el-button plain type="danger" size="mini" @click=del(scope.row.id)>删除</el-button>
+            <el-button plain type="danger" size="mini" @click=del(scope.row.id)>Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination">
-        <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="pageNum"
-            :page-sizes="[5, 10, 20]"
-            :page-size="pageSize"
-            layout="total, prev, pager, next"
-            :total="total">
+        <el-pagination background @current-change="handleCurrentChange" :current-page="pageNum"
+          :page-sizes="[5, 10, 20]" :page-size="pageSize" layout="total, prev, pager, next" :total="total">
         </el-pagination>
       </div>
     </div>
@@ -65,13 +59,13 @@ export default {
   },
   methods: {
     del(id) {   // 单个删除
-      this.$confirm('您确定删除吗？', '确认删除', {type: "warning"}).then(response => {
+      this.$confirm('Are you sure you want to delete?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/orders/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+          if (res.code === '200') {
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)
           }
         })
       }).catch(() => {
@@ -82,16 +76,16 @@ export default {
     },
     delBatch() {   // 批量删除
       if (!this.ids.length) {
-        this.$message.warning('请选择数据')
+        this.$message.warning('Please select data first')
         return
       }
-      this.$confirm('您确定批量删除这些数据吗？', '确认删除', {type: "warning"}).then(response => {
-        this.$request.delete('/orders/delete/batch', {data: this.ids}).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+      this.$confirm('Are you sure you want to delete these items?', 'Confirm Batch Delete', { type: "warning" }).then(response => {
+        this.$request.delete('/orders/delete/batch', { data: this.ids }).then(res => {
+          if (res.code === '200') {
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)
           }
         })
       }).catch(() => {
@@ -121,6 +115,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

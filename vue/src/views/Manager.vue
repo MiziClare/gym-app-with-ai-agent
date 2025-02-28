@@ -43,8 +43,9 @@
               <i class="el-icon-menu"></i><span>Info</span>
             </template>
             <el-menu-item index="/notice">Notices</el-menu-item>
-            <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
             <el-menu-item index="/course">Courses</el-menu-item>
+            <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
+            <el-menu-item index="/orders">Course Orders</el-menu-item>
           </el-submenu>
 
           <el-submenu index="user">

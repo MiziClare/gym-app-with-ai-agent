@@ -111,8 +111,10 @@ export default {
     loadUser() {
       this.$request.get('/user/selectById/' + this.user.id).then(res => {
         if (res.code === '200') {
+          // Now the user data is the latest
           this.user = res.data
-          localStorage.setItem('xm-user', JSON.stringify(this.user))
+          // Update the browser cache's user data
+          localStorage.setItem('xm-user', JSON.stringify(this.user)) // WATCH OUT: Token will be missing after updata the cache if selectById doesnot regenerate a new token again
         } else {
           this.$message.error(res.msg)
         }
@@ -130,7 +132,7 @@ export default {
       this.$request.get('/user/recharge/' + this.account).then(res => {
         if (res.code === '200') {
           this.$message.success('Top up successfully')
-          this.loadUser()
+          this.loadUser() // Refresh the user data after top up
           this.rechargeVisible = false
         }
       })
