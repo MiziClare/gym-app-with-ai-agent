@@ -155,7 +155,7 @@ body {
 
 /* 第一个项目样式 */
 .item:nth-child(1) {
-  background-image: url(@/assets/imgs/01.jpg);
+  background-image: url(@/assets/imgs/course-yoga.jpg);
   /* 背景图片为01.jpg */
   transform: rotateY(0) translateZ(35vw);
   /* 绕y轴旋转0度，沿z轴平移35vw */
@@ -163,7 +163,7 @@ body {
 
 /* 第二个项目样式 */
 .item:nth-child(2) {
-  background-image: url(@/assets/imgs/01.jpg);
+  background-image: url(@/assets/imgs/course-treadmill.jpg);
   /* 背景图片为02.jpg */
   transform: rotateY(120deg) translateZ(35vw);
   /* 绕y轴旋转120度，沿z轴平移35vw */
@@ -171,7 +171,7 @@ body {
 
 /* 第三个项目样式 */
 .item:nth-child(3) {
-  background-image: url(@/assets/imgs/01.jpg);
+  background-image: url(@/assets/imgs/course-core.jpg);
   /* 背景图片为03.jpg */
   transform: rotateY(240deg) translateZ(35vw);
   /* 绕y轴旋转240度，沿z轴平移35vw */
