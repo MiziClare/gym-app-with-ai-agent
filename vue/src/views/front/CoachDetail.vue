@@ -1,70 +1,34 @@
 <template>
   <div class="main-content">
-    <div style="width: 80%; margin: 20px auto">
-      <div style="display: flex">
-        <div style="flex: 1">
-          <el-image style="width: 300px; height: 300px; border-radius: 10px" :src="coachData.img"></el-image>
-        </div>
-        <div style="flex: 2; padding: 20px">
-          <div style="font-size: 25px; font-weight: bold; margin: 10px 0">{{ coachData.name }}</div>
-          <div style="margin: 10px 0">
-            <span style="color: #666">Gender: </span>
-            {{ coachData.sex }}
-          </div>
-          <div style="margin: 10px 0">
-            <span style="color: #666">Age: </span>
-            {{ coachData.age }}
-          </div>
-          <div style="margin: 10px 0">
-            <span style="color: #666">Phone: </span>
-            {{ coachData.phone }}
-          </div>
-          <div style="margin: 10px 0">
-            <span style="color: #666">Email: </span>
-            {{ coachData.email }}
-          </div>
-          <div style="margin: 10px 0">
-            <span style="color: #666">Speciality: </span>
-            {{ coachData.speciality }}
-          </div>
-          <div style="margin: 10px 0">
-            <span style="color: #666">Description: </span>
-            {{ coachData.description }}
-          </div>
-          <div style="margin: 10px 0">
-            <el-button type="primary" @click="reserve" v-if="user.role === 'USER'">Make Reservation</el-button>
-          </div>
+    <div style="width: 65%; margin: 20px auto">
+      <div style="margin-top: 20px; font-size: 17px; font-weight: bold; color: #666666">{{ coachData.name }}'s Bio</div>
+      <div style="margin-top: 20px" v-html="coachData.content" class="w-e-text w-e-text-container"></div>
+      <div style="font-size: 17px; font-weight: bold; margin: 20px 0; color: #9a6d2a">
+        Comments（{{ commentData.length }}）</div>
+      <div>
+        <el-input type="textarea" :rows="5" v-model="comment" placeholder="Enter your comment..."></el-input>
+        <div style="margin-top: 10px; text-align: right">
+          <el-button type="primary" @click="submit">Submit</el-button>
         </div>
       </div>
 
-      <div style="margin: 20px 0">
-        <div style="border-bottom: 1px solid #eee; padding: 10px">Comments ({{ commentData.length }})</div>
-        <div v-if="user.role === 'USER'" style="padding: 10px; display: flex; align-items: center">
-          <el-input v-model="comment" placeholder="Write your comment here..."></el-input>
-          <el-button type="primary" style="margin-left: 10px" @click="addComment">Submit</el-button>
-        </div>
-        <div v-for="item in commentData" :key="item.id" style="padding: 10px; border-bottom: 1px solid #eee">
-          <div>
-            <span style="color: #666; margin-right: 10px">{{ item.userName }}</span>
-            <span style="color: #999; font-size: 12px">{{ item.time }}</span>
-          </div>
-          <div style="margin: 5px 0">{{ item.content }}</div>
-        </div>
+      <div style="margin: 40px 0 100px 0">
+        <el-row :gutter="10" v-for="item in commentData" style="margin-bottom: 30px">
+          <el-col :span="4">
+            <div style="display: flex; align-items: center">
+              <img :src="item.userAvatar" alt="" style="width: 40px; height: 40px; border-radius: 50%">
+              <div style="margin-left: 5px">{{ item.userName }}</div>
+            </div>
+          </el-col>
+          <el-col :span="15">
+            <div style="line-height: 40px">{{ item.content }}</div>
+          </el-col>
+          <el-col :span="5">
+            <div style="line-height: 40px; text-align: right; color: #666666">{{ item.time }}</div>
+          </el-col>
+        </el-row>
       </div>
     </div>
-
-    <el-dialog title="Make Reservation" :visible.sync="dialogFormVisible" width="30%">
-      <el-form :model="form">
-        <el-form-item label="Notes">
-          <el-input v-model="form.content" type="textarea" :rows="4"
-            placeholder="Please enter reservation notes"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="saveReserve">Confirm</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -74,13 +38,11 @@ export default {
 
   data() {
     return {
+      user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
       coachId: this.$route.query.id,
       coachData: {},
-      user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
-      comment: '',
-      commentData: [],
-      dialogFormVisible: false,
-      form: {}
+      comment: null,
+      commentData: []
     }
   },
   mounted() {
@@ -89,15 +51,6 @@ export default {
   },
   // methods：本页面所有的点击事件或者其他函数定义区
   methods: {
-    loadCoach() {
-      this.$request.get('/coach/selectById/' + this.coachId).then(res => {
-        if (res.code === '200') {
-          this.coachData = res.data
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
-    },
     loadComment() {
       this.$request.get('/comment/selectAll', {
         params: {
@@ -111,38 +64,33 @@ export default {
         }
       })
     },
-    reserve() {
-      this.dialogFormVisible = true
-    },
-    saveReserve() {
-      if (!this.form.content) {
-        this.$message.warning('Please enter reservation notes')
-        return
-      }
-      this.$request.post('/reserve/add', {
-        coachId: this.coachId,
-        content: this.form.content
-      }).then(res => {
+    loadCoach() {
+      this.$request.get('/coach/selectById/' + this.coachId).then(res => {
         if (res.code === '200') {
-          this.$message.success('Reservation successful')
-          this.dialogFormVisible = false
+          this.coachData = res.data
         } else {
           this.$message.error(res.msg)
         }
       })
     },
-    addComment() {
-      if (!this.comment) {
-        this.$message.warning('Please enter your comment')
+    submit() {
+      if (this.user.role !== 'USER') {
+        this.$message.warning('Role not supported')
         return
       }
-      this.$request.post('/comment/add', {
+      if (!this.comment) {
+        this.$message.warning('Enter your comment')
+        return
+      }
+      let data = {
+        userId: this.user.id,
         coachId: this.coachId,
         content: this.comment
-      }).then(res => {
+      }
+      this.$request.post('/comment/add', data).then(res => {
         if (res.code === '200') {
-          this.$message.success('Comment submitted successfully')
-          this.comment = ''
+          this.$message.success('Comment added successfully')
+          this.comment = null
           this.loadComment()
         } else {
           this.$message.error(res.msg)

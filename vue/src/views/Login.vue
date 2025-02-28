@@ -14,18 +14,10 @@
             <el-form :model="form" :rules="rules" ref="formRef">
               <div id="input-area">
                 <div class="f-inp">
-                  <input 
-                    type="text" 
-                    placeholder="Username" 
-                    v-model="form.username"
-                  />
+                  <input type="text" placeholder="Username" v-model="form.username" />
                 </div>
                 <div class="f-inp">
-                  <input 
-                    type="password" 
-                    placeholder="Password" 
-                    v-model="form.password"
-                  />
+                  <input type="password" placeholder="Password" v-model="form.password" />
                 </div>
                 <div class="f-inp">
                   <select id="role-select" v-model="form.role">
@@ -56,40 +48,6 @@
       </div>
     </div>
   </div>
-  
-  <!-- <div class="container">
-    <div style="width: 400px; padding: 30px; background-color: white; border-radius: 15px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);">
-      <div style="text-align: center; font-size: 20px; margin-bottom: 20px; color: #333">Welcome</div>
-      <el-form :model="form" :rules="rules" ref="formRef">
-        <el-form-item prop="username">
-          <el-input prefix-icon="el-icon-user" placeholder="Enter your username" v-model="form.username"></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input prefix-icon="el-icon-lock" placeholder="Enter your password" show-password  v-model="form.password"></el-input>
-        </el-form-item>
-        
-        <el-form-item>
-          <el-select v-model="form.role" placeholder="Your Role" style="width: 100%">
-            <el-option label="Admin" value="ADMIN"></el-option>
-            <el-option label="Coach" value="COACH"></el-option>
-            <el-option label="Member" value="USER"></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button style="width: 100%; background-color: #333; border-color: #333; color: white" @click="login">Login</el-button>
-        </el-form-item>
-        
-        <div style="display: flex; align-items: center">
-          <div style="flex: 1"></div>
-          <div style="flex: 1; text-align: right">
-            Don't have an account? <a href="/register">Register</a>
-          </div>
-        </div>
-      </el-form>
-    </div>
-
-  </div> -->
 
 </template>
 
@@ -147,14 +105,16 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  position: relative; /* 添加定位上下文 */
+  position: relative;
+  /* 添加定位上下文 */
 }
 </style>
 
 <style scoped>
 /* 修改容器样式 */
 .container {
-  position: fixed; /* 改为fixed定位 */
+  position: fixed;
+  /* 改为fixed定位 */
   top: 0;
   left: 0;
   width: 100vw;
@@ -179,8 +139,10 @@ export default {
   background-size: cover;
   background-position: center;
   transform: scale(1.07);
-  filter: blur(3px) brightness(0.9);  /* 添加模糊和亮度调整 */
-  z-index: -1;  /* 确保背景在内容之后 */
+  filter: blur(3px) brightness(0.9);
+  /* 添加模糊和亮度调整 */
+  z-index: -1;
+  /* 确保背景在内容之后 */
 }
 
 /* 添加这些全局样式 */
@@ -234,7 +196,8 @@ form {
 .shell {
   display: flex;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* 添加更柔和的阴影 */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  /* 添加更柔和的阴影 */
   border-radius: 15px;
   overflow: hidden;
 }
@@ -243,7 +206,8 @@ form {
   width: 562px;
   height: 475px;
   background-color: #fff;
-  box-shadow: none; /* 移除阴影 */
+  box-shadow: none;
+  /* 移除阴影 */
   border-radius: 15px;
   display: flex;
   justify-content: center;
@@ -336,11 +300,13 @@ form {
   cursor: pointer;
   margin-top: 20px;
   margin-bottom: 15px;
-  transition: transform 0.2s ease-in-out;  /* 添加过渡效果 */
+  transition: transform 0.2s ease-in-out;
+  /* 添加过渡效果 */
 }
 
 #submit-button:hover {
-  transform: scale(1.2);  /* 鼠标悬停时放大5% */
+  transform: scale(1.2);
+  /* 鼠标悬停时放大5% */
 }
 
 #role-select {
@@ -348,7 +314,7 @@ form {
   font-size: 14px;
   border: none;
   background: transparent;
-  color: #333;
+  color: #b9b9b9;
   cursor: pointer;
   font-family: inherit;
 }
@@ -369,6 +335,14 @@ form {
 
 #role-select::-ms-expand {
   display: none;
+}
+
+#role-select option[disabled] {
+  color: #b9b9b9;
+}
+
+#role-select:not([value=""]) {
+  color: #333;
 }
 
 #register-link {
@@ -404,11 +378,13 @@ form {
 .gdpr-consent input[type="checkbox"] {
   margin-top: 3px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;  /* 添加过渡效果 */
+  transition: transform 0.2s ease-in-out;
+  /* 添加过渡效果 */
 }
 
 .gdpr-consent input[type="checkbox"]:hover {
-  transform: scale(1.5);  /* 鼠标悬停时放大 */
+  transform: scale(1.5);
+  /* 鼠标悬停时放大 */
 }
 
 .gdpr-consent label {
@@ -424,5 +400,4 @@ form {
 .policy-link:hover {
   text-decoration: underline;
 }
-
 </style>

@@ -1,27 +1,27 @@
 <template>
   <div class="main-content">
     <div style="width: 80%; margin: 20px auto">
-      <div style="font-size: 17px; color: #666666">我的购买记录（{{ total }}）</div>
+      <div style="font-size: 17px; color: #666666">My Purchase History ({{ total }})</div>
       <div style="margin-top: 20px">
         <el-table :data="tableData" stripe>
-          <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
-          <el-table-column prop="courseName" label="课程名称" show-overflow-tooltip>
+          <el-table-column prop="id" label="No." width="80" align="center" sortable></el-table-column>
+          <el-table-column prop="courseName" label="Course Name" show-overflow-tooltip>
             <template v-slot="scope">
               <a :href="'/front/courseDetail?id=' + scope.row.courseId">{{ scope.row.courseName }}</a>
             </template>
           </el-table-column>
-          <el-table-column prop="coachName" label="教练姓名" show-overflow-tooltip>
+          <el-table-column prop="coachName" label="Coach Name" show-overflow-tooltip>
             <template v-slot="scope">
               <a :href="'/front/coachDetail?id=' + scope.row.coachId">{{ scope.row.coachName }}</a>
             </template>
           </el-table-column>
-          <el-table-column prop="orderNo" label="订单编号" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="price" label="课程价格" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="time" label="下单时间"></el-table-column>
+          <el-table-column prop="orderNo" label="Order No." show-overflow-tooltip></el-table-column>
+          <el-table-column prop="price" label="Course Price" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="time" label="Order Time"></el-table-column>
 
-          <el-table-column label="操作" width="180" align="center">
+          <el-table-column label="Actions" width="180" align="center">
             <template v-slot="scope">
-              <el-button plain type="danger" size="mini" @click=del(scope.row.id)>删除</el-button>
+              <el-button plain type="danger" size="mini" @click=del(scope.row.id)>Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -69,10 +69,10 @@ export default {
       })
     },
     del(id) {   // 单个删除
-      this.$confirm('您确定删除吗？', '确认删除', { type: "warning" }).then(response => {
+      this.$confirm('Are you sure about the deletion?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/orders/delete/' + id).then(res => {
           if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+            this.$message.success('Operate Successfully!')
             this.load(1)
           } else {
             this.$message.error(res.msg)  // 弹出错误的信息

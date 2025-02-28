@@ -4,19 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Complete the back-end development of the course.">
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="The front-end of the recharge function is complete, ready to troubleshoot the 401 issue on the back-end.">
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/OrdersController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/Orders.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/mapper/OrdersMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/OrdersService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/resources/mapper/OrdersMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/UserMapper.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/Front.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Front.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Course.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Course.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Manager.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Manager.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/CoachDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/CoachDetail.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Orders.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Orders.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/front/Person.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Person.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Orders.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Orders.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +131,7 @@
       <option name="presentableId" value="Default" />
       <updated>1740394540469</updated>
       <workItem from="1740394541832" duration="2301000" />
-      <workItem from="1740674376229" duration="26813000" />
+      <workItem from="1740674376229" duration="36890000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -134,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740703553809</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="The front-end of the recharge function is complete, ready to troubleshoot the 401 issue on the back-end.">
+      <option name="closed" value="true" />
+      <created>1740717234287</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1740717234287</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,6 +168,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Complete the back-end development of the course." />
-    <option name="LAST_COMMIT_MESSAGE" value="Complete the back-end development of the course." />
+    <MESSAGE value="The front-end of the recharge function is complete, ready to troubleshoot the 401 issue on the back-end." />
+    <option name="LAST_COMMIT_MESSAGE" value="The front-end of the recharge function is complete, ready to troubleshoot the 401 issue on the back-end." />
   </component>
 </project>
