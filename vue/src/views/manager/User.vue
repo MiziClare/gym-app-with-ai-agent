@@ -7,7 +7,7 @@
     </div>
 
     <div class="operation">
-      <el-button type="primary" plain @click="handleAdd">Add</el-button>
+      <el-button type="primary" plain @click="handleAdd">Add New</el-button>
       <el-button type="danger" plain @click="delBatch">Batch Delete</el-button>
     </div>
 
@@ -45,7 +45,8 @@
     </div>
 
 
-    <el-dialog title="Admin" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Add an User" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
+      destroy-on-close>
       <el-form :model="form" label-width="100px" style="padding-right: 50px" :rules="rules" ref="formRef">
         <el-form-item label="Avatar">
           <el-upload class="avatar-uploader" :action="$baseUrl + '/files/upload'" :headers="{ token: user.token }"

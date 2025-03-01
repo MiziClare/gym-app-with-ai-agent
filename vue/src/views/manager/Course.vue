@@ -18,8 +18,8 @@
         <el-table-column prop="img" label="Poster" show-overflow-tooltip>
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
-              <el-image style="width: 40px; height: 40px; border-radius: 10px" v-if="scope.row.img" :src="scope.row.img"
-                :preview-src-list="[scope.row.img]"></el-image>
+              <el-image style="width: 60px; height: 40px; border-radius: 10px; object-fit: cover" v-if="scope.row.img"
+                :src="scope.row.img" :preview-src-list="[scope.row.img]"></el-image>
             </div>
           </template>
         </el-table-column>

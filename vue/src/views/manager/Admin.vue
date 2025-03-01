@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <el-dialog title="Admin Management" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
+    <el-dialog title="Add an Admin" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
       destroy-on-close>
       <el-form :model="form" label-width="100px" style="padding-right: 50px" :rules="rules" ref="formRef">
         <el-form-item label="Username" prop="username">

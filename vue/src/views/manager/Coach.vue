@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <el-dialog title="Coach Information" :visible.sync="fromVisible" :close-on-click-modal="false" destroy-on-close
+    <el-dialog title="Add a Coach" :visible.sync="fromVisible" :close-on-click-modal="false" destroy-on-close
       custom-class="custom-dialog" width="50%" top="5vh">
       <el-form :model="form" label-width="100px" :rules="rules" ref="formRef" class="coach-form">
         <div class="form-left">
@@ -80,8 +80,8 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="fromVisible = false" class="dialog-btn">取消</el-button>
-        <el-button type="primary" @click="save" class="dialog-btn">确认</el-button>
+        <el-button @click="fromVisible = false" class="dialog-btn">Cancel</el-button>
+        <el-button type="primary" @click="save" class="dialog-btn">Save</el-button>
       </div>
     </el-dialog>
 

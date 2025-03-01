@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.EqreserveMapper">
+
+    <sql id="Base_Column_List">
+        <if test="true">
+        id,equipment_id,user_id,start,end,status
+        </if>
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Eqreserve">
+        select eqreserve.*, user.name as userName, equipment.img as equipmentImg, equipment.name as equipmentName
+        from eqreserve
+        left join equipment on eqreserve.equipment_id = equipment.id
+        left join user on eqreserve.user_id = user.id
+        <where>
+            <if test="id != null"> and id= #{id}</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Eqreserve">
+        select
+        <include refid="Base_Column_List" />
+        from eqreserve
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from eqreserve
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Eqreserve" useGeneratedKeys="true">
+        insert into eqreserve
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="equipmentId != null">equipment_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="start != null">start,</if>
+            <if test="end != null">end,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="equipmentId != null">#{equipmentId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="start != null">#{start},</if>
+            <if test="end != null">#{end},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+    <!--equipment_id,user_id,start,end,status-->
+    <update id="updateById" parameterType="com.example.entity.Eqreserve">
+        update eqreserve
+        <set>
+            <if test="equipmentId != null">
+                equipment_id = #{equipmentId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="start != null">
+                start = #{start},
+            </if>
+            <if test="end != null">
+                end = #{end},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

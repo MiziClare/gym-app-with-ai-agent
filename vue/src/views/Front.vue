@@ -11,9 +11,16 @@
       <div class="front-header-center">
         <div class="front-header-nav">
           <el-menu :default-active="$route.path" mode="horizontal" router>
-            <el-menu-item index="/front/home">Home</el-menu-item>
-            <el-menu-item index="/front/course">Courses</el-menu-item>
-            <el-menu-item index="/front/coach">Coaches</el-menu-item>
+            <el-menu-item index="/front/home"><img src="@/assets/imgs/icon-home.png" alt=""
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Home</el-menu-item>
+            <el-menu-item index="/front/course"><img src="@/assets/imgs/icon-courses.png" alt=""
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Courses</el-menu-item>
+            <el-menu-item index="/front/equipment">
+              <img src="@/assets/imgs/icon-treadmill.png" alt=""
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Equipments
+            </el-menu-item>
+            <el-menu-item index="/front/coach"><img src="@/assets/imgs/icon-coach.png" alt=""
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Coaches</el-menu-item>
           </el-menu>
         </div>
       </div>

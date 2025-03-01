@@ -1008,7 +1008,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </schema>
     <schema id="292" parent="1" name="fyp_fitness">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-02-28.10:54:18</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-03-01.18:22:26</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </schema>
     <schema id="293" parent="1" name="information_schema">
@@ -1072,264 +1072,264 @@ DYNAMIC</Options>
 DYNAMIC</Options>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="307" parent="292" name="equipment">
+    <table id="307" parent="292" name="eqreserve">
+      <Comment>equipment reservation info table</Comment>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_unicode_ci</CollationName>
+    </table>
+    <table id="308" parent="292" name="equipment">
       <Comment>equipment info table</Comment>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="308" parent="292" name="notice">
+    <table id="309" parent="292" name="notice">
       <Comment>bulletin board</Comment>
       <Engine>InnoDB</Engine>
       <Options>row_format
 DYNAMIC</Options>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="309" parent="292" name="orders">
+    <table id="310" parent="292" name="orders">
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="310" parent="292" name="reserve">
+    <table id="311" parent="292" name="reserve">
       <Comment>coach reservation tablecoach</Comment>
       <Engine>InnoDB</Engine>
       <Options>row_format
 DYNAMIC</Options>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="311" parent="292" name="user">
+    <table id="312" parent="292" name="user">
       <Comment>user info table</Comment>
       <Engine>InnoDB</Engine>
       <Options>row_format
 DYNAMIC</Options>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <column id="312" parent="303" name="id">
+    <column id="313" parent="303" name="id">
       <AutoIncrement>2</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="313" parent="303" name="username">
+    <column id="314" parent="303" name="username">
       <Comment>username</Comment>
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="314" parent="303" name="password">
+    <column id="315" parent="303" name="password">
       <Comment>password</Comment>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="315" parent="303" name="name">
+    <column id="316" parent="303" name="name">
       <Comment>name</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="316" parent="303" name="avatar">
+    <column id="317" parent="303" name="avatar">
       <Comment>avatar</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="317" parent="303" name="role">
+    <column id="318" parent="303" name="role">
       <Comment>role</Comment>
       <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="318" parent="303" name="phone">
+    <column id="319" parent="303" name="phone">
       <Comment>phone</Comment>
       <Position>7</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="319" parent="303" name="email">
+    <column id="320" parent="303" name="email">
       <Comment>email</Comment>
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="320" parent="303" name="PRIMARY">
+    <index id="321" parent="303" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="321" parent="303" name="PRIMARY">
+    <key id="322" parent="303" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="322" parent="304" name="id">
-      <AutoIncrement>3</AutoIncrement>
+    <column id="323" parent="304" name="id">
+      <AutoIncrement>7</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="323" parent="304" name="username">
+    <column id="324" parent="304" name="username">
       <Comment>username</Comment>
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="324" parent="304" name="password">
+    <column id="325" parent="304" name="password">
       <Comment>password</Comment>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="325" parent="304" name="name">
+    <column id="326" parent="304" name="name">
       <Comment>name</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="326" parent="304" name="role">
+    <column id="327" parent="304" name="role">
       <Comment>role</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="327" parent="304" name="avatar">
+    <column id="328" parent="304" name="avatar">
       <Comment>avatar</Comment>
       <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="328" parent="304" name="content">
+    <column id="329" parent="304" name="content">
       <Comment>bio</Comment>
       <Position>7</Position>
       <StoredType>longtext|0s</StoredType>
     </column>
-    <column id="329" parent="304" name="phone">
+    <column id="330" parent="304" name="phone">
       <Comment>phone</Comment>
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="330" parent="304" name="email">
+    <column id="331" parent="304" name="email">
       <Comment>email</Comment>
       <Position>9</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="331" parent="304" name="PRIMARY">
+    <index id="332" parent="304" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="332" parent="304" name="PRIMARY">
+    <key id="333" parent="304" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="333" parent="305" name="id">
-      <AutoIncrement>1</AutoIncrement>
+    <column id="334" parent="305" name="id">
+      <AutoIncrement>6</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="334" parent="305" name="user_id">
+    <column id="335" parent="305" name="user_id">
       <Comment>Commenter</Comment>
       <Position>2</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="335" parent="305" name="content">
+    <column id="336" parent="305" name="content">
       <Comment>Comment Content</Comment>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="336" parent="305" name="time">
+    <column id="337" parent="305" name="time">
       <Comment>Comment Time</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="337" parent="305" name="coach_id">
+    <column id="338" parent="305" name="coach_id">
       <Comment>Coach ID</Comment>
       <Position>5</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <index id="338" parent="305" name="PRIMARY">
+    <index id="339" parent="305" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="339" parent="305" name="PRIMARY">
+    <key id="340" parent="305" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="340" parent="306" name="id">
-      <AutoIncrement>1</AutoIncrement>
+    <column id="341" parent="306" name="id">
+      <AutoIncrement>23</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="341" parent="306" name="img">
+    <column id="342" parent="306" name="img">
       <Comment>course image</Comment>
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="342" parent="306" name="name">
+    <column id="343" parent="306" name="name">
       <Comment>course name</Comment>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="343" parent="306" name="time">
+    <column id="344" parent="306" name="time">
       <Comment>course duration</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="344" parent="306" name="price">
+    <column id="345" parent="306" name="price">
       <Comment>course price</Comment>
       <Position>5</Position>
       <StoredType>double(10,2 digit)|0s</StoredType>
     </column>
-    <column id="345" parent="306" name="coach_id">
+    <column id="346" parent="306" name="coach_id">
       <Comment>coach ID of the course</Comment>
       <Position>6</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="346" parent="306" name="content">
+    <column id="347" parent="306" name="content">
       <Comment>course intro</Comment>
       <Position>7</Position>
       <StoredType>longtext|0s</StoredType>
     </column>
-    <index id="347" parent="306" name="PRIMARY">
+    <index id="348" parent="306" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="348" parent="306" name="PRIMARY">
+    <key id="349" parent="306" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="349" parent="307" name="id">
+    <column id="350" parent="307" name="id">
       <AutoIncrement>1</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="350" parent="307" name="img">
-      <Comment>equipment image</Comment>
+    <column id="351" parent="307" name="equipment_id">
+      <Comment>equipment ID</Comment>
       <Position>2</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>int|0s</StoredType>
     </column>
-    <column id="351" parent="307" name="name">
-      <Comment>equipment name</Comment>
+    <column id="352" parent="307" name="user_id">
+      <Comment>user ID</Comment>
       <Position>3</Position>
-      <StoredType>varchar(255)|0s</StoredType>
+      <StoredType>int|0s</StoredType>
     </column>
-    <column id="352" parent="307" name="location">
-      <Comment>equipment position</Comment>
+    <column id="353" parent="307" name="start">
+      <Comment>start time</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="353" parent="307" name="code">
-      <Comment>equipment code</Comment>
+    <column id="354" parent="307" name="end">
+      <Comment>end time</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="354" parent="307" name="descr">
-      <Comment>equipment instructions</Comment>
-      <Position>6</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
     <column id="355" parent="307" name="status">
-      <Comment>equipment status</Comment>
-      <Position>7</Position>
+      <Comment>status of the review</Comment>
+      <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
     <index id="356" parent="307" name="PRIMARY">
@@ -1343,175 +1343,222 @@ DYNAMIC</Options>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="358" parent="308" name="id">
+      <AutoIncrement>1</AutoIncrement>
+      <Comment>ID</Comment>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>int|0s</StoredType>
+    </column>
+    <column id="359" parent="308" name="img">
+      <Comment>equipment image</Comment>
+      <Position>2</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="360" parent="308" name="name">
+      <Comment>equipment name</Comment>
+      <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="361" parent="308" name="location">
+      <Comment>equipment position</Comment>
+      <Position>4</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="362" parent="308" name="code">
+      <Comment>equipment code</Comment>
+      <Position>5</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="363" parent="308" name="descr">
+      <Comment>equipment instructions</Comment>
+      <Position>6</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="364" parent="308" name="status">
+      <Comment>equipment status</Comment>
+      <Position>7</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <index id="365" parent="308" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="366" parent="308" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="367" parent="309" name="id">
       <AutoIncrement>4</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="359" parent="308" name="title">
+    <column id="368" parent="309" name="title">
       <Comment>title</Comment>
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="360" parent="308" name="content">
+    <column id="369" parent="309" name="content">
       <Comment>content</Comment>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="361" parent="308" name="time">
+    <column id="370" parent="309" name="time">
       <Comment>creation time</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="362" parent="308" name="user">
+    <column id="371" parent="309" name="user">
       <Comment>author</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="363" parent="308" name="PRIMARY">
+    <index id="372" parent="309" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="364" parent="308" name="PRIMARY">
+    <key id="373" parent="309" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="365" parent="309" name="id">
-      <AutoIncrement>1</AutoIncrement>
+    <column id="374" parent="310" name="id">
+      <AutoIncrement>8</AutoIncrement>
       <Comment>id</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="366" parent="309" name="course_id">
+    <column id="375" parent="310" name="course_id">
       <Comment>course id</Comment>
       <Position>2</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="367" parent="309" name="user_id">
+    <column id="376" parent="310" name="user_id">
       <Comment>user id</Comment>
       <Position>3</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="368" parent="309" name="order_no">
+    <column id="377" parent="310" name="order_no">
       <Comment>order number</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="369" parent="309" name="time">
+    <column id="378" parent="310" name="time">
       <Comment>time</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="370" parent="309" name="price">
+    <column id="379" parent="310" name="price">
       <Comment>order price</Comment>
       <Position>6</Position>
       <StoredType>double(10,2 digit)|0s</StoredType>
     </column>
-    <index id="371" parent="309" name="PRIMARY">
+    <index id="380" parent="310" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="372" parent="309" name="PRIMARY">
+    <key id="381" parent="310" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="373" parent="310" name="id">
-      <AutoIncrement>2</AutoIncrement>
+    <column id="382" parent="311" name="id">
+      <AutoIncrement>3</AutoIncrement>
       <Comment>ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="374" parent="310" name="user_id">
+    <column id="383" parent="311" name="user_id">
       <Comment>user ID</Comment>
       <Position>2</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="375" parent="310" name="coach_id">
+    <column id="384" parent="311" name="coach_id">
       <Comment>coach ID</Comment>
       <Position>3</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="376" parent="310" name="content">
+    <column id="385" parent="311" name="content">
       <Comment>reservation info</Comment>
       <Position>4</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="377" parent="310" name="time">
+    <column id="386" parent="311" name="time">
       <Comment>create time</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="378" parent="310" name="PRIMARY">
+    <index id="387" parent="311" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="379" parent="310" name="PRIMARY">
+    <key id="388" parent="311" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="380" parent="311" name="id">
+    <column id="389" parent="312" name="id">
       <AutoIncrement>7</AutoIncrement>
       <Comment>userID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="381" parent="311" name="username">
+    <column id="390" parent="312" name="username">
       <Comment>user username</Comment>
       <Position>2</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="382" parent="311" name="password">
+    <column id="391" parent="312" name="password">
       <Comment>user password</Comment>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="383" parent="311" name="name">
+    <column id="392" parent="312" name="name">
       <Comment>user name</Comment>
       <Position>4</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="384" parent="311" name="avatar">
+    <column id="393" parent="312" name="avatar">
       <Comment>user avatar</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="385" parent="311" name="role">
+    <column id="394" parent="312" name="role">
       <Comment>role</Comment>
       <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="386" parent="311" name="phone">
+    <column id="395" parent="312" name="phone">
       <Comment>phone</Comment>
       <Position>7</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="387" parent="311" name="email">
+    <column id="396" parent="312" name="email">
       <Comment>email</Comment>
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="388" parent="311" name="account">
+    <column id="397" parent="312" name="account">
       <Comment>balance</Comment>
       <DefaultExpression>0.00</DefaultExpression>
       <Position>9</Position>
       <StoredType>double(10,2 digit)|0s</StoredType>
     </column>
-    <index id="389" parent="311" name="PRIMARY">
+    <index id="398" parent="312" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="390" parent="311" name="PRIMARY">
+    <key id="399" parent="312" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
