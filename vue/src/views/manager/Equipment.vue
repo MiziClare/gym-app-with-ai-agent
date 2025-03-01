@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="search">
-      <el-input placeholder="Please enter the equipment name..." style="width: 200px" v-model="name"></el-input>
+      <el-input placeholder="Enter the equipment name..." style="width: 300px" v-model="name"></el-input>
       <el-button type="info" plain style="margin-left: 10px" @click="load(1)">Search</el-button>
       <el-button type="warning" plain style="margin-left: 10px" @click="reset">Reset</el-button>
     </div>
 
     <div class="operation">
-      <el-button type="primary" plain @click="handleAdd">Add</el-button>
+      <el-button type="primary" plain @click="handleAdd">Add New</el-button>
       <el-button type="danger" plain @click="delBatch">Batch Delete</el-button>
     </div>
 
@@ -26,7 +26,7 @@
         <el-table-column prop="name" label="Name" show-overflow-tooltip></el-table-column>
         <el-table-column prop="location" label="Postion"></el-table-column>
         <el-table-column prop="code" label="Code"></el-table-column>
-        <el-table-column prop="descr" label="Instructions"></el-table-column>
+        <el-table-column prop="descr" label="Instructions">&#160 &#160 &#160 &#160 . . .</el-table-column>
         <el-table-column prop="status" label="Status"></el-table-column>
 
         <el-table-column label="Actions" width="180" align="center">
@@ -65,8 +65,8 @@
         </el-form-item>
         <el-form-item prop="status" label="Status">
           <el-select v-model="form.status" placeholder="Please select..." style="width: 100%">
-            <el-option label="Available" value="Available"></el-option>
-            <el-option label="In Use" value="In Use"></el-option>
+            <el-option label="Available" value="✅ Available"></el-option>
+            <el-option label="In Use" value="🔴 In Use"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="descr" label="Instructions">
@@ -90,7 +90,7 @@ export default {
     return {
       tableData: [],  // 所有的数据
       pageNum: 1,   // 当前的页码
-      pageSize: 5,  // 每页显示的个数
+      pageSize: 8,  // 每页显示的个数
       total: 0,
       name: null,
       fromVisible: false,

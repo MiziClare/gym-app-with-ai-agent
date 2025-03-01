@@ -2,9 +2,12 @@
   <div class="main-content">
     <div style="width: 80%; margin: 30px auto">
       <div style="text-align: center">
-        <el-input placeholder="Enter the course name for enquiry..." style="width: 300px" v-model="name"></el-input>
-        <el-button type="primary" plain style="margin-left: 10px" @click="loadCourse">Search</el-button>
-        <el-button type="warning" plain style="margin-left: 10px" @click="reset">Reset</el-button>
+        <el-input placeholder="Please enter the course name for enquiry..." style="width: 350px"
+          v-model="name"></el-input>
+        <el-button type="primary" plain style="margin-left: 10px" icon="el-icon-search" round
+          @click="loadCourse"></el-button>
+        <el-button type="warning" plain style="margin-left: 10px" icon="el-icon-refresh" round
+          @click="reset"></el-button>
       </div>
       <div style="margin-top: 30px">
         <el-row :gutter="30">
