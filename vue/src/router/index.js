@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-// 解决导航栏或者底部导航tabBar中的vue-router在3.0版本以上频繁点击菜单报错的问题。
+// Solve the problem of frequent clicking the menu in the navigation bar or bottom navigation tabBar in the 3.0 version above.
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
@@ -14,7 +14,7 @@ const routes = [
     path: '/',
     name: 'Manager',
     component: () => import('../views/Manager.vue'),
-    redirect: '/home',  // 重定向到主页
+    // redirect: '/home',  // will execute before router guard
     children: [
       { path: '403', name: 'NoAuth', meta: { name: 'Forbidden' }, component: () => import('../views/manager/403') },
       { path: 'home', name: 'Home', meta: { name: 'Home' }, component: () => import('../views/manager/Home') },
@@ -66,23 +66,23 @@ const router = new VueRouter({
   routes
 })
 
-// 注：不需要前台的项目，可以注释掉该路由守卫
-// 路由守卫
-// router.beforeEach((to ,from, next) => {
-//   let user = JSON.parse(localStorage.getItem("xm-user") || '{}');
-//   if (to.path === '/') {
-//     if (user.role) {
-//       if (user.role === 'USER') {
-//         next('/front/home')
-//       } else {
-//         next('/home')
-//       }
-//     } else {
-//       next('/login')
-//     }
-//   } else {
-//     next()
-//   }
-// })
+// Router Guard
+router.beforeEach((to ,from, next) => {
+  let user = JSON.parse(localStorage.getItem("xm-user") || '{}');
+  if (to.path === '/') {
+    if (user.role) {
+      if (user.role === 'USER' || user.role === 'COACH') {
+        next('/front/home')
+      } else {
+        next('/home')
+      }
+    } else {
+      next('/login')
+    }
+  } else {
+    next()
+  }
+})
+
 
 export default router
