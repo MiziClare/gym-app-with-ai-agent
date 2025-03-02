@@ -33,25 +33,33 @@
     <div class="manager-main">
       <!--  侧边栏  -->
       <div class="manager-main-left">
-        <el-menu :default-openeds="['info', 'user']" router style="border: none" :default-active="$route.path">
+        <el-menu :default-openeds="['info', 'booking', 'user']" router style="border: none"
+          :default-active="$route.path">
           <el-menu-item index="/home">
             <i class="el-icon-s-home"></i>
             <span slot="title">Home</span>
           </el-menu-item>
           <el-submenu index="info">
             <template slot="title">
-              <i class="el-icon-menu"></i><span>Info</span>
+              <i class="el-icon-school"></i><span>Info</span>
             </template>
             <el-menu-item index="/notice">Notices</el-menu-item>
             <el-menu-item index="/course">Courses</el-menu-item>
-            <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
-            <el-menu-item index="/orders">Course Orders</el-menu-item>
             <el-menu-item index="/equipment">Equipments</el-menu-item>
+            <el-menu-item index="/orders">Course Orders</el-menu-item>
+          </el-submenu>
+
+          <el-submenu index="booking">
+            <template slot="title">
+              <i class="el-icon-bicycle"></i><span>Bookings</span>
+            </template>
+            <el-menu-item index="/eqReserve">Equipment Reservations</el-menu-item>
+            <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
           </el-submenu>
 
           <el-submenu index="user">
             <template slot="title">
-              <i class="el-icon-menu"></i><span>Users</span>
+              <i class="el-icon-user"></i><span>Users</span>
             </template>
             <el-menu-item index="/admin">Admin List</el-menu-item>
             <el-menu-item index="/coach">Coach List</el-menu-item>

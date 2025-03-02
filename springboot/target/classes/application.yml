@@ -1,5 +1,6 @@
 server:
   port: 9090
+  address: 0.0.0.0
 
 # auto restart
 spring.devtools.restart.enabled: true
