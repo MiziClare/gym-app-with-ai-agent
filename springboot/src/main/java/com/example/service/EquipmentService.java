@@ -1,14 +1,10 @@
 package com.example.service;
 
-import cn.hutool.core.date.DateUtil;
-import com.example.entity.Account;
 import com.example.entity.Equipment;
 import com.example.mapper.EquipmentMapper;
-import com.example.utils.TokenUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.List;
 

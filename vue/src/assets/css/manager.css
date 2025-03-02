@@ -116,6 +116,10 @@
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
 }
 
+.my-bold {
+    font-weight: bold;
+}
+
 /* ElementUI */
 .el-menu {
     width: 240px;

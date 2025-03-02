@@ -17,13 +17,13 @@ const routes = [
     // redirect: '/home',  // will execute before router guard
     children: [
       { path: '403', name: 'NoAuth', meta: { name: 'Forbidden' }, component: () => import('../views/manager/403') },
-      { path: 'home', name: 'Home', meta: { name: 'Home' }, component: () => import('../views/manager/Home') },
-      { path: 'admin', name: 'Admin', meta: { name: 'Admin info' }, component: () => import('../views/manager/Admin') },
+      { path: 'home', name: 'Home', meta: { name: 'Dashboard' }, component: () => import('../views/manager/Home') },
+      { path: 'admin', name: 'Admin', meta: { name: 'Admin List' }, component: () => import('../views/manager/Admin') },
       { path: 'adminPerson', name: 'AdminPerson', meta: { name: 'Profile' }, component: () => import('../views/manager/AdminPerson') },
       { path: 'password', name: 'Password', meta: { name: 'Password' }, component: () => import('../views/manager/Password') },
-      { path: 'notice', name: 'Notice', meta: { name: 'Message board' }, component: () => import('../views/manager/Notice') },
-      { path: 'user', name: 'User', meta: { name: 'Member info' }, component: () => import('../views/manager/User') },
-      { path: 'coach', name: 'Coach', meta: { name: 'Coach info' }, component: () => import('../views/manager/Coach') },
+      { path: 'notice', name: 'Notice', meta: { name: 'Notices' }, component: () => import('../views/manager/Notice') },
+      { path: 'user', name: 'User', meta: { name: 'Member List' }, component: () => import('../views/manager/User') },
+      { path: 'coach', name: 'Coach', meta: { name: 'Coach List' }, component: () => import('../views/manager/Coach') },
       { path: 'reserve', name: 'Reserve', meta: { name: 'Coach Reservations' }, component: () => import('../views/manager/Reserve') },
       { path: 'course', name: 'Course', meta: { name: 'Courses' }, component: () => import('../views/manager/Course') },
       { path: 'orders', name: 'Orders', meta: { name: 'Course Orders' }, component: () => import('../views/manager/Orders') },

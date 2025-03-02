@@ -41,17 +41,20 @@
           </el-menu-item>
           <el-submenu index="info">
             <template slot="title">
-              <i class="el-icon-coin"></i><span class="my-bold">Info</span>
+              <el-icon class="el-icon-coin"></el-icon>
+              <span>Info</span>
             </template>
             <el-menu-item index="/notice">Notices</el-menu-item>
             <el-menu-item index="/course">Courses</el-menu-item>
             <el-menu-item index="/equipment">Equipments</el-menu-item>
             <el-menu-item index="/orders">Course Orders</el-menu-item>
+            <el-menu-item index="/experience">Posts</el-menu-item>
           </el-submenu>
 
           <el-submenu index="booking">
             <template slot="title">
-              <i class="el-icon-bell"></i><span>Bookings</span>
+              <el-icon class="el-icon-bell"></el-icon>
+              <span>Bookings</span>
             </template>
             <el-menu-item index="/eqReserve">Equipment Reservations</el-menu-item>
             <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
@@ -59,7 +62,8 @@
 
           <el-submenu index="user">
             <template slot="title">
-              <i class="el-icon-user"></i><span>Users</span>
+              <el-icon class="el-icon-user"></el-icon>
+              <span>Users</span>
             </template>
             <el-menu-item index="/admin">Admin List</el-menu-item>
             <el-menu-item index="/coach">Coach List</el-menu-item>
