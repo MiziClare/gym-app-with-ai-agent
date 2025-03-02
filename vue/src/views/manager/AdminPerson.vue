@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card style="width: 50%">
+    <el-card style="width: 50%;">
       <el-form :model="user" label-width="100px" style="padding-right: 50px">
         <div style="margin: 15px; text-align: center">
           <el-upload

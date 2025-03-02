@@ -4,7 +4,7 @@
     <div class="manager-header">
       <div class="manager-header-left">
         <img src="@/assets/imgs/logo.png" />
-        <div class="title">Admin Dashboard</div>
+        <div class="title">Gym Panel</div>
       </div>
 
       <div class="manager-header-center">
@@ -17,7 +17,7 @@
       <div class="manager-header-right">
         <el-dropdown placement="bottom">
           <div class="avatar">
-            <img :src="user.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" />
+            <img :src="user.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" alt="" />
             <div>{{ user.name || 'Admin' }}</div>
           </div>
           <el-dropdown-menu slot="dropdown">
@@ -36,12 +36,12 @@
         <el-menu :default-openeds="['info', 'booking', 'user']" router style="border: none"
           :default-active="$route.path">
           <el-menu-item index="/home">
-            <i class="el-icon-s-home"></i>
-            <span slot="title">Home</span>
+            <i class="el-icon-data-line"></i>
+            <span slot="title">Dashboard</span>
           </el-menu-item>
           <el-submenu index="info">
             <template slot="title">
-              <i class="el-icon-school"></i><span>Info</span>
+              <i class="el-icon-coin"></i><span class="my-bold">Info</span>
             </template>
             <el-menu-item index="/notice">Notices</el-menu-item>
             <el-menu-item index="/course">Courses</el-menu-item>
@@ -51,7 +51,7 @@
 
           <el-submenu index="booking">
             <template slot="title">
-              <i class="el-icon-bicycle"></i><span>Bookings</span>
+              <i class="el-icon-bell"></i><span>Bookings</span>
             </template>
             <el-menu-item index="/eqReserve">Equipment Reservations</el-menu-item>
             <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
