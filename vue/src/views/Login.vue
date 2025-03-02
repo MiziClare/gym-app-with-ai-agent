@@ -101,7 +101,6 @@ export default {
 /* 移除全局样式，改为更具体的选择器 */
 .login-page {
   margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -125,6 +124,7 @@ export default {
   justify-content: center;
   color: #666;
   transform: scale(1.07);
+  padding: 0 !important;
 }
 
 /* 添加一个伪元素作为背景 */
@@ -143,6 +143,7 @@ export default {
   /* 添加模糊和亮度调整 */
   z-index: -1;
   /* 确保背景在内容之后 */
+  padding: 0 !important;
 }
 
 /* 添加这些全局样式 */
@@ -154,6 +155,7 @@ export default {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  padding: 0 !important;
 }
 
 a {
@@ -181,16 +183,21 @@ a {
 }
 
 body {
+  margin: 0px !important;
   background: linear-gradient(45deg, #fbda61, #ff5acd);
   display: flex;
   justify-content: center;
+  text-align: center;
   align-items: center;
   height: 100vh;
+  padding: 0 !important;
 }
 
 .shell,
 form {
   position: relative;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .shell {
@@ -200,6 +207,8 @@ form {
   /* 添加更柔和的阴影 */
   border-radius: 15px;
   overflow: hidden;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 form {
@@ -213,6 +222,7 @@ form {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 0 !important;
 }
 
 /* 修改图片容器样式 */
