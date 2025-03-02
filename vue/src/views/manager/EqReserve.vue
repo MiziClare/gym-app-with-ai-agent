@@ -1,57 +1,52 @@
 <template>
   <div>
-    <div class="table">
+    <div class="table" style="width: 100%; margin: 0 auto">
       <el-table :data="tableData" stripe>
-        <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
-        <el-table-column prop="equipmentImg" label="器材图片" show-overflow-tooltip>
+        <el-table-column prop="id" label="No." width="80" align="center" sortable></el-table-column>
+        <el-table-column prop="equipmentImg" label="Image" show-overflow-tooltip>
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
               <el-image style="width: 40px; height: 40px; border-radius: 10px" v-if="scope.row.equipmentImg"
-                        :src="scope.row.equipmentImg" :preview-src-list="[scope.row.equipmentImg]"></el-image>
+                :src="scope.row.equipmentImg" :preview-src-list="[scope.row.equipmentImg]"></el-image>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="equipmentName" label="器材名称" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="userName" label="预约人" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="start" label="开始时间" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="end" label="结束时间" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="status" label="审核状态"></el-table-column>
+        <el-table-column prop="equipmentName" label="Name" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="userName" label="User" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="start" label="Start Time" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="end" label="End Time" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="status" label="Status"></el-table-column>
 
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="Action" width="180" align="center">
           <template v-slot="scope">
-            <el-button plain type="primary" @click="handleEdit(scope.row)" size="mini">审核</el-button>
-            <el-button plain type="danger" size="mini" @click=del(scope.row.id)>删除</el-button>
+            <el-button plain type="primary" @click="handleEdit(scope.row)" size="mini">Approve</el-button>
+            <el-button plain type="danger" size="mini" @click=del(scope.row.id)>Reject</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <div class="pagination">
-        <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="pageNum"
-            :page-sizes="[5, 10, 20]"
-            :page-size="pageSize"
-            layout="total, prev, pager, next"
-            :total="total">
+        <el-pagination background @current-change="handleCurrentChange" :current-page="pageNum"
+          :page-sizes="[5, 10, 20]" :page-size="pageSize" layout="total, prev, pager, next" :total="total">
         </el-pagination>
       </div>
     </div>
 
 
-    <el-dialog title="审核信息" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Approval Status" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
+      destroy-on-close>
       <el-form label-width="100px" style="padding-right: 50px" :model="form" :rules="rules" ref="formRef">
-        <el-form-item prop="title" label="标题">
-          <el-select v-model="form.status" placeholder="请选择" style="width: 100%">
-            <el-option label="待审核" value="待审核"></el-option>
-            <el-option label="审核通过" value="审核通过"></el-option>
-            <el-option label="审核不通过" value="审核不通过"></el-option>
+        <el-form-item prop="title" label="Title">
+          <el-select v-model="form.status" placeholder="Select" style="width: 100%">
+            <el-option label="Pending" value="Pending"></el-option>
+            <el-option label="Approved" value="Approved"></el-option>
+            <el-option label="Rejected" value="Rejected"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="fromVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button @click="fromVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="save">Confirm</el-button>
       </div>
     </el-dialog>
 
@@ -91,7 +86,7 @@ export default {
             data: this.form
           }).then(res => {
             if (res.code === '200') {  // 表示成功保存
-              this.$message.success('保存成功')
+              this.$message.success('Saved successfully')
               this.load(1)
               this.fromVisible = false
             } else {
@@ -102,10 +97,10 @@ export default {
       })
     },
     del(id) {   // 单个删除
-      this.$confirm('您确定删除吗？', '确认删除', {type: "warning"}).then(response => {
+      this.$confirm('Are you sure you want to delete it?', 'Confirm delete', { type: "warning" }).then(response => {
         this.$request.delete('/eqreserve/delete/' + id).then(res => {
           if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
             this.$message.error(res.msg)  // 弹出错误的信息
@@ -133,6 +128,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

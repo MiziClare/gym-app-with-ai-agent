@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="The user-side portion of the gym booking system has been completed in preparation for the development of the admin side of the gym booking.">
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Fix the bug that route guards can't audit user's identity.">
+      <change afterPath="$PROJECT_DIR$/vue/src/assets/imgs/avatar-default.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/assets/css/manager.css" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/assets/css/manager.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Manager.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Manager.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/EqReserve.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/EqReserve.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,35 +53,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.SpringbootApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.serve.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;D:\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.SpringbootApplication.executor": "Run",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/OneDrive/fypdemo/manager/vue/src/assets/imgs",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.serve.executor": "Run",
+    "settings.editor.selected.configurable": "com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable",
+    "ts.external.directory.path": "D:\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\OneDrive\fypdemo\manager\vue\src\assets\imgs" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.example.mapper" />
     </key>
@@ -115,7 +124,7 @@
       <updated>1740394540469</updated>
       <workItem from="1740394541832" duration="2301000" />
       <workItem from="1740674376229" duration="40711000" />
-      <workItem from="1740835524006" duration="14895000" />
+      <workItem from="1740835524006" duration="19661000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -157,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740856836802</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Fix the bug that route guards can't audit user's identity.">
+      <option name="closed" value="true" />
+      <created>1740858167830</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1740858167830</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,6 +197,7 @@
     <MESSAGE value="Payment system development is complete. Preparing for equipment system development." />
     <MESSAGE value="Equipment features on the admin side have been implemented. Waiting for data loading and user interface development." />
     <MESSAGE value="The user-side portion of the gym booking system has been completed in preparation for the development of the admin side of the gym booking." />
-    <option name="LAST_COMMIT_MESSAGE" value="The user-side portion of the gym booking system has been completed in preparation for the development of the admin side of the gym booking." />
+    <MESSAGE value="Fix the bug that route guards can't audit user's identity." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix the bug that route guards can't audit user's identity." />
   </component>
 </project>

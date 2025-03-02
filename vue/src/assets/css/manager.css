@@ -17,8 +17,8 @@
 }
 
 .manager-header-left img {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
 }
 
@@ -111,7 +111,7 @@
 
 /* ElementUI */
 .el-menu {
-    width: 200px;
+    width: 240px;
     height: 100%;
     background-color: #222b40;
 }
