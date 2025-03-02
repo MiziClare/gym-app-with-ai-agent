@@ -5,7 +5,7 @@
 
 .manager-header {
     display: flex;
-    background-color: #2c334c;
+    background-color: #222f3e;
 }
 
 .manager-header-left {
@@ -17,15 +17,16 @@
 }
 
 .manager-header-left img {
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
 }
 
 .manager-header-left .title {
     flex: 1;
+    font-family: 'Sigmar', sans-serif;
     margin-left: 5px;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
     color: #ddd
 }
@@ -34,20 +35,24 @@
     flex: 1;
     width: 0;
     display: flex;
-    align-items: center
+    margin-left: 40px;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .manager-header-right {
     width: 200px;
+    margin-right: 40px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    font-family: 'Dangrek', sans-serif;
 }
 
 .manager-header-right .avatar {
     display: flex;
     align-items: center;
-    padding-right: 10px;
+    padding-right: 20px;
     color: #ccc;
     cursor: default
 }
@@ -56,7 +61,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    margin-right: 5px
+    margin-right: 10px
 }
 
 .manager-main {
@@ -64,15 +69,17 @@
 }
 
 .manager-main-left {
-    width: 200px;
+    width: 240px;
     min-height: calc(100vh - 60px);
     box-shadow: 0 0 6px rgba(0, 21, 41, .35);
+    font-family: 'Poppins', sans-serif;
 }
 
 .manager-main-right {
     flex: 1;
     width: 0;
     padding: 10px;
+    font-family: 'Roboto', sans-serif;
 }
 
 .manager-main-right .search {
@@ -113,7 +120,7 @@
 .el-menu {
     width: 240px;
     height: 100%;
-    background-color: #222b40;
+    background-color: #2c3e50;
 }
 
 .el-submenu__title {
@@ -126,7 +133,7 @@
     color: #ccc;
     height: 50px;
     line-height: 50px;
-    background-color: #222b40 !important; /* 必须加上这个背景色，否则鼠标离开会出现白色 */
+    background-color: #2c3e50 !important; /* 必须加上这个背景色，否则鼠标离开会出现白色 */
 }
 
 .el-menu-item.is-active {

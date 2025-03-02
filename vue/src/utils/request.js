@@ -3,8 +3,13 @@ import router from "@/router";
 
 // 创建可一个新的axios对象
 const request = axios.create({
-    baseURL: process.env.VUE_APP_BASEURL,   // 后端的接口地址  ip:port
-    timeout: 30000                          // 30s请求超时
+    // baseURL: process.env.VUE_APP_BASEURL,   // 后端的接口地址  ip:port
+    // timeout: 30000                          // 30s请求超时
+
+    baseURL: process.env.NODE_ENV === 'development' 
+        ? process.env.VUE_APP_BASEURL  // 开发环境用配置的地址
+        : `http://${window.location.hostname}:9090`,  // 生产环境用当前主机名
+    timeout: 5000
 })
 
 // request 拦截器

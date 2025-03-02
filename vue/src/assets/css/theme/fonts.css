@@ -1,0 +1,41 @@
+@font-face {
+    font-family: 'Dangrek';
+    src: url('~@/assets/fonts/Dangrek-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('~@/assets/fonts/Inter_18pt-Regular.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('~@/assets/fonts/Montserrat-Regular.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('~@/assets/fonts/Poppins-Regular.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('~@/assets/fonts/Roboto-Regular.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Sigmar';
+    src: url('~@/assets/fonts/Sigmar-Regular.ttf');
+    font-weight: bold;
+    font-style: normal;
+}

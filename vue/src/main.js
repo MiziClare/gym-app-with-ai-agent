@@ -10,7 +10,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import axios from "axios";
 import request from "@/utils/request";
 import './assets/tailwind.css'  // Tailwind CSS
-
+import './assets/css/theme/fonts.css'
 
 Vue.config.productionTip = false
 
