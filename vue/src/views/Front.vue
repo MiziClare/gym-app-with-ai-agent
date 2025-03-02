@@ -21,6 +21,8 @@
             </el-menu-item>
             <el-menu-item index="/front/coach"><img src="@/assets/imgs/icon-coach.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Coaches</el-menu-item>
+            <el-menu-item index="/front/experience"><img src="@/assets/imgs/icon-post.png" alt=""
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Post</el-menu-item>
           </el-menu>
         </div>
       </div>
