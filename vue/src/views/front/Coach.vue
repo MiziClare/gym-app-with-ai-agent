@@ -62,6 +62,7 @@ export default {
   },
   mounted() {
     this.loadCoach()
+    window.scrollTo(0, 0)  // 添加这一行，确保页面滚动到顶部
   },
   // methods：本页面所有的点击事件或者其他函数定义区
   methods: {

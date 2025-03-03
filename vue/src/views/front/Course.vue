@@ -47,6 +47,7 @@ export default {
   },
   mounted() {
     this.loadCourse()
+    window.scrollTo(0, 0)
   },
   // methods：本页面所有的点击事件或者其他函数定义区
   methods: {
