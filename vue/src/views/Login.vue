@@ -110,6 +110,10 @@ export default {
 </style>
 
 <style scoped>
+.main-content {
+  font-family: 'Inter', sans-serif;
+}
+
 /* 修改容器样式 */
 .container {
   position: fixed;
@@ -256,6 +260,7 @@ form {
   color: #7f7f7f;
   font-size: 40px;
   margin-top: 200px;
+  font-family: 'Dangrek', sans-serif;
 }
 
 #w-line-2 {
@@ -263,6 +268,7 @@ form {
   font-size: 20px;
   margin-top: 20px;
   margin-bottom: 20px;
+  font-family: 'Dangrek', sans-serif;
 }
 
 #input-area {

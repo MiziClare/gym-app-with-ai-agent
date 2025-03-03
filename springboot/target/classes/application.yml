@@ -1,6 +1,5 @@
 server:
   port: 9090
-  address: 0.0.0.0
 
 # auto restart
 spring.devtools.restart.enabled: true
@@ -33,5 +32,4 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
-# ip: localhost
-ip: 0.0.0.0
+ip: localhost

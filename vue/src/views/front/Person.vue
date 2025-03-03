@@ -180,6 +180,11 @@ export default {
 </script>
 
 <style scoped>
+.main-content {
+  font-family: 'Roboto', sans-serif;
+  font-size: 36px;
+}
+
 /deep/.el-form-item__label {
   font-weight: bold;
 }

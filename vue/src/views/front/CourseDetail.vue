@@ -14,7 +14,7 @@
           <el-col :span="18">
             <div style="margin-bottom: 20px; font-size: 18px; font-weight: bold">Course: {{
               courseData.name
-              }}</div>
+            }}</div>
             <div style="margin-bottom: 20px; font-size: 18px">Coach: {{ courseData.coachName }}</div>
             <div style="margin-bottom: 20px; font-size: 18px; color: #333333">Duration: {{ courseData.time }}</div>
             <div style="margin-bottom: 20px; font-size: 18px; color: #222222">Price: <span style="color: red">￡{{
@@ -114,6 +114,13 @@ p {
   margin-top: 10px;
   border-radius: 5px;
   overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.img-container:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
 .course-img {
@@ -123,5 +130,10 @@ p {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.img-container:hover .course-img {
+  transform: scale(1.1);
 }
 </style>

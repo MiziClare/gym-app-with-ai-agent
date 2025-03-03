@@ -30,7 +30,7 @@
           <el-button @click="$router.push('/login')">Login</el-button>
           <el-button @click="$router.push('/register')">Register</el-button>
         </div>
-        <div v-else>
+        <div v-else class="dropdown-menu">
           <el-dropdown>
             <div class="front-header-dropdown">
               <img :src="user.avatar" alt="">
@@ -38,7 +38,7 @@
                 <span>{{ user.name }}</span><i class="el-icon-arrow-down" style="margin-left: 5px"></i>
               </div>
             </div>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu slot="dropdown" class="dropdown-menu">
               <el-dropdown-item>
                 <div style="text-decoration: none" @click="person">Account</div>
               </el-dropdown-item>
@@ -47,6 +47,9 @@
               </el-dropdown-item>
               <el-dropdown-item>
                 <div style="text-decoration: none" @click="$router.push('/front/reserve')">Reservations</div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div style="text-decoration: none" @click="$router.push('/front/myExperience')">My Post</div>
               </el-dropdown-item>
               <el-dropdown-item>
                 <div style="text-decoration: none" @click="logout">Logout</div>

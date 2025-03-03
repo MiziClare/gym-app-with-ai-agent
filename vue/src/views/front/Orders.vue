@@ -88,3 +88,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.main-content {
+  font-family: 'Roboto', sans-serif;
+}
+</style>

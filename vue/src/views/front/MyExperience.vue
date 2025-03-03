@@ -152,3 +152,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.main-content {
+  font-family: 'Dangrek', sans-serif;
+}
+</style>
