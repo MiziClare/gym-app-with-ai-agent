@@ -1,7 +1,10 @@
 <template>
   <div class="main-content">
-    <div style="width: 70%; margin: 30px auto">
-      <div>
+    <div style="width: 70%; margin: 10px auto; position: relative;">
+      <div class="back-button" @click="$router.push('/front/course')">
+        <i class="el-icon-arrow-left"></i> Back
+      </div>
+      <div style="margin-top: 50px">
         <el-row :gutter="50">
           <el-col :span="6">
             <div class="img-container">
@@ -65,6 +68,39 @@ export default {
 }
 </script>
 <style>
+.main-content {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.back-button {
+  position: absolute;
+  top: -55px;
+  left: 0;
+  background-color: rgba(53, 84, 118, 0.1);
+  color: #355476;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 20px;
+  border: 1px solid rgba(53, 84, 118, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.back-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(53, 84, 118, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.back-button i {
+  margin-right: 5px;
+}
+
 p {
   color: #666666;
 }

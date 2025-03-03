@@ -153,10 +153,11 @@ p {
   transform: translateY(-2px);
 }
 
-/* 为整体页面添加背景渐变色，增强玻璃态效果 */
+/* 为整体页面添加白色背景 */
 .main-content {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background-color: #ffffff;
   min-height: 100vh;
   padding-bottom: 50px;
+  font-family: 'Dangrek', sans-serif;
 }
 </style>

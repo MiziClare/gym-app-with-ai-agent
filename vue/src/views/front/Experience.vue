@@ -6,11 +6,12 @@
         <el-button type="primary" plain style="margin-left: 10px" icon="el-icon-search" @click="load(1)"></el-button>
         <el-button type="warning" plain style="margin-left: 10px" icon="el-icon-refresh" @click="reset"></el-button>
       </div>
-      <div class="table" style="width: 100%; display: flex; justify-content: center">
-        <el-table :data="tableData" stripe>
+
+      <div style="width: 100%;">
+        <el-table :data="tableData" stripe style="width: 100%;">
           <el-table-column prop="name" label="Post Title" show-overflow-tooltip>
             <template v-slot="scope">
-              <a :href="'/front/experienceDetail?id=' + scope.row.id" target="_blank">{{ scope.row.name }}</a>
+              <a href="javascript:void(0)" @click="goToDetail(scope.row.id)">{{ scope.row.name }}</a>
             </template>
           </el-table-column>
           <el-table-column prop="userName" label="Poster" show-overflow-tooltip></el-table-column>
@@ -23,7 +24,7 @@
           <el-table-column prop="time" label="Post Time"></el-table-column>
         </el-table>
 
-        <div class="pagination" style="margin-top: 20px">
+        <div class="pagination" style="margin-top: 20px; display: flex; justify-content: center;">
           <el-pagination background @current-change="handleCurrentChange" :current-page="pageNum"
             :page-sizes="[5, 10, 20]" :page-size="pageSize" layout="total, prev, pager, next" :total="total">
           </el-pagination>
@@ -152,7 +153,16 @@ export default {
     reset() {
       this.name = null
       this.load(1)
-    }
+    },
+    goToDetail(id) {
+      this.$router.push('/front/experienceDetail?id=' + id);
+    },
   }
 }
 </script>
+
+<style scoped>
+.main-content {
+  font-family: 'Dangrek', sans-serif;
+}
+</style>

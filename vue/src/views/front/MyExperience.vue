@@ -1,55 +1,51 @@
 <template>
   <div class="main-content">
     <div style="width: 80%; margin: 20px auto">
-      <div><el-button type="primary" plain @click="handleAdd">发布健身经验</el-button></div>
-      <div style="margin: 20px 0; color: #666666; font-size: 17px">我的健身经验（{{total}}）</div>
-      <div class="table">
+      <div><el-button type="primary" circle @click="handleAdd">Post</el-button></div>
+      <div style="margin: 20px 0; color: #666666; font-size: 17px">My Post（{{ total }}）</div>
+      <div class="table" style="width: 100%">
         <el-table :data="tableData" stripe>
-          <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
-          <el-table-column prop="name" label="经验标题" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="content" label="经验详情" show-overflow-tooltip>
+          <el-table-column prop="id" label="No." width="80" align="center" sortable></el-table-column>
+          <el-table-column prop="name" label="Post Title" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="content" label="Post Details" show-overflow-tooltip>
             <template v-slot="scope">
-              <el-button type="primary" @click="viewEditor(scope.row.content)">点击查看</el-button>
+              <el-button type="primary" @click="viewEditor(scope.row.content)">View</el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="time" label="发布时间"></el-table-column>
+          <el-table-column prop="time" label="Time"></el-table-column>
 
-          <el-table-column label="操作" width="180" align="center">
+          <el-table-column label="Action" width="180" align="center">
             <template v-slot="scope">
-              <el-button plain type="primary" size="mini" @click=handleEdit(scope.row)>编辑</el-button>
-              <el-button plain type="danger" size="mini" @click=del(scope.row.id)>删除</el-button>
+              <el-button plain type="primary" size="mini" @click=handleEdit(scope.row)>Edit</el-button>
+              <el-button plain type="danger" size="mini" @click=del(scope.row.id)>Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
 
         <div class="pagination" style="margin-top: 20px">
-          <el-pagination
-              background
-              @current-change="handleCurrentChange"
-              :current-page="pageNum"
-              :page-sizes="[5, 10, 20]"
-              :page-size="pageSize"
-              layout="total, prev, pager, next"
-              :total="total">
+          <el-pagination background @current-change="handleCurrentChange" :current-page="pageNum"
+            :page-sizes="[5, 10, 20]" :page-size="pageSize" layout="total, prev, pager, next" :total="total">
           </el-pagination>
         </div>
       </div>
     </div>
-    <el-dialog title="经验信息" :visible.sync="fromVisible" width="60%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Post Information" :visible.sync="fromVisible" width="60%" :close-on-click-modal="false"
+      destroy-on-close>
       <el-form label-width="100px" style="padding-right: 50px" :model="form" :rules="rules" ref="formRef">
-        <el-form-item prop="name" label="经验标题">
+        <el-form-item prop="name" label="Post Title">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item prop="content" label="经验详情">
+        <el-form-item prop="content" label="Post Details">
           <div id="editor"></div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="fromVisible = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button @click="fromVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="save">Confirm</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="课程介绍" :visible.sync="viewVisible" width="55%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Post Introduction" :visible.sync="viewVisible" width="55%" :close-on-click-modal="false"
+      destroy-on-close>
       <div v-html="viewData" class="w-e-text w-e-text-container"></div>
     </el-dialog>
   </div>
@@ -85,7 +81,7 @@ export default {
     initWangEditor(content) {
       this.$nextTick(() => {
         this.editor = new E('#editor')
-        this.editor.config.placeholder = '请输入内容'
+        this.editor.config.placeholder = 'Please enter the content...'
         this.editor.config.uploadFileName = 'file'
         this.editor.config.uploadImgServer = 'http://localhost:9090/files/wang/upload'
         this.editor.create()
@@ -129,7 +125,7 @@ export default {
         data: this.form
       }).then(res => {
         if (res.code === '200') {  // 表示成功保存
-          this.$message.success('保存成功')
+          this.$message.success('Save successfully')
           this.load(1)
           this.fromVisible = false
         } else {
@@ -138,10 +134,10 @@ export default {
       })
     },
     del(id) {   // 单个删除
-      this.$confirm('您确定删除吗？', '确认删除', {type: "warning"}).then(response => {
+      this.$confirm('Are you sure you want to delete it?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/experience/delete/' + id).then(res => {
           if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
             this.$message.error(res.msg)  // 弹出错误的信息
