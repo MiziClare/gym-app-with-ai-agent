@@ -10,8 +10,8 @@
           @click="reset"></el-button>
       </div>
       <div style="margin-top: 30px">
-        <el-row :gutter="20">
-          <el-col :span="6" v-for="item in courseData" style="margin-bottom: 30px">
+        <el-row :gutter="20" class="course-row">
+          <el-col :xs="12" :sm="8" :md="6" :lg="6" v-for="item in courseData" :key="item.id" class="course-col">
             <div class="course-image-container">
               <img :src="item.img" alt="" class="course-image"
                 @click="$router.push('/front/courseDetail?id=' + item.id)">
@@ -82,6 +82,20 @@ export default {
   height: 16px;
   margin-right: 5px;
   vertical-align: middle;
+}
+
+/* 添加响应式布局样式 */
+.course-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.course-col {
+  padding: 0 10px;
+  box-sizing: border-box;
+  margin-bottom: 30px;
 }
 
 /* 课程图片容器样式 */

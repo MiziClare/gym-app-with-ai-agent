@@ -14,7 +14,7 @@
           <el-col :span="18">
             <div style="margin-bottom: 20px; font-size: 18px; font-weight: bold">Course: {{
               courseData.name
-            }}</div>
+              }}</div>
             <div style="margin-bottom: 20px; font-size: 18px">Coach: {{ courseData.coachName }}</div>
             <div style="margin-bottom: 20px; font-size: 18px; color: #333333">Duration: {{ courseData.time }}</div>
             <div style="margin-bottom: 20px; font-size: 18px; color: #222222">Price: <span style="color: red">￡{{
