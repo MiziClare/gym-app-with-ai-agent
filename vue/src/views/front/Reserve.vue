@@ -78,3 +78,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.main-content {
+  font-family: 'Poppins', sans-serif;
+}
+</style>
+

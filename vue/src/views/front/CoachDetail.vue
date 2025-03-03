@@ -1,6 +1,11 @@
 <template>
   <div class="main-content">
-    <div style="width: 65%; margin: 20px auto">
+    <div style="width: 65%; margin: 20px auto; position: relative;">
+      <!-- 添加返回按钮 -->
+      <div class="back-button" @click="$router.push('/front/coach')">
+        <i class="el-icon-arrow-left"></i> Back
+      </div>
+
       <div style="margin-top: 20px; font-size: 17px; font-weight: bold; color: #666666; padding-top: 40px">{{
         coachData.name }}'s Bio</div>
       <div style="margin-top: 20px" v-html="coachData.content" class="w-e-text w-e-text-container"></div>
@@ -49,8 +54,18 @@ export default {
     }
   },
   mounted() {
+    // 确保页面加载时滚动到顶部
+    window.scrollTo(0, 0);
+
     this.loadCoach()
     this.loadComment()
+  },
+  // 添加路由进入时的钩子函数
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 在组件实例创建后，确保滚动到顶部
+      window.scrollTo(0, 0);
+    });
   },
   // methods：本页面所有的点击事件或者其他函数定义区
   methods: {
@@ -104,6 +119,36 @@ export default {
 }
 </script>
 <style>
+/* 添加返回按钮样式 */
+.back-button {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  background-color: rgba(53, 84, 118, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 40px;
+  border: 1px solid rgba(53, 84, 118, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.back-button:hover {
+  transform: scale(1.1);
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.back-button i {
+  margin-right: 5px;
+}
+
 p {
   color: #333333;
 }

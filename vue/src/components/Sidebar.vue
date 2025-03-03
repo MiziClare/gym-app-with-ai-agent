@@ -191,7 +191,7 @@ export default {
 }
 
 #logo {
-  margin: 40px 0 100px 0;
+  margin: 40px 0 60px 0;
 }
 
 .shell ul li span {

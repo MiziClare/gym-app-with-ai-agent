@@ -97,3 +97,7 @@
     border: none !important;
     height: 59px;
 }
+
+.dropdown-menu {
+    font-family: 'Dangrek', sans-serif;
+}

@@ -1,9 +1,8 @@
 <template>
   <div class="main-content">
     <div style="width: 65%; margin: 20px auto; position: relative;">
-      <div class="back-button">
-        <el-button icon="el-icon-arrow-left" size="small" @click="goBack">
-          Back</el-button>
+      <div class="back-button" @click="goBack">
+        <i class="el-icon-arrow-left"></i> Back
       </div>
       <div
         style="text-align: center; margin-top: 30px; font-size: 17px; font-weight: bold; font-family: 'Montserrat', sans-serif;">
@@ -59,7 +58,30 @@ p {
 
 .back-button {
   position: absolute;
-  top: 0;
+  top: -20px;
   left: 0;
+  background-color: rgba(53, 84, 118, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 40px;
+  border: 1px solid rgba(53, 84, 118, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+.back-button:hover {
+  transform: scale(1.1);
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.back-button i {
+  margin-right: 5px;
 }
 </style>

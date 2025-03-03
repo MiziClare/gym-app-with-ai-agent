@@ -98,9 +98,9 @@ export default {
     },
     getErrorMessage(msg) {
       const errorMap = {
-        '参数缺失': 'Missing required fields',
-        '用户名已存在': 'Username already exists',
-        '注册失败': 'Registration failed'
+        'Missing': 'Missing required fields',
+        'Username': 'Username already exists',
+        'Failed': 'Registration failed'
       }
       return errorMap[msg] || 'Registration error'
     }
@@ -109,6 +109,10 @@ export default {
 </script>
 
 <style scoped>
+.main-content {
+  font-family: 'Inter', sans-serif;
+}
+
 /* 保持原有的container和背景样式 */
 .container {
   position: fixed;
@@ -196,7 +200,8 @@ form {
   margin-bottom: 15px;
 }
 
-.f-inp input, .f-inp select {
+.f-inp input,
+.f-inp select {
   width: 100%;
   font-size: 14px;
   padding: 0;

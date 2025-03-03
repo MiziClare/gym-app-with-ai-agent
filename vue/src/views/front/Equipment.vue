@@ -12,11 +12,9 @@
       <div style="margin-top: 30px">
         <el-row :gutter="20">
           <el-col :xs="12" :sm="8" :md="6" :lg="6" v-for="item in equipmentData" style="margin-bottom: 30px">
-            <div style="position: relative">
-              <img :src="item.img" alt="" style="width: 100%; height: 280px; border-radius: 10px; cursor: pointer">
-              <img src="@/assets/imgs/icon-info.png" @click="viewDescri(item.descr)"
-                style="position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; cursor: pointer"
-                alt="info">
+            <div class="equipment-image-container">
+              <img :src="item.img" alt="" class="equipment-image">
+              <img src="@/assets/imgs/icon-info.png" @click="viewDescri(item.descr)" class="info-icon" alt="info">
             </div>
             <div style="font-size: 17px; margin-top: 10px; font-weight: bold; display: flex">
               <div style="flex: 1; color: #666666">{{ item.name }}</div>
@@ -183,5 +181,49 @@ export default {
   .el-col {
     width: 100%;
   }
+}
+
+/* 添加器材图片容器样式 */
+.equipment-image-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.equipment-image-container:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.equipment-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.5s ease;
+}
+
+.equipment-image-container:hover .equipment-image {
+  transform: scale(1.1);
+}
+
+.info-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.3s ease;
+}
+
+.info-icon:hover {
+  transform: scale(1.2);
 }
 </style>
