@@ -2,14 +2,13 @@
   <div>
     <div class="front-notice"><i class="el-icon-bell" style="margin-right: 2px"></i>Notice: {{ top }}</div>
     <!--Header-->
-    <div class="front-header"
-      style="background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;">
+    <div class="front-header">
       <div class="front-header-left">
         <img src="@/assets/imgs/logo.png" alt="">
         <div class="title" @click="$router.push('/front/home')">Gym Panel</div>
       </div>
       <div class="front-header-center">
-        <div class="front-header-nav">
+        <div class="front-header-nav" style="background-color: #ffeaa7;">
           <el-menu :default-active="$route.path" mode="horizontal" router>
             <el-menu-item index="/front/home"><img src="@/assets/imgs/icon-home.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Home</el-menu-item>

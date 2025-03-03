@@ -2,46 +2,46 @@
   <div class="shell">
     <ul class="nav">
       <li class="active" id="logo">
-        <a href="#">
+        <span>
           <div class="icon">
             <div class="imageBox">
               <img :src="user.avatar" alt="" />
             </div>
           </div>
           <div class="text">{{ user.name || 'User' }}</div>
-        </a>
+        </span>
       </li>
       <li>
-        <a href="#home">
+        <span @click="person">
           <div class="icon">
-            <i class="iconfont icon-cangku"></i>
+            <img src="@/assets/imgs/icon-account.png" alt="" />
           </div>
-          <div class="text" @click="person">Account</div>
-        </a>
+          <div class="text">Account</div>
+        </span>
       </li>
       <li>
-        <a href="#theme">
+        <span @click="$router.push('/front/orders')">
           <div class="icon">
-            <i class="iconfont icon-zhuti_tiaosepan"></i>
+            <img src="@/assets/imgs/icon-orders.png" alt="" />
           </div>
-          <div class="text" @click="$router.push('/front/orders')">Orders</div>
-        </a>
+          <div class="text">Orders</div>
+        </span>
       </li>
       <li>
-        <a href="#wallet">
+        <span @click="$router.push('/front/reserve')">
           <div class="icon">
-            <i class="iconfont icon-qianbao"></i>
+            <img src="@/assets/imgs/icon-reservations.png" alt="" />
           </div>
-          <div class="text" @click="$router.push('/front/reserve')">Reservations</div>
-        </a>
+          <div class="text">Reservations</div>
+        </span>
       </li>
       <li>
-        <a href="#picture">
+        <span @click="logout">
           <div class="icon">
-            <i class="iconfont icon-tupian"></i>
+            <img src="@/assets/imgs/icon-logout.png" alt="" />
           </div>
-          <div class="text" @click="logout">Logout</div>
-        </a>
+          <div class="text">Logout</div>
+        </span>
       </li>
     </ul>
   </div>
@@ -92,28 +92,32 @@ export default {
   box-sizing: border-box;
   list-style: none;
   text-decoration: none;
+  font-family: 'Inter', sans-serif;
 }
 
 .shell {
   position: fixed;
-  width: 100px;
-  height: 100%;
+  width: 80px;
+  height: calc(100% - 150px);
   background: #ffeaa7;
   z-index: 9999;
   transition: width 0.5s;
   padding-left: 10px;
   overflow: hidden;
-  margin-top: calc(80px + 2vh);
+  margin-top: 50px;
+  margin-left: 25px;
+  border-radius: 30px;
 }
 
 .shell:hover {
-  width: 300px;
+  width: 250px;
+  border-radius: 30px;
 }
 
 .imageBox {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -124,21 +128,31 @@ export default {
   object-fit: cover;
 }
 
+/* 为图标图片设置样式，但排除头像 */
+.icon img:not(.imageBox img) {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  z-index: 999;
+}
+
 .shell ul {
   position: relative;
-  height: 100vh;
+  height: calc(100% - 20px);
+  padding-bottom: 20px;
 }
 
 .shell ul li {
   position: relative;
   padding: 5px;
+  margin-bottom: -10px;
 }
 
 .active {
   background: white;
   /* 选中项周围颜色 */
-  border-top-left-radius: 50px;
-  border-bottom-left-radius: 50px;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
 }
 
 .active::before {
@@ -171,10 +185,11 @@ export default {
   margin: 40px 0 100px 0;
 }
 
-.shell ul li a {
+.shell ul li span {
   position: relative;
   display: flex;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .icon {
@@ -182,28 +197,23 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 60px;
+  min-width: 50px;
   padding-left: 10px;
-  height: 70px;
+  height: 60px;
   color: #333;
   /* 文字颜色 */
   transition: 0.5s;
   color: white;
   /* 图标颜色 */
-  margin-right: 20px;
-}
-
-.icon i {
-  font-size: 30px;
-  z-index: 999;
+  margin-right: 10px;
 }
 
 .text {
   position: relative;
-  height: 70px;
+  height: 60px;
   display: flex;
   align-items: center;
-  font-size: 20px;
+  font-size: 15px;
   color: #333;
   padding-left: 15px;
   text-transform: uppercase;
@@ -211,20 +221,21 @@ export default {
   transition: 0.5s;
 }
 
-.shell ul li:hover a .icon,
-.shell ul li:hover a .text {
+.shell ul li:hover span .icon,
+.shell ul li:hover span .text {
   color: #ffa117;
 }
 
-.active a .icon::before {
+.active span .icon::before {
   content: "";
   position: absolute;
   inset: 5px;
-  width: 60px;
+  width: 50px;
+  height: 50px;
   background: #fff;
   border-radius: 50%;
   transition: 0.5s;
-  border: 5px solid #fdcb6e;
+  border: 5px solid #ffeaa7;
   box-sizing: border-box;
 }
 </style>
