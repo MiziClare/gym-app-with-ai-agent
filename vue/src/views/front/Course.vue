@@ -10,7 +10,7 @@
           @click="reset"></el-button>
       </div>
       <div style="margin-top: 30px">
-        <el-row :gutter="30">
+        <el-row :gutter="20">
           <el-col :span="6" v-for="item in courseData" style="margin-bottom: 30px">
             <div class="course-image-container">
               <img :src="item.img" alt="" class="course-image"
@@ -72,6 +72,10 @@ export default {
 </script>
 
 <style scoped>
+.main-content {
+  font-family: 'Poppins', sans-serif;
+}
+
 .coach-icon {
   width: 16px;
   height: 16px;

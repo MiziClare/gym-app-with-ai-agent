@@ -10,8 +10,8 @@
           @click="reset"></el-button>
       </div>
       <div style="margin-top: 30px">
-        <el-row :gutter="30">
-          <el-col :span="6" v-for="item in equipmentData" style="margin-bottom: 30px">
+        <el-row :gutter="20">
+          <el-col :xs="12" :sm="8" :md="6" :lg="6" v-for="item in equipmentData" style="margin-bottom: 30px">
             <div style="position: relative">
               <img :src="item.img" alt="" style="width: 100%; height: 280px; border-radius: 10px; cursor: pointer">
               <img src="@/assets/imgs/icon-info.png" @click="viewDescri(item.descr)"
@@ -37,14 +37,16 @@
         </el-row>
       </div>
     </div>
-    <el-dialog title="Instructions" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
-      style="padding-top: 120px" center="boolean" destroy-on-close>
-      <el-form label-width="100px" style="padding-right: 50px; padding-top: 20px; padding-bottom: 20px">
-        {{ descr }}
-      </el-form>
-    </el-dialog>
+    <div style="font-family: 'Roboto', sans-serif;">
+      <el-dialog title="Instructions" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
+        style="padding-top: 120px" center="boolean" destroy-on-close>
+        <el-form label-width="100px" style="padding-right: 50px; padding-top: 20px; padding-bottom: 20px">
+          {{ descr }}
+        </el-form>
+      </el-dialog>
+    </div>
     <el-dialog title="Reservation Information" :visible.sync="reserveVisible" width="40%" :close-on-click-modal="false"
-      center="boolean" style="padding-top: 120px" destroy-on-close>
+      center="boolean" style="padding-top: 120px;" destroy-on-close>
       <el-form label-width="100px" style="padding-right: 50px">
         <el-form-item prop="start" label="Start Time">
           <el-date-picker style="width: 100%" v-model="start" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
@@ -145,3 +147,41 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.main-content {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* 添加以下CSS样式 */
+.el-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.el-col {
+  width: 25%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 1200px) {
+  .el-col {
+    width: 33.33%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .el-col {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .el-col {
+    width: 100%;
+  }
+}
+</style>

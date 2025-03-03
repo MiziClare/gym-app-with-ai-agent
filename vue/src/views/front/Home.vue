@@ -15,7 +15,7 @@
       <div class="course-section">
         <div class="course-header">
           <div class="course-title"></div>
-          <div class="course-more" @click="$router.push('/front/course')">More></div>
+          <div class="course-more" @click="$router.push('/front/course')">More ></div>
         </div>
         <div class="course-list">
           <el-row :gutter="30">
@@ -76,11 +76,12 @@ html {
 }
 
 .home-container {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
   margin-left: 0%;
   overflow-x: hidden;
   overflow-y: hidden;
+  font-family: 'Roboto', sans-serif;
 }
 
 .home-container::-webkit-scrollbar {
@@ -242,7 +243,7 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .course-image {
@@ -267,7 +268,7 @@ body {
 .course-section {
   width: 80%;
   margin: 30px auto;
-  margin-top: 100px;
+  margin-top: 90px;
   max-width: 1200px;
 }
 

@@ -4,8 +4,9 @@
       <div>
         <el-row :gutter="50">
           <el-col :span="6">
-            <img :src="courseData.img" alt=""
-              style="width: 100%; height: 220px; border-radius: 5px; object-fit: cover;">
+            <div class="img-container">
+              <img :src="courseData.img" alt="" class="course-img">
+            </div>
           </el-col>
           <el-col :span="18">
             <div style="margin-bottom: 20px; font-size: 18px; font-weight: bold">Course: {{
@@ -66,5 +67,25 @@ export default {
 <style>
 p {
   color: #666666;
+}
+
+.img-container {
+  width: 100%;
+  height: 0;
+  padding-top: 66.67%;
+  position: relative;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.course-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
