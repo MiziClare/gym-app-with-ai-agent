@@ -2,7 +2,7 @@
   <div class="shell">
     <ul class="nav">
       <li class="active" id="logo">
-        <span>
+        <span @click="$router.push('/front/home')">
           <div class="icon">
             <div class="imageBox">
               <img :src="user.avatar" alt="" />
@@ -33,6 +33,15 @@
             <img src="@/assets/imgs/icon-reservations.png" alt="" />
           </div>
           <div class="text">Reservations</div>
+        </span>
+      </li>
+      <!-- my post -->
+      <li>
+        <span @click="$router.push('/front/myExperience')">
+          <div class="icon">
+            <img src="@/assets/imgs/icon-mypost.png" alt="" />
+          </div>
+          <div class="text">My Post</div>
         </span>
       </li>
       <li>
