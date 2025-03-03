@@ -4,16 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Development of the posting function is complete. Preparing for the development of the statistics function.">
-      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/EchartsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" afterDir="false" />
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Complete the development of statistical data functions. Basic functions have been fully implemented. Ready for UI optimisation.">
+      <change afterPath="$PROJECT_DIR$/vue/src/components/Sidebar.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/CorsConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/CorsConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/WebConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/WebConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/WebController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/WebController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/vue/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/assets/css/front.css" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/assets/css/front.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/front/Home.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/Home.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +22,7 @@
         <option value="CSS File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Vue Composition API Component" />
       </list>
     </option>
   </component>
@@ -83,6 +80,9 @@
   "keyToStringList": {
     "DatabaseDriversLRU": [
       "mysql"
+    ],
+    "vue.recent.templates": [
+      "Vue Composition API Component"
     ]
   }
 }]]></component>
@@ -129,7 +129,9 @@
       <updated>1740394540469</updated>
       <workItem from="1740394541832" duration="2301000" />
       <workItem from="1740674376229" duration="40711000" />
-      <workItem from="1740835524006" duration="40457000" />
+      <workItem from="1740835524006" duration="40920000" />
+      <workItem from="1740935080843" duration="1845000" />
+      <workItem from="1741016511705" duration="4440000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -203,7 +205,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740892221988</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Complete the development of statistical data functions. Basic functions have been fully implemented. Ready for UI optimisation.">
+      <option name="closed" value="true" />
+      <created>1740903292318</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1740903292318</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -230,6 +240,7 @@
     <MESSAGE value="管理端的器材预约管理功能已经实现。准备进行管理端ui修改。" />
     <MESSAGE value="Ready to develop the posting function." />
     <MESSAGE value="Development of the posting function is complete. Preparing for the development of the statistics function." />
-    <option name="LAST_COMMIT_MESSAGE" value="Development of the posting function is complete. Preparing for the development of the statistics function." />
+    <MESSAGE value="Complete the development of statistical data functions. Basic functions have been fully implemented. Ready for UI optimisation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Complete the development of statistical data functions. Basic functions have been fully implemented. Ready for UI optimisation." />
   </component>
 </project>

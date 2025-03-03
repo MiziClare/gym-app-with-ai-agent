@@ -114,7 +114,7 @@ export default {
   position: relative;
   overflow: hidden;
   font-family: var(--font-secondary);
-  background: url('../../assets/imgs/bg-coach.png') center center/cover no-repeat fixed;
+  background: white;
   position: relative;
 }
 

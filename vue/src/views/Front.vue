@@ -59,17 +59,27 @@
     </div>
     <!--Main Content-->
     <div class="main-body">
-      <router-view ref="child" @update:user="updateUser" />
+      <!-- 侧边栏 -->
+      <div class="sidebar-container">
+        <Sidebar />
+      </div>
+      <!-- 主内容区域 -->
+      <div class="main-content">
+        <router-view ref="child" @update:user="updateUser" />
+      </div>
     </div>
   </div>
 
 </template>
 
 <script>
+import Sidebar from '@/components/Sidebar.vue'
 
 export default {
   name: "FrontLayout",
-
+  components: {
+    Sidebar
+  },
   data() {
     return {
       top: '',
