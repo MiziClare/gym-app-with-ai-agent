@@ -183,8 +183,43 @@ export default {
     },
     // 导出用户数据
     exportUserData() {
-      // 这里只是创建按钮，不实现具体功能
-      this.$message.info('Export data function will be implemented soon');
+      // 获取当前用户的ID
+      const userId = this.user.id;
+
+      // 检查用户ID是否存在
+      if (!userId) {
+        this.$message.error('User not logged in or information is incomplete, please log in again');
+        return;
+      }
+
+      // 显示加载提示
+      this.$message.info('Preparing to download data...');
+
+      // 使用浏览器的fetch API直接下载
+      fetch(this.$baseUrl + '/user/exportUserInfo?userId=' + userId, {
+        method: 'GET',
+        headers: {
+          'token': this.user.token
+        }
+      })
+        .then(response => response.blob())
+        .then(blob => {
+          // 创建Blob URL
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'user_info.csv');
+          document.body.appendChild(link);
+          link.click();
+          // 清理
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(link);
+          this.$message.success('Data export successfully');
+        })
+        .catch(error => {
+          console.error('Export failed:', error);
+          this.$message.error('Data export failed, please try again later');
+        });
     },
 
     // 删除用户数据
