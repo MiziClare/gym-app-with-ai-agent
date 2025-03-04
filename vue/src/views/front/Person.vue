@@ -32,6 +32,12 @@
           <el-button type="primary" @click="update">Save</el-button>
         </div>
       </el-form>
+
+      <!-- 添加数据导出和删除用户数据按钮 -->
+      <div style="text-align: right; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px">
+        <el-button size="small" type="success" @click="exportUserData">Export My Data</el-button>
+        <el-button size="small" type="danger" @click="deleteUserData">Delete My Data</el-button>
+      </div>
     </el-card>
     <el-dialog title="Change Password" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false"
       destroy-on-close>
@@ -174,6 +180,17 @@ export default {
           })
         }
       })
+    },
+    // 导出用户数据
+    exportUserData() {
+      // 这里只是创建按钮，不实现具体功能
+      this.$message.info('Export data function will be implemented soon');
+    },
+
+    // 删除用户数据
+    deleteUserData() {
+      // 这里只是创建按钮，不实现具体功能
+      this.$message.info('Delete data function will be implemented soon');
     }
   }
 }
