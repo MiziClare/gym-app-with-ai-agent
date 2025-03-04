@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <el-dialog title="Post Information" :visible.sync="fromVisible" width="60%" :close-on-click-modal="false"
+    <el-dialog title="Post Details" :visible.sync="fromVisible" width="60%" :close-on-click-modal="false"
       destroy-on-close>
       <el-form label-width="100px" style="padding-right: 50px" :model="form" :rules="rules" ref="formRef">
         <el-form-item prop="name" label="Post Title">
@@ -44,7 +44,7 @@
         <el-button type="primary" @click="save">Confirm</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="Post Introduction" :visible.sync="viewVisible" width="55%" :close-on-click-modal="false"
+    <el-dialog title="Post Details" :visible.sync="viewVisible" width="55%" :close-on-click-modal="false"
       destroy-on-close>
       <div v-html="viewData" class="w-e-text w-e-text-container"></div>
     </el-dialog>
@@ -70,6 +70,7 @@ export default {
     }
   },
   mounted() {
+    window.scrollTo(0, 0);
     this.load(1)
   },
   // methods：本页面所有的点击事件或者其他函数定义区

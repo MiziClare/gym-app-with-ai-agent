@@ -50,6 +50,7 @@ export default {
     }
   },
   mounted() {
+    window.scrollTo(0, 0);
     this.loadCourse()
   },
   // methods：本页面所有的点击事件或者其他函数定义区
