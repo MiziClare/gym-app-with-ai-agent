@@ -24,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
+import com.example.entity.Account;
+import com.example.utils.TokenUtils;
 
 /**
  * API：
@@ -126,5 +128,37 @@ public class UserController {
      * 让用户导出个人信息
      * 以CSV文件形式下载数据
      */
-    
+    @GetMapping("/exportUserInfo")
+    public ResponseEntity<byte[]> exportUserInfo(@RequestParam(required = false) Integer userId) {
+        try {
+            // 如果没有传入userId，尝试从token中获取
+            if (userId == null) {
+                Account currentUser = TokenUtils.getCurrentUser();
+                if (currentUser != null && currentUser.getId() != null) {
+                    userId = currentUser.getId();
+                } else {
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                }
+            }
+            
+            // 获取用户信息的CSV字符串
+            String csvData = userService.exportUserInfoToCsv(userId);
+            
+            // 设置HTTP响应头
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=user_info.csv");
+            headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            headers.add("Pragma", "no-cache");
+            headers.add("Expires", "0");
+            headers.add("Content-Type", "text/csv");
+            
+            // 将CSV字符串转换为字节数组并返回
+            byte[] csvBytes = csvData.getBytes(StandardCharsets.UTF_8);
+            
+            return new ResponseEntity<>(csvBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
