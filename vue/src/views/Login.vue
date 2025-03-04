@@ -31,8 +31,9 @@
               <div class="gdpr-consent">
                 <input type="checkbox" id="gdpr-checkbox" required v-model="form.gdprConsent" />
                 <label for="gdpr-checkbox">
-                  I agree to the <a href="#" class="policy-link">Privacy Policy</a> and
-                  <a href="#" class="policy-link">Terms of Service</a>
+                  I agree to the <a href="/privacy-policy.html" target="_blank" class="policy-link">Privacy Policy</a>
+                  and
+                  <a href="/terms-of-service.html" target="_blank" class="policy-link">Terms of Service</a>
                 </label>
               </div>
               <div id="submit-button-cvr">
@@ -57,13 +58,27 @@ export default {
   data() {
     return {
       dialogVisible: true,
-      form: { role: '' },
+      form: {
+        role: '',
+        gdprConsent: false  // 添加GDPR同意状态
+      },
       rules: {
         username: [
           { required: true, message: 'Please enter your username', trigger: 'blur' },
         ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
+        ],
+        gdprConsent: [
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(new Error('Please agree to the privacy policy and terms of service'));
+              } else {
+                callback();
+              }
+            }, trigger: 'change'
+          }
         ]
       }
     }
@@ -76,6 +91,11 @@ export default {
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
           // 验证通过
+          if (!this.form.gdprConsent) {
+            this.$message.error('Please agree to the privacy policy and terms of service');
+            return;
+          }
+
           this.$request.post('/login', this.form).then(res => {
             if (res.code === '200') {
               localStorage.setItem("xm-user", JSON.stringify(res.data))  // 存储用户数据
