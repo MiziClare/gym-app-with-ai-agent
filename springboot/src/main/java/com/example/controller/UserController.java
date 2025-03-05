@@ -161,4 +161,13 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * 删除用户个人数据（软删除）
+     */
+    @PutMapping("/deletePersonalData")
+    public Result deletePersonalData(@RequestBody User user) {
+        userService.deletePersonalData(user);
+        return Result.success();
+    }
 }

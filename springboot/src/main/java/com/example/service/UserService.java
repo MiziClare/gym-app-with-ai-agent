@@ -51,7 +51,7 @@ public class UserService {
         if (ObjectUtil.isEmpty(user.getName())) {
             user.setName(user.getUsername());
         }
-        // set the role ‘USER’ to user
+        // set the role 'USER' to user
         user.setRole(RoleEnum.USER.name());
         // insert only when the user does not exist
         userMapper.insert(user);
@@ -228,5 +228,25 @@ public class UserService {
             throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
         }
         return exportUserInfoToCsv(currentUser.getId());
+    }
+
+    /**
+     * 删除用户个人数据（软删除）
+     * 将用户的name、phone和email设置为空字符串
+     */
+    public void deletePersonalData(User user) {
+        // 获取数据库中的用户信息
+        User dbUser = userMapper.selectById(user.getId());
+        if (dbUser == null) {
+            throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
+        }
+        
+        // 只更新需要清空的字段
+        dbUser.setName("");
+        dbUser.setPhone("");
+        dbUser.setEmail("");
+        
+        // 更新到数据库
+        userMapper.updateById(dbUser);
     }
 }

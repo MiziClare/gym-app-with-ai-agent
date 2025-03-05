@@ -113,6 +113,10 @@ export default {
   created() {
     this.loadUser()
   },
+  mounted() {
+    // 打开网页后视角定位到最顶部
+    window.scrollTo(0, 0)
+  },
   methods: {
     loadUser() {
       this.$request.get('/user/selectById/' + this.user.id).then(res => {
@@ -224,8 +228,40 @@ export default {
 
     // 删除用户数据
     deleteUserData() {
-      // 这里只是创建按钮，不实现具体功能
-      this.$message.info('Delete data function will be implemented soon');
+      this.$confirm('Are you sure you want to delete your personal data? This will clear all personal information.', 'Warning', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        // 创建一个对象，只包含需要更新的字段
+        const updateData = {
+          id: this.user.id,
+          name: '',
+          phone: '',
+          email: ''
+        };
+
+        this.$request.put('/user/deletePersonalData', updateData).then(res => {
+          if (res.code === '200') {
+            this.$message.success('Personal data deleted successfully');
+            // 更新本地用户数据
+            this.user.name = '';
+            this.user.phone = '';
+            this.user.email = '';
+            // 更新浏览器缓存里的用户信息
+            localStorage.setItem('xm-user', JSON.stringify(this.user));
+            // 触发父级的数据更新
+            this.$emit('update:user');
+          } else {
+            this.$message.error(res.msg);
+          }
+        }).catch(error => {
+          console.error('Failed to delete personal data:', error);
+          this.$message.error('Failed to delete personal data, please try again later');
+        });
+      }).catch(() => {
+        this.$message.info('Operation cancelled');
+      });
     }
   }
 }
