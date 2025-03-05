@@ -15,28 +15,30 @@ const routes = [
     name: 'Manager',
     component: () => import('../views/Manager.vue'),
     // redirect: '/home',  // will execute before router guard
+    meta: { requiresAdmin: true },  // 添加需要管理员权限的标记
     children: [
       { path: '403', name: 'NoAuth', meta: { name: 'Forbidden' }, component: () => import('../views/manager/403') },
-      { path: 'home', name: 'Home', meta: { name: 'Dashboard' }, component: () => import('../views/manager/Home') },
-      { path: 'admin', name: 'Admin', meta: { name: 'Admin List' }, component: () => import('../views/manager/Admin') },
-      { path: 'adminPerson', name: 'AdminPerson', meta: { name: 'Profile' }, component: () => import('../views/manager/AdminPerson') },
-      { path: 'password', name: 'Password', meta: { name: 'Password' }, component: () => import('../views/manager/Password') },
-      { path: 'notice', name: 'Notice', meta: { name: 'Notices' }, component: () => import('../views/manager/Notice') },
-      { path: 'user', name: 'User', meta: { name: 'Member List' }, component: () => import('../views/manager/User') },
-      { path: 'coach', name: 'Coach', meta: { name: 'Coach List' }, component: () => import('../views/manager/Coach') },
-      { path: 'reserve', name: 'Reserve', meta: { name: 'Coach Reservations' }, component: () => import('../views/manager/Reserve') },
-      { path: 'course', name: 'Course', meta: { name: 'Courses' }, component: () => import('../views/manager/Course') },
-      { path: 'orders', name: 'Orders', meta: { name: 'Course Orders' }, component: () => import('../views/manager/Orders') },
-      { path: 'equipment', name: 'Equipment', meta: { name: 'Equipments' }, component: () => import('../views/manager/Equipment') },
-      { path: 'eqReserve', name: 'EqReserve', meta: { name: 'Equipment Reservations' }, component: () => import('../views/manager/EqReserve') },
-      { path: 'menu', name: 'Menu', meta: { name: 'Fitness Recipes' }, component: () => import('../views/manager/Menu') },
-      { path: 'experience', name: 'Experience', meta: { name: 'Posts' }, component: () => import('../views/manager/Experience') },
+      { path: 'home', name: 'Home', meta: { name: 'Dashboard', requiresAdmin: true }, component: () => import('../views/manager/Home') },
+      { path: 'admin', name: 'Admin', meta: { name: 'Admin List', requiresAdmin: true }, component: () => import('../views/manager/Admin') },
+      { path: 'adminPerson', name: 'AdminPerson', meta: { name: 'Profile', requiresAdmin: true }, component: () => import('../views/manager/AdminPerson') },
+      { path: 'password', name: 'Password', meta: { name: 'Password', requiresAdmin: true }, component: () => import('../views/manager/Password') },
+      { path: 'notice', name: 'Notice', meta: { name: 'Notices', requiresAdmin: true }, component: () => import('../views/manager/Notice') },
+      { path: 'user', name: 'User', meta: { name: 'Member List', requiresAdmin: true }, component: () => import('../views/manager/User') },
+      { path: 'coach', name: 'Coach', meta: { name: 'Coach List', requiresAdmin: true }, component: () => import('../views/manager/Coach') },
+      { path: 'reserve', name: 'Reserve', meta: { name: 'Coach Reservations', requiresAdmin: true }, component: () => import('../views/manager/Reserve') },
+      { path: 'course', name: 'Course', meta: { name: 'Courses', requiresAdmin: true }, component: () => import('../views/manager/Course') },
+      { path: 'orders', name: 'Orders', meta: { name: 'Course Orders', requiresAdmin: true }, component: () => import('../views/manager/Orders') },
+      { path: 'equipment', name: 'Equipment', meta: { name: 'Equipments', requiresAdmin: true }, component: () => import('../views/manager/Equipment') },
+      { path: 'eqReserve', name: 'EqReserve', meta: { name: 'Equipment Reservations', requiresAdmin: true }, component: () => import('../views/manager/EqReserve') },
+      { path: 'menu', name: 'Menu', meta: { name: 'Fitness Recipes', requiresAdmin: true }, component: () => import('../views/manager/Menu') },
+      { path: 'experience', name: 'Experience', meta: { name: 'Posts', requiresAdmin: true }, component: () => import('../views/manager/Experience') },
     ]
   },
   {
     path: '/front',
     name: 'Front',
     component: () => import('../views/Front.vue'),
+    meta: { requiresAuth: true },  // 只需要登录，不需要特定角色
     children: [
       { path: 'home', name: 'Home', meta: { name: 'Home' }, component: () => import('../views/front/Home') },
       { path: 'person', name: 'Person', meta: { name: 'Profile' }, component: () => import('../views/front/Person') },
@@ -67,8 +69,10 @@ const router = new VueRouter({
 })
 
 // Router Guard
-router.beforeEach((to ,from, next) => {
+router.beforeEach((to, from, next) => {
   let user = JSON.parse(localStorage.getItem("xm-user") || '{}');
+  
+  // 处理根路径重定向
   if (to.path === '/') {
     if (user.role) {
       if (user.role === 'USER' || user.role === 'COACH') {
@@ -79,9 +83,30 @@ router.beforeEach((to ,from, next) => {
     } else {
       next('/login')
     }
-  } else {
-    next()
+    return;
   }
+  
+  // 检查是否需要管理员权限
+  if (to.matched.some(record => record.meta.requiresAdmin)) {
+    // 检查用户是否登录且是管理员
+    if (!user.role || (user.role !== 'ADMIN')) {
+      // 如果不是管理员，重定向到403页面或前台首页
+      next('/front/home');
+      return;
+    }
+  }
+  
+  // 检查是否需要登录
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // 检查用户是否登录
+    if (!user.role) {
+      next('/login');
+      return;
+    }
+  }
+  
+  // 其他情况正常放行
+  next();
 })
 
 
