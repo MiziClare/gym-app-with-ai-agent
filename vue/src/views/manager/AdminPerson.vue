@@ -1,14 +1,10 @@
 <template>
   <div>
-    <el-card style="width: 50%;">
+    <el-card style="width: 100%;">
       <el-form :model="user" label-width="100px" style="padding-right: 50px">
         <div style="margin: 15px; text-align: center">
-          <el-upload
-              class="avatar-uploader"
-              :action="$baseUrl + '/files/upload'"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-          >
+          <el-upload class="avatar-uploader" :action="$baseUrl + '/files/upload'" :show-file-list="false"
+            :on-success="handleAvatarSuccess">
             <img v-if="user.avatar" :src="user.avatar" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -74,9 +70,11 @@ export default {
 ::v-deep .el-form-item__label {
   font-weight: bold;
 }
+
 ::v-deep .el-upload {
   border-radius: 50%;
 }
+
 ::v-deep .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   cursor: pointer;
@@ -84,9 +82,11 @@ export default {
   overflow: hidden;
   border-radius: 50%;
 }
+
 ::v-deep .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -96,6 +96,7 @@ export default {
   text-align: center;
   border-radius: 50%;
 }
+
 .avatar {
   width: 120px;
   height: 120px;
