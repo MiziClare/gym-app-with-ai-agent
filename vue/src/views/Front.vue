@@ -72,6 +72,8 @@
     </div>
     <!-- Add AI chat component -->
     <AIChat />
+    <!-- Add VR component -->
+    <Vr />
   </div>
 
 </template>
@@ -79,12 +81,14 @@
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 import AIChat from '@/components/AIChat.vue'
+import Vr from '@/components/Vr.vue'
 
 export default {
   name: "FrontLayout",
   components: {
     Sidebar,
-    AIChat
+    AIChat,
+    Vr
   },
   data() {
     return {

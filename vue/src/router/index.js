@@ -30,7 +30,6 @@ const routes = [
       { path: 'orders', name: 'Orders', meta: { name: 'Course Orders', requiresAdmin: true }, component: () => import('../views/manager/Orders') },
       { path: 'equipment', name: 'Equipment', meta: { name: 'Equipments', requiresAdmin: true }, component: () => import('../views/manager/Equipment') },
       { path: 'eqReserve', name: 'EqReserve', meta: { name: 'Equipment Reservations', requiresAdmin: true }, component: () => import('../views/manager/EqReserve') },
-      { path: 'menu', name: 'Menu', meta: { name: 'Fitness Recipes', requiresAdmin: true }, component: () => import('../views/manager/Menu') },
       { path: 'experience', name: 'Experience', meta: { name: 'Posts', requiresAdmin: true }, component: () => import('../views/manager/Experience') },
     ]
   },
@@ -51,10 +50,10 @@ const routes = [
       { path: 'orders', name: 'Orders', meta: { name: 'Orders' }, component: () => import('../views/front/Orders') },
       { path: 'equipment', name: 'Equipment', meta: { name: 'Equipment' }, component: () => import('../views/front/Equipment') },
       { path: 'eqReserve', name: 'EqReserve', meta: { name: 'Equipment Reservations' }, component: () => import('../views/front/EqReserve') },
-      { path: 'menu', name: 'Menu', meta: { name: 'Fitness Recipes' }, component: () => import('../views/front/Menu') },
       { path: 'myExperience', name: 'MyExperience', meta: { name: 'My Posts' }, component: () => import('../views/front/MyExperience') },
       { path: 'experience', name: 'Experience', meta: { name: 'Sharing' }, component: () => import('../views/front/Experience') },
       { path: 'experienceDetail', name: 'ExperienceDetail', meta: { name: 'Post Details' }, component: () => import('../views/front/ExperienceDetail') },
+      { path: 'vr', name: 'Vr', meta: { name: 'VR' }, component: () => import('../components/Vr') },
     ]
   },
   { path: '/login', name: 'Login', meta: { name: 'Login' }, component: () => import('../views/Login.vue') },
