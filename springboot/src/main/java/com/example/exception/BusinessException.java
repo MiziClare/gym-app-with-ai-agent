@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 /**
- * 业务异常
+ * Business exception
  */
 @Component
 public class BusinessException extends RuntimeException {

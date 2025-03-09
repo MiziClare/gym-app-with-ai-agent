@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 可成订单表业务处理
+ * Order table business processing
  **/
 @Service
 public class OrdersService {
@@ -32,10 +32,10 @@ public class OrdersService {
     private CoachMapper coachMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Orders orders) {
-        // 先判断下用户的余额够不够
+        // First, check if the user's balance is sufficient
         User user = userMapper.selectById(orders.getUserId());
         if (user.getAccount() < orders.getPrice()) {
             throw new CustomException("-1", "Insufficient balance. Please top up in your account.");
@@ -44,21 +44,21 @@ public class OrdersService {
         orders.setOrderNo(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         ordersMapper.insert(orders);
 
-        // 扣除用户的余额
+        // Deduct the user's balance
         user.setAccount(user.getAccount() - orders.getPrice());
         userMapper.updateById(user);
 
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         ordersMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -67,28 +67,28 @@ public class OrdersService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Orders orders) {
         ordersMapper.updateById(orders);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Orders selectById(Integer id) {
         return ordersMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Orders> selectAll(Orders orders) {
         return ordersMapper.selectAll(orders);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Orders> selectPage(Orders orders, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);

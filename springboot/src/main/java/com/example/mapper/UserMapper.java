@@ -9,27 +9,27 @@ import java.util.List;
  */
 public interface UserMapper {
     /**
-     * 新增
+     * Add
      */
     int insert(User user);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(User user);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     User selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<User> selectAll(User user);
 

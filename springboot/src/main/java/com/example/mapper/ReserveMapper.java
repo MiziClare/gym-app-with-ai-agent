@@ -5,32 +5,32 @@ import com.example.entity.Reserve;
 import java.util.List;
 
 /**
- * 操作reserve相关数据接口
+ * Interface for operations on reserve related data
  */
 public interface ReserveMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Reserve reserve);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Reserve reserve);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Reserve selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Reserve> selectAll(Reserve reserve);
 

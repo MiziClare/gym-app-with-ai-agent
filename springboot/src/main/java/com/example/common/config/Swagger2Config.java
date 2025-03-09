@@ -11,16 +11,16 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 // http://localhost:9090/swagger-ui.html
-@Configuration          // 表示这是一个配置类
-@EnableSwagger2         // 启用 Swagger2（Springfox 2.x）
+@Configuration          // Represents this as a configuration class
+@EnableSwagger2         // Enable Swagger2 (Springfox 2.x)
 public class Swagger2Config {
 
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                // 配置 API 的元信息
+                // Configure the metadata of the API
                 .apiInfo(apiInfo())
-                // 指定要扫描的包，这里写你的 Controller 所在包路径
+                // Specify the package to scan, write the path of your Controller here
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com"))
                 .paths(PathSelectors.any())
@@ -30,7 +30,7 @@ public class Swagger2Config {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("API Doc")
-                .description("Swagger2 API Doc for test")
+                .description("Swagger2 API Doc for testing")
                 .build();
     }
 }

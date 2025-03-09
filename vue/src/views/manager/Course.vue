@@ -95,9 +95,9 @@ export default {
   name: "Course",
   data() {
     return {
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 10,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 10,  // Number of items per page
       total: 0,
       name: null,
       fromVisible: false,
@@ -141,17 +141,17 @@ export default {
         }
       })
     },
-    handleAdd() {   // 新增数据
-      this.form = {}  // 新增数据的时候清空数据
+    handleAdd() {   // Add data
+      this.form = {}  // When adding data, clear the data
       this.initWangEditor('')
-      this.fromVisible = true   // 打开弹窗
+      this.fromVisible = true   // Open the popup
     },
-    handleEdit(row) {   // 编辑数据
-      this.form = JSON.parse(JSON.stringify(row))  // 给form对象赋值  注意要深拷贝数据
+    handleEdit(row) {   // Edit data
+      this.form = JSON.parse(JSON.stringify(row))  // Assign the value to the form object  注意要深拷贝数据
       this.initWangEditor(this.form.content)
-      this.fromVisible = true   // 打开弹窗
+      this.fromVisible = true   // Open the popup
     },
-    save() {   // 保存按钮触发的逻辑  它会触发新增或者更新
+    save() {   // The logic triggered by the save button will trigger the addition or update
       this.$refs.formRef.validate((valid) => {
         if (valid) {
           if (this.form.price) {
@@ -163,12 +163,12 @@ export default {
             method: this.form.id ? 'PUT' : 'POST',
             data: this.form
           }).then(res => {
-            if (res.code === '200') {  // 表示成功保存
-              this.$message.success('保存成功')
+            if (res.code === '200') {  // Successfully saved
+              this.$message.success('Save successfully')
               this.load(1)
               this.fromVisible = false
             } else {
-              this.$message.error(res.msg)  // 弹出错误的信息
+              this.$message.error(res.msg)  // Show error message
             }
           })
         }
@@ -177,17 +177,17 @@ export default {
     del(id) {   // Single delete
       this.$confirm('Are you sure you want to delete?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/course/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+          if (res.code === '200') {   // Successfully deleted
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
+    handleSelectionChange(rows) {   // Current selected all row data
       this.ids = rows.map(v => v.id)   //  [1,2]
     },
     delBatch() {   // Batch delete
@@ -197,17 +197,17 @@ export default {
       }
       this.$confirm('Are you sure you want to delete these items?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/course/delete/batch', { data: this.ids }).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+          if (res.code === '200') {   // Successfully deleted
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/course/selectPage', {
         params: {
@@ -240,7 +240,7 @@ export default {
   overflow: hidden;
 }
 
-/* 覆盖el-dialog的标题样式 */
+/* Override the title style of el-dialog */
 :deep(.custom-dialog .el-dialog__header) {
   padding: 20px;
   background-color: #f5f7fa;
@@ -255,12 +255,12 @@ export default {
   transform: scale(1.05);
 }
 
-/* 确保弹窗内容有合适的内边距 */
+/* Ensure that the popup content has appropriate padding */
 :deep(.custom-dialog .el-dialog__body) {
   padding: 30px 20px;
 }
 
-/* 确保底部按钮区域有合适的内边距 */
+/* Ensure that the bottom button area has appropriate padding */
 :deep(.custom-dialog .el-dialog__footer) {
   padding: 20px;
   border-top: 1px solid #eee;

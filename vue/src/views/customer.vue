@@ -20,21 +20,21 @@ export default {
   data() {
     return {
       prompt: '',
-      messages: []  // 存储对话记录
+      messages: []  // store the chat messages
     };
   },
   methods: {
     sendMessage() {
       if (!this.prompt) return;
 
-      // 记录用户发送的消息
+      // Record the user's message
       this.messages.push({ sender: '用户', content: this.prompt });
 
-      // 修改请求方式，使用完整的后端URL
+      // Modify the request method, use the complete backend URL
       axios
         .get(`http://localhost:9090/chat/${encodeURIComponent(this.prompt)}`)
         .then(response => {
-          // 记录后端返回的消息
+          // Record the message returned by the backend
           this.messages.push({ sender: '客服', content: response.data });
         })
         .catch(error => {
@@ -42,7 +42,7 @@ export default {
           this.messages.push({ sender: '客服', content: '系统错误，请稍后重试！' });
         });
 
-      // 清空输入框
+      // Clear the input box
       this.prompt = '';
     }
   }

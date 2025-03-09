@@ -30,9 +30,9 @@ export default {
   name: "Reserve",
   data() {
     return {
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 10,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 10,  // Number of items per page
       total: 0,
       coachName: null,
       user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
@@ -43,7 +43,7 @@ export default {
     this.load(1)
   },
   methods: {
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/reserve/selectPage', {
         params: {

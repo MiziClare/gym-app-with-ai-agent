@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * 管理员
+ * Admin
  */
 @Entity
 @Table(name = "user")

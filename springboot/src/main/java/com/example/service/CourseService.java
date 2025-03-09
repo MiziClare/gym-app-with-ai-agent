@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 课程信息表业务处理
+ * Course information table business processing
  **/
 @Service
 public class CourseService {
@@ -19,21 +19,21 @@ public class CourseService {
     private CourseMapper courseMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Course course) {
         courseMapper.insert(course);
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         courseMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -42,28 +42,28 @@ public class CourseService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Course course) {
         courseMapper.updateById(course);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Course selectById(Integer id) {
         return courseMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Course> selectAll(Course course) {
         return courseMapper.selectAll(course);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Course> selectPage(Course course, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);

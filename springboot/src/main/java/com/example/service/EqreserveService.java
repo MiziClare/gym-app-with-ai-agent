@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 器材预约表业务处理
+ * Equipment reservation table business processing
  **/
 @Service
 public class EqreserveService {
@@ -18,21 +18,21 @@ public class EqreserveService {
     private EqreserveMapper eqreserveMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Eqreserve eqreserve) {
         eqreserveMapper.insert(eqreserve);
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         eqreserveMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -41,28 +41,28 @@ public class EqreserveService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Eqreserve eqreserve) {
         eqreserveMapper.updateById(eqreserve);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Eqreserve selectById(Integer id) {
         return eqreserveMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Eqreserve> selectAll(Eqreserve eqreserve) {
         return eqreserveMapper.selectAll(eqreserve);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Eqreserve> selectPage(Eqreserve eqreserve, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);

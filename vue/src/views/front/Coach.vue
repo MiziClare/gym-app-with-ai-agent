@@ -62,9 +62,9 @@ export default {
   },
   mounted() {
     this.loadCoach()
-    window.scrollTo(0, 0)  // 添加这一行，确保页面滚动到顶部
+    window.scrollTo(0, 0)  // Add this line to ensure the page scrolls to the top
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: The click event or other function definition area of this page
   methods: {
     loadCoach() {
       this.$request.get('/coach/selectAll').then(res => {
@@ -114,10 +114,10 @@ export default {
   z-index: 1;
 }
 
-/* 完全移除模糊层 */
+/* Completely remove the blur layer */
 .main-content::before {
   display: none;
-  /* 移除模糊层 */
+  /* Remove the blur layer */
 }
 
 .container {
@@ -127,16 +127,16 @@ export default {
   position: relative;
   z-index: 1;
   padding-left: 180px;
-  /* 增加左侧内边距 */
+  /* Add left inner padding */
   margin-left: 0;
 }
 
-/* 为玻璃卡片添加白色背景 */
+/* Add a white background to the glass card */
 .glass-header,
 .glass-card {
   background: rgba(255, 255, 255, 0.95);
-  /* 更改为更不透明的白色背景 */
-  /* 其他样式保持不变 */
+  /* Change to a more opaque white background */
+  /* Other styles remain unchanged */
 }
 
 .glass-header {
@@ -373,7 +373,7 @@ export default {
   }
 }
 
-/* 优化文字渲染 */
+/* Optimize text rendering */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -395,7 +395,7 @@ export default {
   transform: translateY(-2px) scale(1.1);
 }
 
-/* 预约窗口样式 */
+/* Appointment window style */
 :deep(.glass-dialog) {
   background: rgba(245, 247, 250, 0.9) !important;
   backdrop-filter: blur(30px) !important;
@@ -407,7 +407,7 @@ export default {
     inset 0 0 32px rgba(255, 255, 255, 0.8) !important;
   overflow: hidden;
   z-index: 10000 !important;
-  /* 确保对话框在最上层 */
+  /* Ensure the dialog is on top */
 }
 
 :deep(.glass-dialog .el-dialog__header) {
@@ -475,7 +475,7 @@ export default {
   border-color: rgba(53, 84, 118, 0.5) !important;
 }
 
-/* 添加新的响应式布局样式 */
+/* Add new responsive layout styles */
 .coach-grid {
   width: 100%;
 }
@@ -493,7 +493,7 @@ export default {
   box-sizing: border-box;
 }
 
-/* 响应式断点 */
+/* Responsive breakpoints */
 @media (max-width: 1200px) {
   .coach-card {
     width: 33.333%;

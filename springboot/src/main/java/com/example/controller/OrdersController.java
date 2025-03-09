@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 课程订单表前端操作接口
+ * Course order table front-end operation interface
  **/
 @RestController
 @RequestMapping("/orders")
@@ -20,7 +20,7 @@ public class OrdersController {
     private OrdersService ordersService;
 
     /**
-     * 新增
+     * Add
      */
     @PostMapping("/add")
     public Result add(@RequestBody Orders orders) {
@@ -29,7 +29,7 @@ public class OrdersController {
     }
 
     /**
-     * 删除
+     * Delete
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
@@ -38,7 +38,7 @@ public class OrdersController {
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
@@ -47,7 +47,7 @@ public class OrdersController {
     }
 
     /**
-     * 修改
+     * Update
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Orders orders) {
@@ -56,7 +56,7 @@ public class OrdersController {
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
@@ -65,7 +65,7 @@ public class OrdersController {
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     @GetMapping("/selectAll")
     public Result selectAll(Orders orders ) {
@@ -74,7 +74,7 @@ public class OrdersController {
     }
 
     /**
-     * 分页查询
+     * Query by page
      */
     @GetMapping("/selectPage")
     public Result selectPage(Orders orders,

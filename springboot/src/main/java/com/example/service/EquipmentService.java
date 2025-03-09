@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 健身器材表业务处理
+ * Equipment information table business processing
  **/
 @Service
 public class EquipmentService {
@@ -18,21 +18,21 @@ public class EquipmentService {
     private EquipmentMapper equipmentMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Equipment equipment) {
         equipmentMapper.insert(equipment);
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         equipmentMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -41,28 +41,28 @@ public class EquipmentService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Equipment equipment) {
         equipmentMapper.updateById(equipment);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Equipment selectById(Integer id) {
         return equipmentMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Equipment> selectAll(Equipment equipment) {
         return equipmentMapper.selectAll(equipment);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Equipment> selectPage(Equipment equipment, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);

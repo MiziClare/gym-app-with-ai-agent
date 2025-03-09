@@ -33,7 +33,7 @@
         </div>
       </el-form>
 
-      <!-- 添加数据导出和删除用户数据按钮 -->
+      <!-- Add data export and delete user data button -->
       <div style="text-align: right; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px">
         <el-button size="small" type="success" @click="exportUserData">Export My Data</el-button>
         <el-button size="small" type="danger" @click="deleteUserData">Delete My Data</el-button>
@@ -114,7 +114,7 @@ export default {
     this.loadUser()
   },
   mounted() {
-    // 打开网页后视角定位到最顶部
+    // When the page is opened, the view is positioned at the top
     window.scrollTo(0, 0)
   },
   methods: {
@@ -148,15 +148,15 @@ export default {
       })
     },
     update() {
-      // 保存当前的用户信息到数据库
+      // Save the current user information to the database
       this.$request.put('/user/update', this.user).then(res => {
         if (res.code === '200') {
-          // 成功更新
+          // Successfully updated
           this.$message.success('Saved successfully')
-          // 更新浏览器缓存里的用户信息
+          // Update the user information in the browser cache
           localStorage.setItem('xm-user', JSON.stringify(this.user))
 
-          // 触发父级的数据更新
+          // Trigger the data update of the parent
           this.$emit('update:user')
         } else {
           this.$message.error(res.msg)
@@ -164,10 +164,10 @@ export default {
       })
     },
     handleAvatarSuccess(response, file, fileList) {
-      // 把user的头像属性换成上传的图片的链接
+      // Replace the user's avatar attribute with the link of the uploaded image
       this.$set(this.user, 'avatar', response.data)
     },
-    // 修改密码
+    // Change password
     updatePassword() {
       this.dialogVisible = true
     },
@@ -185,21 +185,21 @@ export default {
         }
       })
     },
-    // 导出用户数据
+    // Export user data
     exportUserData() {
-      // 获取当前用户的ID
+      // Get the current user's ID
       const userId = this.user.id;
 
-      // 检查用户ID是否存在
+      // Check if the user ID exists
       if (!userId) {
         this.$message.error('User not logged in or information is incomplete, please log in again');
         return;
       }
 
-      // 显示加载提示
+      // Show loading prompt
       this.$message.info('Preparing to download data...');
 
-      // 使用浏览器的fetch API直接下载
+      // Use the browser's fetch API to directly download
       fetch(this.$baseUrl + '/user/exportUserInfo?userId=' + userId, {
         method: 'GET',
         headers: {
@@ -208,14 +208,14 @@ export default {
       })
         .then(response => response.blob())
         .then(blob => {
-          // 创建Blob URL
+          // Create a Blob URL
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
           link.setAttribute('download', 'user_info.csv');
           document.body.appendChild(link);
           link.click();
-          // 清理
+          // Clean up
           window.URL.revokeObjectURL(url);
           document.body.removeChild(link);
           this.$message.success('Data export successfully');
@@ -226,14 +226,14 @@ export default {
         });
     },
 
-    // 删除用户数据
+    // Delete user data
     deleteUserData() {
       this.$confirm('Are you sure you want to delete your personal data? This will clear all personal information.', 'Warning', {
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
-        // 创建一个对象，只包含需要更新的字段
+        // Create an object that only contains the fields to be updated
         const updateData = {
           id: this.user.id,
           name: '',
@@ -244,13 +244,13 @@ export default {
         this.$request.put('/user/deletePersonalData', updateData).then(res => {
           if (res.code === '200') {
             this.$message.success('Personal data deleted successfully');
-            // 更新本地用户数据
+            // Update local user data
             this.user.name = '';
             this.user.phone = '';
             this.user.email = '';
-            // 更新浏览器缓存里的用户信息
+            // Update the user information in the browser cache
             localStorage.setItem('xm-user', JSON.stringify(this.user));
-            // 触发父级的数据更新
+            // Trigger the data update of the parent
             this.$emit('update:user');
           } else {
             this.$message.error(res.msg);

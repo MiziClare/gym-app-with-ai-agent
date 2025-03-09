@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 器材预约表前端操作接口
+ * Equipment reservation table front-end operation interface
  **/
 @RestController
 @RequestMapping("/eqreserve")
@@ -20,7 +20,7 @@ public class EqreserveController {
     private EqreserveService eqreserveService;
 
     /**
-     * 新增
+     * Add
      */
     @PostMapping("/add")
     public Result add(@RequestBody Eqreserve eqreserve) {
@@ -29,7 +29,7 @@ public class EqreserveController {
     }
 
     /**
-     * 删除
+     * Delete
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
@@ -38,7 +38,7 @@ public class EqreserveController {
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
@@ -47,7 +47,7 @@ public class EqreserveController {
     }
 
     /**
-     * 修改
+     * Update
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Eqreserve eqreserve) {
@@ -56,7 +56,7 @@ public class EqreserveController {
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
@@ -65,7 +65,7 @@ public class EqreserveController {
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     @GetMapping("/selectAll")
     public Result selectAll(Eqreserve eqreserve ) {
@@ -74,7 +74,7 @@ public class EqreserveController {
     }
 
     /**
-     * 分页查询
+     * Query by page
      */
     @GetMapping("/selectPage")
     public Result selectPage(Eqreserve eqreserve,

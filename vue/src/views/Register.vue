@@ -113,7 +113,7 @@ export default {
   font-family: 'Inter', sans-serif;
 }
 
-/* 保持原有的container和背景样式 */
+/* Keep the original container and background styles */
 .container {
   position: fixed;
   top: 0;
@@ -143,7 +143,7 @@ export default {
   z-index: -1;
 }
 
-/* 新增现代UI样式 */
+/* Add modern UI styles */
 .shell {
   display: flex;
   justify-content: center;
@@ -278,7 +278,7 @@ form {
   text-decoration: underline;
 }
 
-/* 添加以下样式来处理自动填充的背景色 */
+/* Add the following styles to handle the background color of automatically filled fields */
 .f-inp input:-webkit-autofill,
 .f-inp input:-webkit-autofill:hover,
 .f-inp input:-webkit-autofill:focus {

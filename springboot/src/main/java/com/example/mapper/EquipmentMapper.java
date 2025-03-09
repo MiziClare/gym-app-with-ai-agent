@@ -5,32 +5,32 @@ import com.example.entity.Equipment;
 import java.util.List;
 
 /**
- * 操作equipment相关数据接口
+ * Interface for operations on equipment related data
  */
 public interface EquipmentMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Equipment equipment);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Equipment equipment);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Equipment selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Equipment> selectAll(Equipment equipment);
 

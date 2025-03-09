@@ -15,16 +15,16 @@ public class GlobalExceptionHandler {
     private static final Log log = LogFactory.get();
 
 
-    //统一异常处理@ExceptionHandler,主要用于Exception
+    // Unified exception handling @ExceptionHandler, mainly for Exception
     @ExceptionHandler(Exception.class)
-    @ResponseBody//返回json串
+    @ResponseBody//Return json string
     public Result error(HttpServletRequest request, Exception e){
         log.error("Exception information: ",e);
         return Result.error();
     }
 
     @ExceptionHandler(CustomException.class)
-    @ResponseBody//返回json串
+    @ResponseBody//Return json string
     public Result customError(HttpServletRequest request, CustomException e){
         return Result.error(e.getCode(), e.getMsg());
     }

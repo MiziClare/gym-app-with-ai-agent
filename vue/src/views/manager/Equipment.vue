@@ -88,9 +88,9 @@ export default {
   name: "Equipment",
   data() {
     return {
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 8,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 8,  // Number of items per page
       total: 0,
       name: null,
       fromVisible: false,
@@ -104,63 +104,63 @@ export default {
     this.load(1)
   },
   methods: {
-    handleAdd() {   // 新增数据
-      this.form = {}  // 新增数据的时候清空数据
-      this.fromVisible = true   // 打开弹窗
+    handleAdd() {   // Add data
+      this.form = {}  // When adding data, clear the data
+      this.fromVisible = true   // Open the popup
     },
-    handleEdit(row) {   // 编辑数据
-      this.form = JSON.parse(JSON.stringify(row))  // 给form对象赋值  注意要深拷贝数据
-      this.fromVisible = true   // 打开弹窗
+    handleEdit(row) {   // Edit data
+      this.form = JSON.parse(JSON.stringify(row))  // Assign the value to the form object  注意要深拷贝数据
+      this.fromVisible = true   // Open the popup
     },
-    save() {   // 保存按钮触发的逻辑  它会触发新增或者更新
+    save() {   // The logic triggered by the save button will trigger the addition or update
       this.$request({
         url: this.form.id ? '/equipment/update' : '/equipment/add',
         method: this.form.id ? 'PUT' : 'POST',
         data: this.form
       }).then(res => {
-        if (res.code === '200') {  // 表示成功保存
+        if (res.code === '200') {  // Successfully saved
           this.$message.success('Save successfully')
           this.load(1)
           this.fromVisible = false
         } else {
-          this.$message.error(res.msg)  // 弹出错误的信息
+          this.$message.error(res.msg)  // Show error message
         }
       })
     },
-    del(id) {   // 单个删除
+    del(id) {   // Single delete
       this.$confirm('Are you sure you want to delete it?', 'Confirm delete', { type: "warning" }).then(response => {
         this.$request.delete('/equipment/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
+          if (res.code === '200') {   // Successfully deleted
             this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
+    handleSelectionChange(rows) {   // Current selected all row data
       this.ids = rows.map(v => v.id)   //  [1,2]
     },
-    delBatch() {   // 批量删除
+    delBatch() {   // Batch delete
       if (!this.ids.length) {
         this.$message.warning('Please select data')
         return
       }
       this.$confirm('Are you sure you want to delete these data?', 'Confirm delete', { type: "warning" }).then(response => {
         this.$request.delete('/equipment/delete/batch', { data: this.ids }).then(res => {
-          if (res.code === '200') {   // 表示操作成功
+          if (res.code === '200') {   // Successfully deleted
             this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/equipment/selectPage', {
         params: {

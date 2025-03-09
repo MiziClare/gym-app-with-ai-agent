@@ -1,11 +1,11 @@
 <template>
   <div>
     <div style="display: flex">
-      <!-- 第一行：Monthly Revenue(3) 和 Equipment Usage(1) -->
+      <!-- First row: Monthly Revenue(3) and Equipment Usage(1) -->
       <div style="width: 75%; height: 330px" class="card" id="lineChart"></div>
       <div style="width: 25%; height: 330px" class="card" id="pie1"></div>
     </div>
-    <!-- 第二行：Coach Reservation(3) 和 Course Sales(1) -->
+    <!-- Second row: Coach Reservation(3) and Course Sales(1) -->
     <div style="display: flex">
       <div style="width: 40%; height: 430px" class="card" id="bar"></div>
       <div style="width: 60%; height: 430px" class="card" id="pieCourse"></div>
@@ -18,8 +18,8 @@ import * as echarts from "echarts";
 
 let pieEquipmentOptions = {
   title: {
-    text: '', // 主标题
-    subtext: '', // 副标题
+    text: '', // Main title
+    subtext: '', // Subtitle
     left: 'right'
   },
   tooltip: {
@@ -32,16 +32,16 @@ let pieEquipmentOptions = {
   },
   series: [
     {
-      name: '', // 鼠标移上去显示内容
+      name: '', // Content displayed when hovering over the mouse
       type: 'pie',
       radius: '50%',
       center: ['50%', '60%'],
       data: [
-        { value: 1048, name: '瑞幸咖啡' }, // 示例数据：name表示维度，value表示对应的值
-        { value: 735, name: '雀巢咖啡' },
-        { value: 580, name: '星巴克咖啡' },
-        { value: 484, name: '栖巢咖啡' },
-        { value: 300, name: '小武哥咖啡' }
+        { value: 1048, name: '1' }, // Example data: name represents the dimension, and value represents the corresponding value
+        { value: 735, name: '2' },
+        { value: 580, name: '3' },
+        { value: 484, name: '4' },
+        { value: 300, name: '5' }
       ]
     }
   ]
@@ -49,15 +49,15 @@ let pieEquipmentOptions = {
 
 let barCoachOptions = {
   title: {
-    text: '', // 主标题
-    subtext: '', // 副标题
+    text: '', // Main title
+    subtext: '', // Subtitle
     left: 'center'
   },
   xAxis: {
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // 示例数据：统计的维度（横坐标）
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // Example data: Statistics dimension (horizontal coordinate)
     axisLabel: {
-      rotate: 30  // 斜着显示
+      rotate: 30  // Display at an angle
     }
   },
   yAxis: {
@@ -73,13 +73,13 @@ let barCoachOptions = {
       itemStyle: {
         color: function (params) {
           const colors = [
-            '#5470C6',  // 优雅的蓝色
-            '#91CC75',  // 清新的绿色
-            '#FAC858',  // 温暖的黄色
-            '#EE6666',  // 柔和的红色
-            '#73C0DE',  // 浅蓝色
-            '#3BA272',  // 翠绿色
-            '#FC8452'   // 橙色
+            '#5470C6',  // Elegant blue
+            '#91CC75',  // Fresh green
+            '#FAC858',  // Warm yellow
+            '#EE6666',  // Gentle red
+            '#73C0DE',  // Light blue
+            '#3BA272',  // Turquoise green
+            '#FC8452'   // Orange
           ];
           return colors[params.dataIndex];
         }
@@ -114,7 +114,7 @@ let pieCourseOptions = {
   ]
 }
 
-// 修改折线图配置
+// Modify the line chart configuration
 let lineChartOptions = {
   title: {
     text: '',
@@ -128,7 +128,7 @@ let lineChartOptions = {
     type: 'category',
     data: [],
     axisLabel: {
-      rotate: 30  // 斜着显示月份
+      rotate: 30  // Display at an angle
     }
   },
   yAxis: {
@@ -138,17 +138,17 @@ let lineChartOptions = {
   series: [{
     data: [],
     type: 'line',
-    smooth: true,  // 平滑曲线
+    smooth: true,  // Smooth curve
     lineStyle: {
       color: '#5470C6',
       width: 3
     },
-    symbol: 'circle',  // 数据点样式
+    symbol: 'circle',  // Data point style
     symbolSize: 8,
     itemStyle: {
       color: '#5470C6'
     },
-    areaStyle: {  // 添加区域填充
+    areaStyle: {  // Add area fill
       color: {
         type: 'linear',
         x: 0,
@@ -164,7 +164,7 @@ let lineChartOptions = {
         }]
       }
     },
-    markPoint: {  // 添加标记点，显示最大值和最小值
+    markPoint: {  // Add mark point, display maximum and minimum values
       data: [
         { type: 'max', name: 'max' },
         { type: 'min', name: 'min' }
@@ -236,10 +236,10 @@ export default {
           lineChartOptions.xAxis.data = res.data.xAxis
           lineChartOptions.series[0].data = res.data.yAxis
 
-          // 格式化x轴标签，将YYYY-MM格式转换为更友好的显示
+          // Format the x-axis label, convert the YYYY-MM format to a more friendly display
           lineChartOptions.xAxis.axisLabel = {
             formatter: function (value) {
-              // 将YYYY-MM转换为YYYY年MM月
+              // Convert YYYY-MM to YYYY year MM month
               const parts = value.split('-');
               return parts[0] + '/' + parts[1];
             },

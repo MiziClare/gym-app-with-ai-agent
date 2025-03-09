@@ -85,7 +85,7 @@
       </div>
     </el-dialog>
 
-    <!-- 预览富文本编辑器 -->
+    <!-- Preview rich text editor -->
     <el-dialog title="Details" :visible.sync="viewVisible" width="55%" :close-on-click-modal="false" destroy-on-close>
       <div v-html="viewData" class="w-e-text w-e-text-container preview-content"></div>
     </el-dialog>
@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import E from 'wangeditor' // 导入富文本编辑器
+import E from 'wangeditor' // Import rich text editor
 export default {
   name: "Coach",
   data() {
@@ -101,9 +101,9 @@ export default {
       editor: null,
       viewData: null,
       viewVisible: false,
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 10,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 10,  // Number of items per page
       total: 0,
       username: null,
       fromVisible: false,
@@ -122,7 +122,7 @@ export default {
   },
   methods: {
 
-    // 初始化富文本编辑器
+    // Initialize rich text editor
     initWangEditor(content) {
       this.$nextTick(() => {
         this.editor = new E('#editor')
@@ -136,23 +136,23 @@ export default {
       })
     },
 
-    // 点击View按钮预览富文本编辑器
+    // Click View button to preview rich text editor
     viewEditor(content) {
       this.viewData = content
       this.viewVisible = true
     },
 
-    handleAdd() {   // 新增数据
-      this.form = {}  // 新增数据的时候清空数据
-      this.initWangEditor('') // 初始化富文本编辑器
-      this.fromVisible = true   // 打开弹窗
+    handleAdd() {   // Add data
+      this.form = {}  // When adding data, clear the data
+      this.initWangEditor('') // Initialize rich text editor
+      this.fromVisible = true   // Open the popup
     },
-    handleEdit(row) {   // 编辑数据
-      this.form = JSON.parse(JSON.stringify(row))  // 给form对象赋值  注意要深拷贝数据
-      this.initWangEditor(this.form.content) // edit 的时候初始化富文本编辑器
-      this.fromVisible = true   // 打开弹窗
+    handleEdit(row) {   // Edit data
+      this.form = JSON.parse(JSON.stringify(row))  // Assign the value to the form object  注意要深拷贝数据
+      this.initWangEditor(this.form.content) // When editing, initialize the rich text editor
+      this.fromVisible = true   // Open the popup
     },
-    save() {   // 保存按钮触发的逻辑  它会触发新增或者更新
+    save() {   // The logic triggered by the save button will trigger the addition or update
       this.$refs.formRef.validate((valid) => {
         if (valid) {
           this.form.content = this.editor.txt.html()
@@ -161,51 +161,51 @@ export default {
             method: this.form.id ? 'PUT' : 'POST',
             data: this.form
           }).then(res => {
-            if (res.code === '200') {  // 表示成功保存
+            if (res.code === '200') {  // Successfully saved
               this.$message.success('Saved successfully')
               this.load(1)
               this.fromVisible = false
             } else {
-              this.$message.error(res.msg)  // 弹出错误的信息
+              this.$message.error(res.msg)  // Show error message
             }
           })
         }
       })
     },
-    del(id) {   // 单个删除
+    del(id) {   // Single delete
       this.$confirm('Are you sure you want to delete?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/coach/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+          if (res.code === '200') {   // Successfully deleted
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
+    handleSelectionChange(rows) {   // Current selected all row data
       this.ids = rows.map(v => v.id)
     },
-    delBatch() {   // 批量删除
+    delBatch() {   // Batch delete
       if (!this.ids.length) {
         this.$message.warning('Please select data first')
         return
       }
       this.$confirm('Are you sure you want to delete these items?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/coach/delete/batch', { data: this.ids }).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('操作成功')
+          if (res.code === '200') {   // Successfully deleted
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/coach/selectPage', {
         params: {
@@ -226,7 +226,7 @@ export default {
       this.load(pageNum)
     },
     handleAvatarSuccess(response, file, fileList) {
-      // 把头像属性换成上传的图片的链接
+      // Replace the avatar attribute with the link of the uploaded image
       this.form.avatar = response.data
     },
   }
@@ -234,7 +234,7 @@ export default {
 </script>
 
 <style scoped>
-/* 自定义对话框样式 */
+/* Custom dialog style */
 .custom-dialog {
   border-radius: 15px !important;
   overflow: hidden;
@@ -257,12 +257,12 @@ export default {
   margin-bottom: 0;
 }
 
-/* 让Bio编辑器占据单独的一行 */
+/* Let the Bio editor occupy a separate line */
 .bio-editor {
   grid-column: 1 / -1;
 }
 
-/* 设置编辑器外框和样式 */
+/* Set the outer frame and style of the editor */
 :deep(#editor) {
   border-radius: 12px;
   overflow: hidden;
@@ -292,7 +292,7 @@ export default {
   padding: 10px 15px !important;
 }
 
-/* 按钮动画效果 */
+/* Button animation effect */
 .dialog-btn {
   transition: all 0.3s ease;
   border-radius: 20px;
@@ -303,7 +303,7 @@ export default {
   transform: scale(1.05);
 }
 
-/* 确保弹窗内的输入框和其他元素也有圆角 */
+/* Ensure that the input box and other elements in the popup also have rounded corners */
 :deep(.el-input__inner) {
   border-radius: 8px !important;
 }
@@ -317,7 +317,7 @@ export default {
   overflow: hidden;
 }
 
-/* 自定义滚动条样式 */
+/* Custom scrollbar style */
 .coach-form::-webkit-scrollbar {
   width: 6px;
 }
@@ -331,7 +331,7 @@ export default {
   background-color: #f5f7fa;
 }
 
-/* 添加预览窗口的样式 */
+/* Add preview window style */
 .preview-content {
   min-height: 500px;
   padding: 20px;
@@ -340,12 +340,12 @@ export default {
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
-/* 确保内容为空时也能显示背景 */
+/* Ensure that the content is empty and the background can also be displayed */
 .preview-content:empty {
   background-color: #f8f9fa;
 }
 
-/* 自定义预览对话框样式 */
+/* Custom preview dialog style */
 :deep(.el-dialog) {
   border-radius: 15px;
   overflow: hidden;

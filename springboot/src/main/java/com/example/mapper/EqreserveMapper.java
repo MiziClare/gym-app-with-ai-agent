@@ -4,32 +4,32 @@ import com.example.entity.Eqreserve;
 import java.util.List;
 
 /**
- * 操作eqreserve相关数据接口
+ * Interface for operations on eqreserve related data
  */
 public interface EqreserveMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Eqreserve eqreserve);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Eqreserve eqreserve);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Eqreserve selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Eqreserve> selectAll(Eqreserve eqreserve);
 

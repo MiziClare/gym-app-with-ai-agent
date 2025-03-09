@@ -58,9 +58,9 @@ export default {
   name: "Experience",
   data() {
     return {
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 10,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 10,  // Number of items per page
       total: 0,
       name: null,
       fromVisible: false,
@@ -82,40 +82,40 @@ export default {
       this.viewData = content
       this.viewVisible = true
     },
-    del(id) {   // 单个删除
+    del(id) {   // Single delete
       this.$confirm('Are you sure you want to delete it?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/experience/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
+          if (res.code === '200') {   // Successfully deleted
             this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
+    handleSelectionChange(rows) {   // Current selected all row data
       this.ids = rows.map(v => v.id)   //  [1,2]
     },
-    delBatch() {   // 批量删除
+    delBatch() {   // Batch delete
       if (!this.ids.length) {
         this.$message.warning('Please select the data')
         return
       }
       this.$confirm('Are you sure you want to delete these data?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/experience/delete/batch', { data: this.ids }).then(res => {
-          if (res.code === '200') {   // 表示操作成功
+          if (res.code === '200') {   // Successfully deleted
             this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/experience/selectPage', {
         params: {

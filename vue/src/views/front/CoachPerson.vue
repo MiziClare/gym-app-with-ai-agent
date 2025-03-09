@@ -84,15 +84,15 @@ export default {
   },
   methods: {
     update() {
-      // 保存当前的用户信息到数据库
+      // Save the current user information to the database
       this.$request.put('/coach/update', this.user).then(res => {
         if (res.code === '200') {
-          // 成功更新
+          // Successfully updated
           this.$message.success('Saved successfully')
-          // 更新浏览器缓存里的用户信息
+          // Update the user information in the browser cache
           localStorage.setItem('xm-user', JSON.stringify(this.user))
 
-          // 触发父级的数据更新
+          // Trigger the data update of the parent
           this.$emit('update:user')
         } else {
           this.$message.error(res.msg)
@@ -100,10 +100,10 @@ export default {
       })
     },
     handleAvatarSuccess(response, file, fileList) {
-      // 把user的头像属性换成上传的图片的链接
+      // Replace the user's avatar attribute with the link of the uploaded image
       this.$set(this.user, 'avatar', response.data)
     },
-    // 修改密码
+    // Change password
     updatePassword() {
       this.dialogVisible = true
     },
@@ -112,7 +112,7 @@ export default {
         if (valid) {
           this.$request.put('/updatePassword', this.user).then(res => {
             if (res.code === '200') {
-              // 成功更新
+              // Successfully updated
               this.$message.success('Password changed successfully')
               this.$router.push('/login')
             } else {

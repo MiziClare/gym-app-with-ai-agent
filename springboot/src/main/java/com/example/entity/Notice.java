@@ -3,20 +3,20 @@ package com.example.entity;
 import java.io.Serializable;
 
 /**
- * 公告信息表
+ * Notice information table
 */
 public class Notice implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** ID */
     private Integer id;
-    /** 标题 */
+    /** Title */
     private String title;
-    /** 内容 */
+    /** Content */
     private String content;
-    /** 创建时间 */
+    /** Creation time */
     private String time;
-    /** 创建人 */
+    /** Creator */
     private String user;
 
     public Integer getId() {
