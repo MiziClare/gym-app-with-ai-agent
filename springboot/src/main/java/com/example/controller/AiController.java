@@ -2,11 +2,17 @@ package com.example.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
@@ -14,20 +20,39 @@ import java.util.*;
 public class AiController {
 
     private final RestTemplate restTemplate;
-    private static final String DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
-    // 请替换为你实际的 API Token
-    private static final String API_TOKEN = "sk-ba0b5e17decd42cbbcab21cb4fc697d9";
+    
+    @Value("${spring.ai.deepseek.url}")
+    private String deepseekUrl;
+    
+    @Value("${spring.ai.deepseek.api-token}")
+    private String apiToken;
+    
+    @Value("${spring.ai.deepseek.model}")
+    private String model;
+    
+    private String knowledgeBase;
 
     @Autowired
     public AiController(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
+        loadKnowledgeBase();
+    }
+    
+    private void loadKnowledgeBase() {
+        try {
+            Resource resource = new ClassPathResource("Knowledge.json");
+            knowledgeBase = new String(Files.readAllBytes(Paths.get(resource.getURI())));
+        } catch (IOException e) {
+            knowledgeBase = "{}";
+            e.printStackTrace();
+        }
     }
 
     @GetMapping("/chat/{prompt}")
     public String chat(@PathVariable("prompt") String prompt) {
-        // 构造请求对象，注意各个字段需要和 deepseek API 文档一致
+        // Construct the request object, note that the fields need to be consistent with the deepseek API documentation
         DeepseekRequest requestBody = new DeepseekRequest();
-        requestBody.setModel("deepseek-chat");
+        requestBody.setModel(model);
         requestBody.setFrequencyPenalty(0);
         requestBody.setMaxTokens(2048);
         requestBody.setPresencePenalty(0);
@@ -41,16 +66,23 @@ public class AiController {
         requestBody.setTools(null);
         requestBody.setTopLogprobs(null);
 
-        // response_format 字段
+        // response_format field
         Map<String, String> responseFormat = new HashMap<>();
         responseFormat.put("type", "text");
         requestBody.setResponseFormat(responseFormat);
 
-        // 设置对话消息：先设置 system，再设置 user
+        // Set the conversation messages: first set system, then set user
         List<Message> messages = new ArrayList<>();
         Message systemMessage = new Message();
         systemMessage.setRole("system");
-        systemMessage.setContent("You are the AI assistant for Gym Panel, a small gym membership website. Your role is to help users navigate the platform and answer fitness-related questions in a friendly and helpful manner. Keep your responses concise and to the point.");
+        systemMessage.setContent("You are the AI assistant for Gym Panel, a small gym membership website. " +
+    "Your role is to help users navigate the platform and answer fitness-related questions " +
+    "in a friendly and helpful manner. When a question is related to platform functions, tutorials, or equipment usage and tips, " +
+    "you must refer directly to the provided knowledge base and answer exclusively using the corresponding content. " +
+    "If a query specifically asks 'how to use' any equipment (e.g., 'how to use treadmill'), " +
+    "your response should include the 'Usage' and 'Tips' exactly as stated in the knowledge base. " +
+    "Keep your responses concise and to the point.\n\n" +
+    "Knowledge Base:\n" + knowledgeBase);
         messages.add(systemMessage);
 
         Message userMessage = new Message();
@@ -59,29 +91,29 @@ public class AiController {
         messages.add(userMessage);
         requestBody.setMessages(messages);
 
-        // 构造请求头
+        // Construct the request header
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("Authorization", "Bearer " + API_TOKEN);
+        headers.set("Authorization", "Bearer " + apiToken);
 
         HttpEntity<DeepseekRequest> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<DeepseekResponse> responseEntity = restTemplate.postForEntity(DEEPSEEK_URL, entity, DeepseekResponse.class);
+        ResponseEntity<DeepseekResponse> responseEntity = restTemplate.postForEntity(deepseekUrl, entity, DeepseekResponse.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             DeepseekResponse deepseekResponse = responseEntity.getBody();
             if (deepseekResponse.getChoices() != null && !deepseekResponse.getChoices().isEmpty()) {
                 return deepseekResponse.getChoices().get(0).getMessage().getContent();
             } else {
-                return "未收到 deepseek 响应内容";
+                return "No deepseek response content received";
             }
         } else {
-            return "请求错误，状态码：" + responseEntity.getStatusCode();
+            return "Request error, status code: " + responseEntity.getStatusCode();
         }
     }
 }
 
-// ==================== 请求对象 ====================
+// ==================== Request object ====================
 class DeepseekRequest {
 
     @JsonProperty("messages")
@@ -223,7 +255,7 @@ class DeepseekRequest {
     }
 }
 
-// ==================== 消息对象 ====================
+// ==================== Message object ====================
 class Message {
 
     @JsonProperty("role")
@@ -247,7 +279,7 @@ class Message {
     }
 }
 
-// ==================== 响应对象 ====================
+// ==================== Response object ====================
 class DeepseekResponse {
 
     @JsonProperty("id")
@@ -316,7 +348,7 @@ class DeepseekResponse {
     }
 }
 
-// ==================== 选择项 ====================
+// ==================== Choice object ====================
 class Choice {
 
     @JsonProperty("index")
@@ -358,7 +390,7 @@ class Choice {
     }
 }
 
-// ==================== 使用情况 ====================
+// ==================== Usage object ====================
 class Usage {
 
     @JsonProperty("prompt_tokens")

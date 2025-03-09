@@ -17,7 +17,14 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
-# 配置mybatis实体和xml映射
+  # AI service configuration
+  ai:
+    deepseek:
+      url: https://api.deepseek.com/chat/completions
+      api-token: sk-ba0b5e17decd42cbbcab21cb4fc697d9
+      model: deepseek-chat
+
+# Configure mybatis entity and xml mapping
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.example.entity
@@ -25,7 +32,7 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
 
-# 分页
+# Pagination
 pagehelper:
   helper-dialect: mysql
   reasonable: true
