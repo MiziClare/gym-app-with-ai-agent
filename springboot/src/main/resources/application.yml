@@ -20,9 +20,9 @@ spring:
   # AI service configuration
   ai:
     deepseek:
-      url: https://api.deepseek.com/chat/completions
-      api-token: sk-ba0b5e17decd42cbbcab21cb4fc697d9
-      model: deepseek-chat
+      url: https://api.siliconflow.cn/v1/chat/completions
+      api-token: sk-teuivpffjzajnpulzvytghljvbaymtunthinwnxcizxgitjp
+      model: deepseek-ai/DeepSeek-V2.5
 
 # Configure mybatis entity and xml mapping
 mybatis:
