@@ -26,7 +26,7 @@ a {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2; /* 超出几行省略 */
+    -webkit-line-clamp: 2; /* Exceeding a few lines will be omitted */
     overflow: hidden;
 }
 

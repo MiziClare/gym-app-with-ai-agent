@@ -7,27 +7,27 @@ import java.util.List;
 public interface CoachMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Coach coach);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Coach coach);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Coach selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Coach> selectAll(Coach coach);
 

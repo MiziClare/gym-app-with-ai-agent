@@ -24,7 +24,7 @@ public class CoachService {
     private CoachMapper coachMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Coach coach) {
         Coach dbCoach = coachMapper.selectByUsername(coach.getUsername());
@@ -42,14 +42,14 @@ public class CoachService {
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         coachMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -58,28 +58,28 @@ public class CoachService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Coach coach) {
         coachMapper.updateById(coach);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Coach selectById(Integer id) {
         return coachMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Coach> selectAll(Coach coach) {
         return coachMapper.selectAll(coach);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Coach> selectPage(Coach coach, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
@@ -88,7 +88,7 @@ public class CoachService {
     }
 
     /**
-     * 登录
+     * Login
      */
     public Account login(Account account) {
         Account dbCoach = coachMapper.selectByUsername(account.getUsername());
@@ -106,7 +106,7 @@ public class CoachService {
     }
 
     /**
-     * 注册
+     * Register
      */
     public void register(Account account) {
         Coach coach = new Coach();
@@ -115,7 +115,7 @@ public class CoachService {
     }
 
     /**
-     * 重置密码
+     * Reset password
      */
     public void updatePassword(Account account) {
         Coach dbCoach = coachMapper.selectByUsername(account.getUsername());

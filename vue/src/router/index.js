@@ -15,7 +15,7 @@ const routes = [
     name: 'Manager',
     component: () => import('../views/Manager.vue'),
     // redirect: '/home',  // will execute before router guard
-    meta: { requiresAdmin: true },  // 添加需要管理员权限的标记
+    meta: { requiresAdmin: true },  // Add the mark of needing admin permission
     children: [
       { path: '403', name: 'NoAuth', meta: { name: 'Forbidden' }, component: () => import('../views/manager/403') },
       { path: 'home', name: 'Home', meta: { name: 'Dashboard', requiresAdmin: true }, component: () => import('../views/manager/Home') },
@@ -38,7 +38,7 @@ const routes = [
     path: '/front',
     name: 'Front',
     component: () => import('../views/Front.vue'),
-    meta: { requiresAuth: true },  // 只需要登录，不需要特定角色
+    meta: { requiresAuth: true },  // Only need to login, no specific role
     children: [
       { path: 'home', name: 'Home', meta: { name: 'Home' }, component: () => import('../views/front/Home') },
       { path: 'person', name: 'Person', meta: { name: 'Profile' }, component: () => import('../views/front/Person') },
@@ -73,7 +73,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   let user = JSON.parse(localStorage.getItem("xm-user") || '{}');
   
-  // 处理根路径重定向
+  // Handle root path redirection
   if (to.path === '/') {
     if (user.role) {
       if (user.role === 'USER' || user.role === 'COACH') {
@@ -87,26 +87,26 @@ router.beforeEach((to, from, next) => {
     return;
   }
   
-  // 检查是否需要管理员权限
+  // Check if admin permission is required
   if (to.matched.some(record => record.meta.requiresAdmin)) {
-    // 检查用户是否登录且是管理员
+    // Check if the user is logged in and is an admin
     if (!user.role || (user.role !== 'ADMIN')) {
-      // 如果不是管理员，重定向到403页面或前台首页
+      // If not an admin, redirect to the 403 page or the front page
       next('/front/home');
       return;
     }
   }
   
-  // 检查是否需要登录
+  // Check if login is required
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // 检查用户是否登录
+    // Check if the user is logged in
     if (!user.role) {
       next('/login');
       return;
     }
   }
   
-  // 其他情况正常放行
+  // Other cases are normally allowed to pass
   next();
 })
 

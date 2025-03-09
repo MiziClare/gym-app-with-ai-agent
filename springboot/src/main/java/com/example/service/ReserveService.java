@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 预约信息表业务处理
+ * Reservation information table business processing
  **/
 @Service
 public class ReserveService {
@@ -22,7 +22,7 @@ public class ReserveService {
     private ReserveMapper reserveMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Reserve reserve) {
         reserve.setTime(DateUtil.now()); // Set the current time as the time of the reservation
@@ -30,14 +30,14 @@ public class ReserveService {
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         reserveMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -46,28 +46,28 @@ public class ReserveService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Reserve reserve) {
         reserveMapper.updateById(reserve);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Reserve selectById(Integer id) {
         return reserveMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Reserve> selectAll(Reserve reserve) {
         return reserveMapper.selectAll(reserve);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Reserve> selectPage(Reserve reserve, Integer pageNum, Integer pageSize) {
         Account currentUser = TokenUtils.getCurrentUser();

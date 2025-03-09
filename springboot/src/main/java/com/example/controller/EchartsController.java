@@ -117,20 +117,20 @@ public class EchartsController {
 
         List<Orders> all = ordersService.selectAll(new Orders());
         
-        // 按月份分组并计算每月的订单总金额
+        // Group by month and calculate the total order amount for each month
         Map<String, Double> monthlySum = all.stream()
                 .filter(x -> ObjectUtil.isNotEmpty(x.getTime()))
                 .collect(Collectors.groupingBy(
-                        orders -> orders.getTime().substring(0, 7),  // 只保留 YYYY-MM 格式
+                        orders -> orders.getTime().substring(0, 7),  // Only keep the YYYY-MM format
                         Collectors.summingDouble(Orders::getPrice)
                 ));
 
-        // 获取所有月份并排序
+        // Get all months and sort them
         List<String> months = monthlySum.keySet().stream()
                 .sorted()
                 .collect(Collectors.toList());
         
-        // 取最后6个月的数据
+        // Get the last 6 months of data
         int size = months.size();
         int startIndex = Math.max(0, size - 6);
         for (int i = startIndex; i < size; i++) {

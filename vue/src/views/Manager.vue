@@ -1,6 +1,6 @@
 <template>
   <div class="manager-container">
-    <!--  头部  -->
+    <!--   Header  -->
     <div class="manager-header">
       <div class="manager-header-left">
         <img src="@/assets/imgs/logo.png" />
@@ -29,9 +29,9 @@
       </div>
     </div>
 
-    <!--  主体  -->
+    <!--   Main  -->
     <div class="manager-main">
-      <!--  侧边栏  -->
+      <!--   Sidebar  -->
       <div class="manager-main-left">
         <el-menu :default-openeds="['info', 'booking', 'user']" router style="border: none"
           :default-active="$route.path">
@@ -72,7 +72,7 @@
         </el-menu>
       </div>
 
-      <!--  数据表格  -->
+      <!--   Data table  -->
       <div class="manager-main-right">
         <router-view @update:user="updateUser" />
       </div>
@@ -96,7 +96,7 @@ export default {
   },
   methods: {
     updateUser() {
-      this.user = JSON.parse(localStorage.getItem('xm-user') || '{}')   // 重新获取下用户的最新信息
+      this.user = JSON.parse(localStorage.getItem('xm-user') || '{}')   // Re-get the latest user information
     },
     goToPerson() {
       if (this.user.role === 'ADMIN') {

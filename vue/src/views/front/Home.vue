@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="home-container">
-      <!-- 轮播图 -->
+      <!-- Carousel -->
       <div class="carousel-container">
         <div class="shell">
           <div class="content">
@@ -11,7 +11,7 @@
           </div>
         </div>
       </div>
-      <!-- 课程区域 -->
+      <!-- Course section -->
       <div class="course-section">
         <div class="course-header">
           <div class="course-title"></div>
@@ -53,7 +53,7 @@ export default {
     window.scrollTo(0, 0);
     this.loadCourse()
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: The click event or other function definition area of this page
   methods: {
     loadCourse() {
       this.$request.get('/course/selectFour').then(res => {
@@ -104,7 +104,7 @@ body {
   max-width: 80%;
 }
 
-/* 新增轮播图容器样式，用于居中显示 */
+/* Add new carousel container style for centering display */
 .carousel-container {
   display: flex;
   justify-content: center;
@@ -115,7 +115,7 @@ body {
   overflow: visable;
 }
 
-/* 定义外层容器样式 */
+/* Define the outer container style */
 .shell {
   position: relative;
   width: 60vw;
@@ -123,83 +123,83 @@ body {
   max-width: 380px;
   max-height: 250px;
   margin: 0 auto;
-  /* 居中显示 */
+  /* Center display */
   color: white;
   perspective: 1000px;
   transform-origin: center;
 }
 
-/* 定义内容容器样式 */
+/* Define the content container style */
 .content {
   display: flex;
-  /* 弹性盒子布局 */
+  /* Elastic box layout */
   justify-content: center;
-  /* 主轴居中 */
+  /* Main axis center */
   align-items: center;
-  /* 交叉轴居中 */
+  /* Cross-axis center */
   position: absolute;
-  /* 绝对定位 */
+  /* Absolute positioning */
   width: 100%;
-  /* 宽度100% */
+  /* Width 100% */
   height: 100%;
-  /* 高度100% */
+  /* Height 100% */
   transform-origin: center;
-  /* 变形原点为中心 */
+  /* Transform origin center */
   transform-style: preserve-3d;
-  /* 保持3D变换 */
+  /* Keep 3D transformation */
   transform: translateZ(-30vw) rotateY(0);
-  /* 初始变换：沿z轴平移-30vw，绕y轴旋转0度 */
+  /* Initial transformation: translate along z-axis by -30vw, rotate around y-axis by 0 degrees */
   animation: carousel 10s infinite cubic-bezier(0.77, 0, 0.175, 1) forwards;
-  /* 动画：名称为carousel，持续10秒，无限循环 */
+  /* Animation: Name is carousel, lasts 10 seconds, and loops infinitely */
 }
 
-/* 定义项目样式 */
+/* Define the item style */
 .item {
   position: absolute;
-  /* 绝对定位 */
+  /* Absolute positioning */
   width: 60vw;
-  /* 宽度占视口宽度的60% */
+  /* Width */
   height: 40vw;
-  /* 高度占视口高度的40% */
+  /* Height */
   max-width: 380px;
-  /* 最大宽度为380像素 */
+  /* Maximum width is 380 pixels */
   max-height: 250px;
-  /* 最大高度为250像素 */
+  /* Maximum height is 250 pixels */
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  /* 设置阴影 */
+  /* Set shadow */
   border-radius: 6px;
-  /* 边框圆角 */
+  /* Border radius */
   background-size: cover;
-  /* 背景图片覆盖整个容器 */
+  /* Background image covers the container */
   -webkit-box-reflect: below 25px -webkit-linear-gradient(transparent 50%, rgba(255, 255, 255, 0.3));
-  /* 创建倒影效果 */
+  /* Create a reflection effect */
 }
 
-/* 第一个项目样式 */
+/* The first item style */
 .item:nth-child(1) {
   background-image: url(@/assets/imgs/course-yoga.jpg);
-  /* 背景图片为01.jpg */
+  /* Background image is 01.jpg */
   transform: rotateY(0) translateZ(35vw);
-  /* 绕y轴旋转0度，沿z轴平移35vw */
+  /* Rotate around y-axis by 0 degrees, translate along z-axis by 35vw */
 }
 
-/* 第二个项目样式 */
+/* The second item style */
 .item:nth-child(2) {
   background-image: url(@/assets/imgs/course-treadmill.jpg);
-  /* 背景图片为02.jpg */
+  /* Background image is 02.jpg */
   transform: rotateY(120deg) translateZ(35vw);
-  /* 绕y轴旋转120度，沿z轴平移35vw */
+  /* Rotate around y-axis by 120 degrees, translate along z-axis by 35vw */
 }
 
-/* 第三个项目样式 */
+/* The third item style */
 .item:nth-child(3) {
   background-image: url(@/assets/imgs/course-core.jpg);
-  /* 背景图片为03.jpg */
+  /* Background image is 03.jpg */
   transform: rotateY(240deg) translateZ(35vw);
-  /* 绕y轴旋转240度，沿z轴平移35vw */
+  /* Rotate around y-axis by 240 degrees, translate along z-axis by 35vw */
 }
 
-/* 定义动画 */
+/* Define the animation */
 @keyframes carousel {
 
   0%,
@@ -223,7 +223,7 @@ body {
   }
 }
 
-/* 如果main-content没有设置样式，也可以添加以下样式确保整个页面内容居中 */
+/* If main-content is not set, you can also add the following styles to ensure the entire page content is centered */
 .main-content {
   display: flex;
   flex-direction: column;
@@ -231,16 +231,16 @@ body {
   width: 100%;
   min-height: 80vh;
   overflow-x: hidden;
-  /* 添加这一行防止水平溢出 */
+  /* Add this line to prevent horizontal overflow */
   max-width: 100vw;
-  /* 确保不超过视口宽度 */
+  /* Ensure it does not exceed the viewport width */
 }
 
-/* 课程图片容器样式 */
+/* Course image container style */
 .course-image-container {
   width: 100%;
   padding-top: 66.67%;
-  /* 保持3:2的宽高比 (2/3 = 66.67%) */
+  /* Keep the 3:2 aspect ratio (2/3 = 66.67%) */
   position: relative;
   overflow: hidden;
   border-radius: 10px;
@@ -254,7 +254,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* 保持图片比例并填充容器 */
+  /* Keep the image ratio and fill the container */
   cursor: pointer;
 }
 
@@ -265,7 +265,7 @@ body {
   vertical-align: middle;
 }
 
-/* 课程区域样式 */
+/* Course area style */
 .course-section {
   width: 80%;
   margin: 30px auto;
@@ -295,7 +295,7 @@ body {
   margin-top: 30px;
 }
 
-/* 响应式调整 */
+/* Responsive adjustment */
 @media screen and (max-width: 768px) {
   .course-section {
     width: 80%;

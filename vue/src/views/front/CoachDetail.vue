@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div style="width: 65%; margin: 20px auto; position: relative;">
-      <!-- 添加返回按钮 -->
+      <!-- Add back button -->
       <div class="back-button" @click="$router.push('/front/coach')">
         <i class="el-icon-arrow-left"></i> Back
       </div>
@@ -54,20 +54,20 @@ export default {
     }
   },
   mounted() {
-    // 确保页面加载时滚动到顶部
+    // Ensure the page scrolls to the top when it loads
     window.scrollTo(0, 0);
 
     this.loadCoach()
     this.loadComment()
   },
-  // 添加路由进入时的钩子函数
+  // Add the hook function when the route enters
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      // 在组件实例创建后，确保滚动到顶部
+      // After the component instance is created, ensure the page scrolls to the top
       window.scrollTo(0, 0);
     });
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: The click event or other function definition area of this page
   methods: {
     loadComment() {
       this.$request.get('/comment/selectAll', {
@@ -119,7 +119,7 @@ export default {
 }
 </script>
 <style>
-/* 添加返回按钮样式 */
+/* Add back button style */
 .back-button {
   position: absolute;
   top: -20px;
@@ -153,7 +153,7 @@ p {
   color: #333333;
 }
 
-/* 玻璃态风格样式 */
+/* Glass style */
 .glassmorphism-input .el-textarea__inner {
   background: rgba(255, 255, 255, 0.25) !important;
   backdrop-filter: blur(10px) !important;
@@ -171,7 +171,7 @@ p {
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2) !important;
   border-radius: 15px !important;
   transition: all 0.3s ease !important;
-  /* 放大效果 */
+  /* Zoom effect */
   transform: scale(1.2);
 }
 
@@ -182,7 +182,7 @@ p {
   transform: translateY(-2px) !important;
 }
 
-/* 为评论区添加玻璃态效果 */
+/* Add glass effect to the comment section */
 .el-row {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(5px);
@@ -198,7 +198,7 @@ p {
   transform: translateY(-2px);
 }
 
-/* 为整体页面添加白色背景 */
+/* Add white background to the entire page */
 .main-content {
   background-color: #ffffff;
   min-height: 100vh;

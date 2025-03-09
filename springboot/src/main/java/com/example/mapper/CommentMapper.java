@@ -5,32 +5,32 @@ import com.example.entity.Comment;
 import java.util.List;
 
 /**
- * 操作comment相关数据接口
+ * Interface for operations on comment related data
  */
 public interface CommentMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Comment comment);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Comment comment);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Comment selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Comment> selectAll(Comment comment);
 

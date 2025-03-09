@@ -42,9 +42,9 @@ export default {
   name: "Orders",
   data() {
     return {
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 10,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 10,  // Number of items per page
       total: 0,
       orderNo: null,
       fromVisible: false,
@@ -58,7 +58,7 @@ export default {
     this.load(1)
   },
   methods: {
-    del(id) {   // 单个删除
+    del(id) {   // Single delete
       this.$confirm('Are you sure you want to delete?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/orders/delete/' + id).then(res => {
           if (res.code === '200') {
@@ -71,10 +71,10 @@ export default {
       }).catch(() => {
       })
     },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
+    handleSelectionChange(rows) {   // Current selected all row data
       this.ids = rows.map(v => v.id)   //  [1,2]
     },
-    delBatch() {   // 批量删除
+    delBatch() {   // Batch delete
       if (!this.ids.length) {
         this.$message.warning('Please select data first')
         return
@@ -91,7 +91,7 @@ export default {
       }).catch(() => {
       })
     },
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/orders/selectPage', {
         params: {

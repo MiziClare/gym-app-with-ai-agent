@@ -1,21 +1,21 @@
 package com.example.entity;
 
 /**
- * 角色用户父类
+ * Role user parent class
  */
 public class Account {
     private Integer id;
-    /** 用户名 */
+    /** Username */
     private String username;
-    /** 名称 */
+    /** Name */
     private String name;
-    /** 密码 */
+    /** Password */
     private String password;
-    /** 角色标识 */
+    /** Role identifier */
     private String role;
-    /** 新密码 */
+    /** New password */
     private String newPassword;
-    /** 头像 */
+    /** Avatar */
     private String avatar;
 
     private String token;

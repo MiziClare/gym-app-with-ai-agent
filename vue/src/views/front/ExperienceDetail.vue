@@ -31,7 +31,7 @@ export default {
     window.scrollTo(0, 0);
     this.loadExperience()
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: The click event or other function definition area of this page
   methods: {
     loadExperience() {
       this.$request.get('/experience/selectById/' + this.experienceId).then(res => {

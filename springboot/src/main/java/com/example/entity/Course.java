@@ -3,7 +3,7 @@ package com.example.entity;
 import java.io.Serializable;
 
 /**
- * 课程信息表
+ * Course information table
  */
 public class Course implements Serializable {
     private static final long serialVersionUID = 1L;

@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 文件接口
+ * File interface
  */
 @RestController
 @RequestMapping("/files")
 public class FileController {
 
-    // 文件上传存储路径
+    // File upload storage path
     private static final String filePath = System.getProperty("user.dir") + "/files/";
 
     @Value("${server.port:9090}")
@@ -34,7 +34,7 @@ public class FileController {
     private String ip;
 
     /**
-     * 文件上传
+     * File upload
      */
     @PostMapping("/upload")
     public Result upload(MultipartFile file) {
@@ -48,12 +48,12 @@ public class FileController {
             if (!FileUtil.isDirectory(filePath)) {
                 FileUtil.mkdir(filePath);
             }
-            // 文件存储形式：时间戳-文件名
+            // File storage format: timestamp-file name
             FileUtil.writeBytes(file.getBytes(), filePath + flag + "-" + fileName);  // ***/manager/files/1697438073596-avatar.png
-            System.out.println(fileName + "--上传成功");
+            System.out.println(fileName + "--Upload successful");
 
         } catch (Exception e) {
-            System.err.println(fileName + "--文件上传失败");
+            System.err.println(fileName + "--File upload failed");
         }
         String http = "http://" + ip + ":" + port + "/files/";
         return Result.success(http + flag + "-" + fileName);  //  http://localhost:9090/files/1697438073596-avatar.png
@@ -61,7 +61,7 @@ public class FileController {
 
 
     /**
-     * 获取文件
+     * Get file
      *
      * @param flag
      * @param response
@@ -80,33 +80,33 @@ public class FileController {
                 os.close();
             }
         } catch (Exception e) {
-            System.out.println("文件下载失败");
+            System.out.println("File download failed");
         }
     }
 
     /**
-     * 删除文件
+     * Delete file
      *
      * @param flag
      */
     @DeleteMapping("/{flag}")
     public void delFile(@PathVariable String flag) {
         FileUtil.del(filePath + flag);
-        System.out.println("删除文件" + flag + "成功");
+        System.out.println("Delete file" + flag + "successfully");
     }
 
     /**
-     * 富文本编辑器上传接口
+     * Rich text editor upload interface
      */
     /**
-     * wang-editor编辑器文件上传接口
+     * wang-editor editor file upload interface
      */
     @PostMapping("/wang/upload")
     public Map<String, Object> wangEditorUpload(MultipartFile file) {
         String flag = System.currentTimeMillis() + "";
         String fileName = file.getOriginalFilename();
         try {
-            // 文件存储形式：时间戳-文件名
+            // File storage format: timestamp-file name
             FileUtil.writeBytes(file.getBytes(), filePath + flag + "-" + fileName);
             System.out.println(fileName + "--Upload complete!");
             Thread.sleep(1L);
@@ -115,7 +115,7 @@ public class FileController {
         }
         String http = "http://" + ip + ":" + port + "/files/";
         Map<String, Object> resMap = new HashMap<>();
-        // wangEditor上传图片成功后， 需要返回的参数
+        // After wangEditor uploads the image successfully, the parameters to be returned
         resMap.put("errno", 0);
         resMap.put("data", CollUtil.newArrayList(Dict.create().set("url", http + flag + "-" + fileName)));
         return resMap;

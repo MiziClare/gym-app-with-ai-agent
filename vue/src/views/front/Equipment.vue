@@ -86,7 +86,7 @@ export default {
     this.loadEquipment()
     window.scrollTo(0, 0)
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: The click event or other function definition area of this page
   methods: {
     loadEquipment() {
       this.$request.get('/equipment/selectAll', {
@@ -152,7 +152,7 @@ export default {
   font-family: 'Roboto', sans-serif;
 }
 
-/* 添加以下CSS样式 */
+/* Add the following CSS styles */
 .el-row {
   display: flex;
   flex-wrap: wrap;
@@ -184,7 +184,7 @@ export default {
   }
 }
 
-/* 添加器材图片容器样式 */
+/* Add equipment image container style */
 .equipment-image-container {
   position: relative;
   width: 100%;

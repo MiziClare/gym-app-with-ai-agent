@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 管理员前端操作接口
+ * Admin front-end operation interface
  **/
 @RestController
 @RequestMapping("/admin")
@@ -19,7 +19,7 @@ public class AdminController {
     private AdminService adminService;
 
     /**
-     * 新增
+     * Add
      */
     @PostMapping("/add")
     public Result add(@RequestBody Admin admin) {
@@ -28,7 +28,7 @@ public class AdminController {
     }
 
     /**
-     * 删除
+     * Delete
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
@@ -37,7 +37,7 @@ public class AdminController {
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
@@ -46,7 +46,7 @@ public class AdminController {
     }
 
     /**
-     * 修改
+     * Update
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Admin admin) {
@@ -55,7 +55,7 @@ public class AdminController {
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
@@ -64,7 +64,7 @@ public class AdminController {
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     @GetMapping("/selectAll")
     public Result selectAll(Admin admin ) {
@@ -73,7 +73,7 @@ public class AdminController {
     }
 
     /**
-     * 分页查询
+     * Query by page
      */
     @GetMapping("/selectPage")
     public Result selectPage(Admin admin,

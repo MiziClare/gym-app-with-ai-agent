@@ -60,7 +60,7 @@ export default {
       dialogVisible: true,
       form: {
         role: '',
-        gdprConsent: false  // 添加GDPR同意状态
+        gdprConsent: false  // Add GDPR consent status
       },
       rules: {
         username: [
@@ -90,7 +90,7 @@ export default {
     login() {
       this.$refs['formRef'].validate((valid) => {
         if (valid) {
-          // 验证通过
+          // Validation passed
           if (!this.form.gdprConsent) {
             this.$message.error('Please agree to the privacy policy and terms of service');
             return;
@@ -98,12 +98,12 @@ export default {
 
           this.$request.post('/login', this.form).then(res => {
             if (res.code === '200') {
-              localStorage.setItem("xm-user", JSON.stringify(res.data))  // 存储用户数据
+              localStorage.setItem("xm-user", JSON.stringify(res.data))  // Store user data
 
               if (res.data.role === 'ADMIN') {
-                this.$router.push('/home') // 跳转后台主页
+                this.$router.push('/home') // Redirect to the backend home page
               } else {
-                location.href = '/front/home'  // 跳转前台主页
+                location.href = '/front/home'  // Redirect to the front page
               }
               this.$message.success('Login Success')
             } else {
@@ -118,14 +118,14 @@ export default {
 </script>
 
 <style>
-/* 移除全局样式，改为更具体的选择器 */
+/* Remove global styles and use more specific selectors */
 .login-page {
   margin: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
   position: relative;
-  /* 添加定位上下文 */
+  /* Add positioning context */
 }
 </style>
 
@@ -134,10 +134,10 @@ export default {
   font-family: 'Inter', sans-serif;
 }
 
-/* 修改容器样式 */
+/* Modify container styles */
 .container {
   position: fixed;
-  /* 改为fixed定位 */
+  /* Change to fixed positioning */
   top: 0;
   left: 0;
   width: 100vw;
@@ -151,7 +151,7 @@ export default {
   padding: 0 !important;
 }
 
-/* 添加一个伪元素作为背景 */
+/* Add a pseudo-element as a background */
 .container::before {
   content: '';
   position: absolute;
@@ -164,13 +164,13 @@ export default {
   background-position: center;
   transform: scale(1.07);
   filter: blur(3px) brightness(0.9);
-  /* 添加模糊和亮度调整 */
+  /* Add blur and brightness adjustment */
   z-index: -1;
-  /* 确保背景在内容之后 */
+  /* Ensure the background is behind the content */
   padding: 0 !important;
 }
 
-/* 添加这些全局样式 */
+/* Add these global styles */
 :deep(html),
 :deep(body),
 :deep(#app) {
@@ -186,7 +186,7 @@ a {
   color: #2a60c9;
 }
 
-/* 为输入框添加圆角样式 */
+/* Add rounded styles to input fields */
 :deep(.el-input__inner) {
   border-radius: 8px !important;
 }
@@ -199,7 +199,7 @@ a {
   border-radius: 8px !important;
 }
 
-/* 以下为尝试添加的样式 */
+/* The following are styles added for testing */
 * {
   padding: 0;
   margin: 0;
@@ -228,7 +228,7 @@ form {
   display: flex;
   justify-content: center;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  /* 添加更柔和的阴影 */
+  /* Add a softer shadow */
   border-radius: 15px;
   overflow: hidden;
   padding: 0 !important;
@@ -240,7 +240,7 @@ form {
   height: 475px;
   background-color: #fff;
   box-shadow: none;
-  /* 移除阴影 */
+  /* Remove the shadow */
   border-radius: 15px;
   display: flex;
   justify-content: center;
@@ -249,7 +249,7 @@ form {
   padding: 0 !important;
 }
 
-/* 修改图片容器样式 */
+/* Modify image container styles */
 #img-box {
   width: 330px;
   height: 520px;
@@ -337,12 +337,12 @@ form {
   margin-top: 20px;
   margin-bottom: 15px;
   transition: transform 0.2s ease-in-out;
-  /* 添加过渡效果 */
+  /* Add transition effect */
 }
 
 #submit-button:hover {
   transform: scale(1.2);
-  /* 鼠标悬停时放大5% */
+  /* When the mouse is hovered, increase by 5% */
 }
 
 #role-select {
@@ -399,7 +399,7 @@ form {
   text-decoration: underline;
 }
 
-/* 新添加的GDPR相关样式 */
+/* Newly added GDPR-related styles */
 .gdpr-consent {
   width: 100%;
   margin: 10px 0;
@@ -415,12 +415,12 @@ form {
   margin-top: 3px;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
-  /* 添加过渡效果 */
+  /* Add transition effect */
 }
 
 .gdpr-consent input[type="checkbox"]:hover {
   transform: scale(1.5);
-  /* 鼠标悬停时放大 */
+  /* When the mouse is hovered, increase */
 }
 
 .gdpr-consent label {

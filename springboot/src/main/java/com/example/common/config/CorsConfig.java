@@ -7,7 +7,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 /**
- * 跨域配置
+ * Cross-domain configuration
  */
 @Configuration
 public class CorsConfig {
@@ -16,12 +16,12 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://10.184.197.243:8080"); // 1 设置访问源地址
-        corsConfiguration.addAllowedOrigin("http://localhost:8080"); // 1 设置访问源地址
-        corsConfiguration.setAllowCredentials(true);  // 允许携带认证信息
-        corsConfiguration.addAllowedHeader("*"); // 2 设置访问源请求头
-        corsConfiguration.addAllowedMethod("*"); // 3 设置访问源请求方法
-        source.registerCorsConfiguration("/**", corsConfiguration); // 4 对接口配置跨域设置
+        corsConfiguration.addAllowedOrigin("http://10.184.197.243:8080"); // Set the allowed origin address
+        corsConfiguration.addAllowedOrigin("http://localhost:8080"); // Set the allowed origin address
+        corsConfiguration.setAllowCredentials(true);  // Allow credentials
+        corsConfiguration.addAllowedHeader("*"); // Set the allowed origin request header
+        corsConfiguration.addAllowedMethod("*"); // Set the allowed origin request method
+        source.registerCorsConfiguration("/**", corsConfiguration); // Register the cors configuration
         return new CorsFilter(source);
     }
 }

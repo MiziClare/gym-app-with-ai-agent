@@ -11,27 +11,27 @@ import java.util.List;
 public interface AdminMapper {
 
     /**
-      * 新增
+      * Add
     */
     int insert(Admin admin);
 
     /**
-      * 删除
+      * Delete
     */
     int deleteById(Integer id);
 
     /**
-      * 修改
+      * Update
     */
     int updateById(Admin admin);
 
     /**
-      * 根据ID查询
+      * Query by ID
     */
     Admin selectById(Integer id);
 
     /**
-      * 查询所有
+      * Query all
     */
     List<Admin> selectAll(Admin admin);
 

@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 健身经验表业务处理
+ * Fitness experience table business processing
  **/
 @Service
 public class ExperienceService {
@@ -28,7 +28,7 @@ public class ExperienceService {
     private UserMapper userMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Experience experience) {
         experience.setTime(DateUtil.now());
@@ -36,14 +36,14 @@ public class ExperienceService {
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         experienceMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -52,14 +52,14 @@ public class ExperienceService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Experience experience) {
         experienceMapper.updateById(experience);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Experience selectById(Integer id) {
         Experience experience = experienceMapper.selectById(id);
@@ -69,25 +69,25 @@ public class ExperienceService {
 
     private void extracted(Experience experience) {
         if (RoleEnum.COACH.name().equals(experience.getRole())) {
-            // 去教练表里查询对应的教练
+            // Query the corresponding coach in the coach table
             Coach coach = coachMapper.selectById(experience.getUserId());
             experience.setUserName(coach.getName());
         } else {
-            // 去用户表里查询对应的用户
+            // Query the corresponding user in the user table
             User user = userMapper.selectById(experience.getUserId());
             experience.setUserName(user.getName());
         }
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Experience> selectAll(Experience experience) {
         return experienceMapper.selectAll(experience);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Experience> selectPage(Experience experience, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);

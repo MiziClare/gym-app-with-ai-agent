@@ -4,32 +4,32 @@ import com.example.entity.Notice;
 import java.util.List;
 
 /**
- * 操作notice相关数据接口
+ * Interface for operations on notice related data
 */
 public interface NoticeMapper {
 
     /**
-      * 新增
+      * Add
     */
     int insert(Notice notice);
 
     /**
-      * 删除
+      * Delete
     */
     int deleteById(Integer id);
 
     /**
-      * 修改
+      * Update
     */
     int updateById(Notice notice);
 
     /**
-      * 根据ID查询
+      * Query by ID
     */
     Notice selectById(Integer id);
 
     /**
-      * 查询所有
+      * Query all
     */
     List<Notice> selectAll(Notice notice);
 

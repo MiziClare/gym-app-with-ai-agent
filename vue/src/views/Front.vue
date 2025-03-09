@@ -61,16 +61,16 @@
     </div>
     <!--Main Content-->
     <div class="main-body">
-      <!-- 侧边栏 -->
+      <!-- Sidebar -->
       <div class="sidebar-container">
         <Sidebar />
       </div>
-      <!-- 主内容区域 -->
+      <!-- Main content area -->
       <div class="main-content">
         <router-view ref="child" @update:user="updateUser" />
       </div>
     </div>
-    <!-- 添加 AI 聊天组件 -->
+    <!-- Add AI chat component -->
     <AIChat />
   </div>
 
@@ -115,9 +115,9 @@ export default {
       })
     },
     updateUser() {
-      this.user = JSON.parse(localStorage.getItem('xm-user') || '{}')   // 重新获取下用户的最新信息
+      this.user = JSON.parse(localStorage.getItem('xm-user') || '{}')   // Re-get the latest user information
     },
-    // 退出登录
+    // Logout
     logout() {
       localStorage.removeItem("xm-user");
       this.$router.push("/login");

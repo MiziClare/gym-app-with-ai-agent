@@ -5,32 +5,32 @@ import com.example.entity.Orders;
 import java.util.List;
 
 /**
- * 操作orders相关数据接口
+ * Interface for operations on orders related data
  */
 public interface OrdersMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Orders orders);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Orders orders);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Orders selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Orders> selectAll(Orders orders);
 

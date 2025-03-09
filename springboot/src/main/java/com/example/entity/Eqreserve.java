@@ -3,7 +3,7 @@ package com.example.entity;
 import java.io.Serializable;
 
 /**
- * 器材预约表
+ * Equipment reservation table
  */
 public class Eqreserve implements Serializable {
     private static final long serialVersionUID = 1L;

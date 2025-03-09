@@ -73,7 +73,7 @@ export default {
     window.scrollTo(0, 0);
     this.load(1)
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: All click events or other function definitions for this page
   methods: {
     viewEditor(content) {
       this.viewData = content
@@ -125,23 +125,23 @@ export default {
         method: this.form.id ? 'PUT' : 'POST',
         data: this.form
       }).then(res => {
-        if (res.code === '200') {  // 表示成功保存
+        if (res.code === '200') {  // Successfully saved
           this.$message.success('Save successfully')
           this.load(1)
           this.fromVisible = false
         } else {
-          this.$message.error(res.msg)  // 弹出错误的信息
+          this.$message.error(res.msg)  // Show error message
         }
       })
     },
-    del(id) {   // 单个删除
+    del(id) {   // Single delete
       this.$confirm('Are you sure you want to delete it?', 'Confirm Delete', { type: "warning" }).then(response => {
         this.$request.delete('/experience/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
+          if (res.code === '200') {   // Successfully deleted
             this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {

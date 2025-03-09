@@ -16,7 +16,7 @@ public class CoachController {
     private CoachService coachService;
 
     /**
-     * 新增
+     * Add
      */
     @PostMapping("/add")
     public Result add(@RequestBody Coach coach) {
@@ -25,7 +25,7 @@ public class CoachController {
     }
 
     /**
-     * 删除
+     * Delete
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
@@ -34,7 +34,7 @@ public class CoachController {
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
@@ -43,7 +43,7 @@ public class CoachController {
     }
 
     /**
-     * 修改
+     * Update
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Coach coach) {
@@ -52,7 +52,7 @@ public class CoachController {
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
@@ -61,7 +61,7 @@ public class CoachController {
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     @GetMapping("/selectAll")
     public Result selectAll(Coach coach ) {
@@ -70,7 +70,7 @@ public class CoachController {
     }
 
     /**
-     * 分页查询
+     * Query by page
      */
     @GetMapping("/selectPage")
     public Result selectPage(Coach coach,

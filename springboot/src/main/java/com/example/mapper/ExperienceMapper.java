@@ -5,32 +5,32 @@ import com.example.entity.Experience;
 import java.util.List;
 
 /**
- * 操作experience相关数据接口
+ * Interface for operations on experience related data
  */
 public interface ExperienceMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Experience experience);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Experience experience);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Experience selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Experience> selectAll(Experience experience);
 

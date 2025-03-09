@@ -28,14 +28,14 @@ import com.example.entity.Account;
 import com.example.utils.TokenUtils;
 
 /**
- * API：
- * 新增用户 (POST /user/add)
- * 删除用户 (DELETE /user/delete/{id})
- * 批量删除用户 (DELETE /user/delete/batch)
- * 修改用户 (PUT /user/update)
- * 查询单个用户 (GET /user/selectById/{id})
- * 查询所有用户 (GET /user/selectAll)
- * 分页查询用户 (GET /user/selectPage)
+ * API:
+ * Add user (POST /user/add)
+ * Delete user (DELETE /user/delete/{id})
+ * Batch delete user (DELETE /user/delete/batch)
+ * Update user (PUT /user/update)
+ * Query single user (GET /user/selectById/{id})
+ * Query all users (GET /user/selectAll)
+ * Query by page (GET /user/selectPage)
  */
 
 @RestController
@@ -54,7 +54,7 @@ public class UserController {
     private EqreserveService eqreserveService;
 
     /**
-     * 新增
+     * Add
      */
     @PostMapping("/add")
     public Result add(@RequestBody User user) {
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     /**
-     * 删除
+     * Delete
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
@@ -81,7 +81,7 @@ public class UserController {
     }
 
     /**
-     * 修改
+     * Update
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody User user) {
@@ -90,7 +90,7 @@ public class UserController {
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
@@ -99,7 +99,7 @@ public class UserController {
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     @GetMapping("/selectAll")
     public Result selectAll(User user ) {
@@ -108,7 +108,7 @@ public class UserController {
     }
 
     /**
-     * 分页查询
+     * Query by page
      */
     @GetMapping("/selectPage")
     public Result selectPage(User user,
@@ -125,13 +125,13 @@ public class UserController {
     }
 
     /**
-     * 让用户导出个人信息
-     * 以CSV文件形式下载数据
+     * Let the user export their personal information
+     * Download data in CSV file format
      */
     @GetMapping("/exportUserInfo")
     public ResponseEntity<byte[]> exportUserInfo(@RequestParam(required = false) Integer userId) {
         try {
-            // 如果没有传入userId，尝试从token中获取
+            // If userId is not passed in, try to get it from the token
             if (userId == null) {
                 Account currentUser = TokenUtils.getCurrentUser();
                 if (currentUser != null && currentUser.getId() != null) {
@@ -141,10 +141,10 @@ public class UserController {
                 }
             }
             
-            // 获取用户信息的CSV字符串
+            // Get the CSV string of user information
             String csvData = userService.exportUserInfoToCsv(userId);
             
-            // 设置HTTP响应头
+            // Set HTTP response headers
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Disposition", "attachment; filename=user_info.csv");
             headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -152,7 +152,7 @@ public class UserController {
             headers.add("Expires", "0");
             headers.add("Content-Type", "text/csv");
             
-            // 将CSV字符串转换为字节数组并返回
+            // Convert the CSV string to a byte array and return it
             byte[] csvBytes = csvData.getBytes(StandardCharsets.UTF_8);
             
             return new ResponseEntity<>(csvBytes, headers, HttpStatus.OK);
@@ -163,7 +163,7 @@ public class UserController {
     }
 
     /**
-     * 删除用户个人数据（软删除）
+     * Delete user personal data (soft delete)
      */
     @PutMapping("/deletePersonalData")
     public Result deletePersonalData(@RequestBody User user) {

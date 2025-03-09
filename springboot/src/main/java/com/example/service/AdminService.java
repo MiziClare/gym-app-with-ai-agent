@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 管理员业务处理
+ * Admin business processing
  **/
 @Service
 public class AdminService {
@@ -27,7 +27,7 @@ public class AdminService {
     private AdminMapper adminMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(Admin admin) {
         Admin dbAdmin = adminMapper.selectByUsername(admin.getUsername());
@@ -45,14 +45,14 @@ public class AdminService {
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         adminMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -61,28 +61,28 @@ public class AdminService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(Admin admin) {
         adminMapper.updateById(admin);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public Admin selectById(Integer id) {
         return adminMapper.selectById(id);
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<Admin> selectAll(Admin admin) {
         return adminMapper.selectAll(admin);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<Admin> selectPage(Admin admin, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
@@ -91,7 +91,7 @@ public class AdminService {
     }
 
     /**
-     * 登录
+     * Login
      */
     public Account login(Account account) {
         Account dbAdmin = adminMapper.selectByUsername(account.getUsername());
@@ -109,7 +109,7 @@ public class AdminService {
     }
 
     /**
-     * 注册
+     * Register
      */
     public void register(Account account) {
         Admin admin = new Admin();
@@ -118,7 +118,7 @@ public class AdminService {
     }
 
     /**
-     * 修改密码
+     * Update password
      */
     public void updatePassword(Account account) {
         Admin dbAdmin = adminMapper.selectByUsername(account.getUsername());

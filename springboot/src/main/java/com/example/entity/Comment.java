@@ -3,7 +3,7 @@ package com.example.entity;
 import java.io.Serializable;
 
 /**
- * 评价信息表
+ * Evaluation information table
  */
 public class Comment implements Serializable {
     private static final long serialVersionUID = 1L;

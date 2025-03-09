@@ -5,7 +5,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * 管理员
+ * Administrator
 */
 @Entity
 @Table(name = "admin")
@@ -15,19 +15,19 @@ public class Admin extends Account implements Serializable {
     /** ID */
     @Id
     private Integer id;
-    /** 用户名 */
+    /** Username */
     private String username;
-    /** 密码 */
+    /** Password */
     private String password;
-    /** 姓名 */
+    /** Name */
     private String name;
-    /** 电话 */
+    /** Phone */
     private String phone;
-    /** 邮箱 */
+    /** Email */
     private String email;
-    /** 头像 */
+    /** Avatar */
     private String avatar;
-    /** 角色标识 */
+    /** Role identifier */
     private String role;
 
     @Override

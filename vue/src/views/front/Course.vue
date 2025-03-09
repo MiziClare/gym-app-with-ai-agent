@@ -49,7 +49,7 @@ export default {
     this.loadCourse()
     window.scrollTo(0, 0)
   },
-  // methods：本页面所有的点击事件或者其他函数定义区
+  // methods: The click event or other function definition area of this page
   methods: {
     loadCourse() {
       this.$request.get('/course/selectAll', {
@@ -84,7 +84,7 @@ export default {
   vertical-align: middle;
 }
 
-/* 添加响应式布局样式 */
+/* Add responsive layout styles */
 .course-row {
   display: flex;
   flex-wrap: wrap;
@@ -98,11 +98,11 @@ export default {
   margin-bottom: 30px;
 }
 
-/* 课程图片容器样式 */
+/* Course image container style */
 .course-image-container {
   width: 100%;
   padding-top: 66.67%;
-  /* 保持3:2的宽高比 (2/3 = 66.67%) */
+  /* Keep the 3:2 aspect ratio (2/3 = 66.67%) */
   position: relative;
   overflow: hidden;
   border-radius: 10px;
@@ -122,7 +122,7 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* 保持图片比例并填充容器 */
+  /* Keep the image ratio and fill the container */
   cursor: pointer;
   transition: transform 0.5s ease;
 }

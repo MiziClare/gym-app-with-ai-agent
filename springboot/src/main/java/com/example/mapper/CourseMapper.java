@@ -6,32 +6,32 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 /**
- * 操作course相关数据接口
+ * Interface for operations on course related data
  */
 public interface CourseMapper {
 
     /**
-     * 新增
+     * Add
      */
     int insert(Course course);
 
     /**
-     * 删除
+     * Delete
      */
     int deleteById(Integer id);
 
     /**
-     * 修改
+     * Update
      */
     int updateById(Course course);
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     Course selectById(Integer id);
 
     /**
-     * 查询所有
+     * Query all
      */
     List<Course> selectAll(Course course);
 

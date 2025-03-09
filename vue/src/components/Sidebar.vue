@@ -137,7 +137,7 @@ export default {
   object-fit: cover;
 }
 
-/* 为图标图片设置样式，但排除头像 */
+/* Set the style for the icon image, but exclude the avatar */
 .icon img:not(.imageBox img) {
   width: 25px;
   height: 25px;
@@ -159,7 +159,7 @@ export default {
 
 .active {
   background: white;
-  /* 选中项周围颜色 */
+  /* The color of the selected item */
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
 }
@@ -173,7 +173,7 @@ export default {
   height: 30px;
   border-bottom-right-radius: 25px;
   box-shadow: 5px 5px 0 5px white;
-  /* 选中项周围阴影 */
+  /* The shadow around the selected item */
   background: transparent;
 }
 
@@ -186,7 +186,7 @@ export default {
   height: 30px;
   border-top-right-radius: 25px;
   box-shadow: 5px -5px 0 5px white;
-  /* 阴影 */
+  /* The shadow */
   background: transparent;
 }
 
@@ -210,10 +210,10 @@ export default {
   padding-left: 10px;
   height: 60px;
   color: #333;
-  /* 文字颜色 */
+  /* The text color */
   transition: 0.5s;
   color: white;
-  /* 图标颜色 */
+  /* The icon color */
   margin-right: 10px;
 }
 

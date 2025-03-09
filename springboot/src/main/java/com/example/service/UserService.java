@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     // UserMapper is a class that maps the user table in the database
-    // 通过 @Resource 注解，将 UserMapper 注入进来，后续所有对数据库的操作都由 userMapper 完成。
+    // Inject UserMapper through @Resource annotation, and all database operations are completed by userMapper
     @Resource
     private UserMapper userMapper;
     
@@ -35,7 +35,7 @@ public class UserService {
     private CourseMapper courseMapper;
 
     /**
-     * 新增
+     * Add
      */
     public void add(User user) {
         User dbUser = userMapper.selectByUsername(user.getUsername());
@@ -58,14 +58,14 @@ public class UserService {
     }
 
     /**
-     * 删除
+     * Delete
      */
     public void deleteById(Integer id) {
         userMapper.deleteById(id);
     }
 
     /**
-     * 批量删除
+     * Batch delete
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
@@ -74,14 +74,14 @@ public class UserService {
     }
 
     /**
-     * 修改
+     * Update
      */
     public void updateById(User user) {
         userMapper.updateById(user);
     }
 
     /**
-     * 根据ID查询
+     * Query by ID
      */
     public User selectById(Integer id) {
         User dbUser = userMapper.selectById(id);
@@ -93,14 +93,14 @@ public class UserService {
     }
 
     /**
-     * 查询所有
+     * Query all
      */
     public List<User> selectAll(User user) {
         return userMapper.selectAll(user);
     }
 
     /**
-     * 分页查询
+     * Pagination query
      */
     public PageInfo<User> selectPage(User user, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
@@ -109,7 +109,7 @@ public class UserService {
     }
 
     /**
-     * 登录
+     * Login
      */
     public Account login(Account account) {
         Account dbUser = userMapper.selectByUsername(account.getUsername());
@@ -127,7 +127,7 @@ public class UserService {
     }
 
     /**
-     * 注册
+     * Register
      */
     public void register(Account account) {
         User user = new User();
@@ -136,7 +136,7 @@ public class UserService {
     }
 
     /**
-     * 修改密码
+     * Update password
      */
     public void updatePassword(Account account) {
         User dbUser = userMapper.selectByUsername(account.getUsername());
@@ -151,36 +151,36 @@ public class UserService {
     }
 
     /**
-     * 重置密码
+     * Reset password
      */
     public void recharge(Double account) {
         Account currentUser = TokenUtils.getCurrentUser();
-        // 1.根据用户id从数据库中查询出用户的详细信息
+        // 1. Query the detailed information of the user from the database according to the user id
         User user = userMapper.selectById(currentUser.getId());
-        // 2. 更新用户的余额
+        // 2. Update the user's balance
         user.setAccount(user.getAccount() + account);
         userMapper.updateById(user);
     }
 
     /**
-     * 导出用户信息为CSV格式
-     * @param userId 用户ID
-     * @return 包含用户信息的CSV字符串
+     * Export user information as CSV format
+     * @param userId User ID
+     * @return Contains user information in CSV format
      */
     public String exportUserInfoToCsv(Integer userId) {
-        // 查询用户详细信息
+        // Query user detailed information
         User user = userMapper.selectById(userId);
         
         if (user == null) {
             throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
         }
         
-        // 查询用户的订单信息
+        // Query the user's order information
         Orders orderQuery = new Orders();
         orderQuery.setUserId(userId);
         List<Orders> ordersList = ordersService.selectAll(orderQuery);
         
-        // 为每个订单填充课程名称
+        // Fill the course name for each order
         if (ordersList != null && !ordersList.isEmpty()) {
             for (Orders order : ordersList) {
                 if (order.getCourseId() != null) {
@@ -192,7 +192,7 @@ public class UserService {
             }
         }
         
-        // 构建订单信息字符串
+        // Build the order information string
         String ordersInfo = "";
         if (ordersList != null && !ordersList.isEmpty()) {
             ordersInfo = ordersList.stream()
@@ -204,11 +204,11 @@ public class UserService {
                 .collect(Collectors.joining("; "));
         }
         
-        // 构建CSV头部
+        // Build the CSV header
         StringBuilder csv = new StringBuilder();
         csv.append("ID,username,name,role,phone,email,balance,orders\n");
         
-        // 添加用户数据行，确保所有字段都进行null检查
+        // Add the user data line, ensuring all fields are null checked
         csv.append(user.getId() != null ? user.getId() : "").append(",")
            .append(user.getUsername() != null ? user.getUsername() : "").append(",")
            .append(user.getName() != null ? user.getName() : "").append(",")
@@ -221,7 +221,7 @@ public class UserService {
         return csv.toString();
     }
 
-    // 保留原方法作为重载，内部调用新方法
+    // Keep the original method as an overload, and call the new method internally
     public String exportUserInfoToCsv() {
         Account currentUser = TokenUtils.getCurrentUser();
         if (currentUser == null || currentUser.getId() == null) {
@@ -231,22 +231,22 @@ public class UserService {
     }
 
     /**
-     * 删除用户个人数据（软删除）
-     * 将用户的name、phone和email设置为空字符串
+     * Delete user personal data (soft delete)
+     * Set the name, phone, and email of the user to an empty string
      */
     public void deletePersonalData(User user) {
-        // 获取数据库中的用户信息
+        // Get the user information from the database
         User dbUser = userMapper.selectById(user.getId());
         if (dbUser == null) {
             throw new CustomException(ResultCodeEnum.USER_NOT_EXIST_ERROR);
         }
         
-        // 只更新需要清空的字段
+        // Only update the fields that need to be cleared
         dbUser.setName("");
         dbUser.setPhone("");
         dbUser.setEmail("");
         
-        // 更新到数据库
+        // Update to the database
         userMapper.updateById(dbUser);
     }
 }

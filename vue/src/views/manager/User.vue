@@ -83,9 +83,9 @@ export default {
   name: "User",
   data() {
     return {
-      tableData: [],  // 所有的数据
-      pageNum: 1,   // 当前的页码
-      pageSize: 10,  // 每页显示的个数
+      tableData: [],  // All data
+      pageNum: 1,   // Current page number
+      pageSize: 10,  // Number of items per page
       total: 0,
       username: null,
       fromVisible: false,
@@ -103,15 +103,15 @@ export default {
     this.load(1)
   },
   methods: {
-    handleAdd() {   // 新增数据
-      this.form = {}  // 新增数据的时候清空数据
-      this.fromVisible = true   // 打开弹窗
+    handleAdd() {   // Add data
+      this.form = {}  // When adding data, clear the data
+      this.fromVisible = true   // Open the popup
     },
-    handleEdit(row) {   // 编辑数据
-      this.form = JSON.parse(JSON.stringify(row))  // 给form对象赋值  注意要深拷贝数据
-      this.fromVisible = true   // 打开弹窗
+    handleEdit(row) {   // Edit data
+      this.form = JSON.parse(JSON.stringify(row))  // Assign the value to the form object  注意要深拷贝数据
+      this.fromVisible = true   // Open the popup
     },
-    save() {   // 保存按钮触发的逻辑  它会触发新增或者更新
+    save() {   // The logic triggered by the save button will trigger the addition or update
       this.$refs.formRef.validate((valid) => {
         if (valid) {
           this.$request({
@@ -119,51 +119,51 @@ export default {
             method: this.form.id ? 'PUT' : 'POST',
             data: this.form
           }).then(res => {
-            if (res.code === '200') {  // 表示成功保存
-              this.$message.success('保存成功')
+            if (res.code === '200') {  // Successfully saved
+              this.$message.success('Save successfully')
               this.load(1)
               this.fromVisible = false
             } else {
-              this.$message.error(res.msg)  // 弹出错误的信息
+              this.$message.error(res.msg)  // Show error message
             }
           })
         }
       })
     },
-    del(id) {   // 单个删除
+    del(id) {   // Single delete
       this.$confirm('Are you sure about the deletion?', 'Confirm', { type: "warning" }).then(response => {
         this.$request.delete('/user/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('Success')
+          if (res.code === '200') {   // Successfully deleted
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    handleSelectionChange(rows) {   // 当前选中的所有的行数据
+    handleSelectionChange(rows) {   // Current selected all row data
       this.ids = rows.map(v => v.id)
     },
-    delBatch() {   // 批量删除
+    delBatch() {   // Batch delete
       if (!this.ids.length) {
         this.$message.warning('Please select the data to be deleted')
         return
       }
       this.$confirm('Are you sure about the deletion?', 'Confirm', { type: "warning" }).then(response => {
         this.$request.delete('/user/delete/batch', { data: this.ids }).then(res => {
-          if (res.code === '200') {   // 表示操作成功
-            this.$message.success('Success')
+          if (res.code === '200') {   // Successfully deleted
+            this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)  // Show error message
           }
         })
       }).catch(() => {
       })
     },
-    load(pageNum) {  // 分页查询
+    load(pageNum) {  // Pagination query
       if (pageNum) this.pageNum = pageNum
       this.$request.get('/user/selectPage', {
         params: {
@@ -184,7 +184,7 @@ export default {
       this.load(pageNum)
     },
     handleAvatarSuccess(response, file, fileList) {
-      // 把头像属性换成上传的图片的链接
+      // Replace the avatar property with the uploaded image link
       this.form.avatar = response.data
     },
   }
