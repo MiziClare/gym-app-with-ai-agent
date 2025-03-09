@@ -17,7 +17,8 @@
                     :class="msg.sender === 'Customer Service' ? 'ai-message' : 'user-message'">
                     <div class="message-content">
                         <span class="sender">{{ msg.sender }}</span>
-                        <span class="content">{{ msg.content }}</span>
+                        <span class="content" v-if="msg.sender !== 'Customer Service'">{{ msg.content }}</span>
+                        <span class="content markdown-content" v-else v-html="renderMarkdown(msg.content)"></span>
                     </div>
                 </div>
             </div>
@@ -33,6 +34,8 @@
 
 <script>
 import axios from 'axios';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 export default {
     name: 'AiChat',
@@ -41,7 +44,7 @@ export default {
             chatVisible: false,
             prompt: '',
             messages: [
-                { sender: 'Customer Service', content: 'Hi! I’m the AI assistant for Gym Panel. I’m here to help with any questions about our platform and fitness advice. How can I assist you today?' }
+                { sender: 'Customer Service', content: 'Hi! I\'m the AI assistant for Gym Panel. I\'m here to help with any questions about our platform and fitness advice. How can I assist you today?' }
             ]
         };
     },
@@ -97,6 +100,11 @@ export default {
                     this.$refs.messagesContainer.scrollTop = this.$refs.messagesContainer.scrollHeight;
                 }
             });
+        },
+        renderMarkdown(text) {
+            // 将 Markdown 转换为 HTML 并进行安全处理
+            const rawHtml = marked(text);
+            return DOMPurify.sanitize(rawHtml);
         }
     }
 };
@@ -234,5 +242,63 @@ button {
 
 button:hover {
     background-color: #fdcb6e;
+}
+
+.markdown-content {
+    display: block;
+}
+
+.markdown-content :deep(p) {
+    margin: 0.5em 0;
+}
+
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+    padding-left: 1.5em;
+    margin: 0.5em 0;
+}
+
+.markdown-content :deep(h1),
+.markdown-content :deep(h2),
+.markdown-content :deep(h3),
+.markdown-content :deep(h4),
+.markdown-content :deep(h5),
+.markdown-content :deep(h6) {
+    margin: 0.5em 0;
+    font-weight: bold;
+}
+
+.markdown-content :deep(a) {
+    color: #0066cc;
+    text-decoration: underline;
+}
+
+.markdown-content :deep(code) {
+    background-color: #f0f0f0;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.markdown-content :deep(pre) {
+    background-color: #f0f0f0;
+    padding: 0.5em;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.markdown-content :deep(blockquote) {
+    border-left: 4px solid #ddd;
+    padding-left: 1em;
+    margin-left: 0;
+    color: #666;
+}
+
+.markdown-content :deep(strong) {
+    font-weight: bold;
+}
+
+.markdown-content :deep(em) {
+    font-style: italic;
 }
 </style>

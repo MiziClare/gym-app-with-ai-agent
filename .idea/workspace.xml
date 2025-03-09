@@ -4,14 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="UI">
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Add AI chat knowledge base.">
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/resources/Knowledge.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/WebController.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/WebController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/CoachService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/CoachService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/AdminService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/AdminService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/CoachService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/CoachService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/AiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/AiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/WebConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/WebConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/vue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/components/AIChat.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/components/AIChat.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,9 +26,9 @@
       <list>
         <option value="CSS File" />
         <option value="Interface" />
+        <option value="HTML File" />
         <option value="Class" />
         <option value="Vue Composition API Component" />
-        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -56,43 +59,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.SpringbootApplication.executor": "Run",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/OneDrive/fypdemo/manager/vue/src/assets/imgs",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.serve.executor": "Run",
-    "settings.editor.selected.configurable": "com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable",
-    "ts.external.directory.path": "D:\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.SpringbootApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/OneDrive/fypdemo/manager/vue/src/assets/imgs&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.serve.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\IntelliJ IDEA 2023.3.6\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ],
-    "vue.recent.templates": [
-      "Vue Composition API Component"
+    &quot;vue.recent.templates&quot;: [
+      &quot;Vue Composition API Component&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\OneDrive\fypdemo\manager\vue\src\assets\imgs" />
+      <recent name="E:\OneDrive\fypdemo\manager" />
       <recent name="E:\OneDrive\fypdemo\manager\vue\src\assets\fonts" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -145,7 +149,9 @@
       <workItem from="1740935080843" duration="1845000" />
       <workItem from="1741016511705" duration="20191000" />
       <workItem from="1741119852308" duration="122000" />
-      <workItem from="1741120037759" duration="14830000" />
+      <workItem from="1741120037759" duration="25706000" />
+      <workItem from="1741499885425" duration="1598000" />
+      <workItem from="1741501671190" duration="10397000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -315,7 +321,31 @@
       <option name="project" value="LOCAL" />
       <updated>1741137156057</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Done.">
+      <option name="closed" value="true" />
+      <created>1741138522813</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1741138522813</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Upload sql file.">
+      <option name="closed" value="true" />
+      <created>1741138724214</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1741138724214</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Add AI chat.">
+      <option name="closed" value="true" />
+      <created>1741509777635</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1741509777635</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -333,8 +363,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Complete the back-end development of the course." />
-    <MESSAGE value="The front-end of the recharge function is complete, ready to troubleshoot the 401 issue on the back-end." />
     <MESSAGE value="Payment system development is complete. Preparing for equipment system development." />
     <MESSAGE value="Equipment features on the admin side have been implemented. Waiting for data loading and user interface development." />
     <MESSAGE value="The user-side portion of the gym booking system has been completed in preparation for the development of the admin side of the gym booking." />
@@ -356,6 +384,10 @@
     <MESSAGE value="Order data export bug is fixed." />
     <MESSAGE value="Optimise routing management: do not allow non-administrative users to access the backend management side." />
     <MESSAGE value="UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="UI" />
+    <MESSAGE value="Done." />
+    <MESSAGE value="Upload sql file." />
+    <MESSAGE value="Add AI chat." />
+    <MESSAGE value="Add AI chat knowledge base." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add AI chat knowledge base." />
   </component>
 </project>

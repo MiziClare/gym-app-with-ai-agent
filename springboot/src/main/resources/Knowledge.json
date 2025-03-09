@@ -1,0 +1,92 @@
+{
+  "navigation": {
+    "Courses": "When a user wants to book a class, they click the 'Courses' tab in the navigation bar to view detailed course information and make purchases.",
+    "Equipments": "When a user wants to reserve gym equipment, they click the 'Equipments' tab in the navigation bar to view and book various fitness machines.",
+    "Coaches": "When a user wants to learn about coaches or book a private training session, they click the 'Coaches' tab in the navigation bar to view coach profiles, read member reviews, and schedule sessions or leave messages.",
+    "Posts": "When a user wants to view posts (such as fitness experience sharing or fitness recipes), they click the 'Posts' tab in the navigation bar to see content posted by other members and coaches."
+  },
+  "sidebar": {
+    "Account": "Users can click the sidebar or the dropdown under the avatar labeled 'Account' to view or modify personal information, export or delete account data, and check or recharge their balance using card or e-wallet.",
+    "My Post": "Users can click the sidebar or the avatar dropdown labeled 'My Post' to publish or edit their own posts (such as fitness experience sharing or recipes).",
+    "Orders": "Users can click the sidebar or the avatar dropdown labeled 'Orders' to view their course orders.",
+    "Reservations": "Users can click the sidebar or the avatar dropdown labeled 'Reservations' to view their private training session bookings with coaches."
+  },
+  "courses": [
+    "Swimming Class",
+    "Core Training",
+    "Pilates Class",
+    "Yoga Class",
+    "Treadmill Class",
+    "Body Combat",
+    "Spin Class",
+    "Body Pump",
+    "Functional Training",
+    "Stretch & Relax",
+    "Swimming for Children",
+    "Meditation Class"
+  ],
+  "equipments": [
+    "Cable Machine",
+    "Elliptical Trainer",
+    "Lat Pulldown Machine",
+    "Pec Deck Machine",
+    "Roman Chair",
+    "Rowing Machine",
+    "Smith Machine",
+    "Spin Bike",
+    "Squat Rack",
+    "Stair Climber",
+    "Swimming Pool",
+    "Treadmill"
+  ],
+  "equipment_instructions": {
+    "Cable Machine": {
+      "Usage": "Adjust the pulley height and select the appropriate handle to perform exercises like tricep pushdowns, cable crossovers, or lat pulldowns.",
+      "Tips": "Keep your core engaged and maintain controlled movements to avoid momentum-based lifting."
+    },
+    "Elliptical Trainer": {
+      "Usage": "Step onto the pedals, grip the handles, and start moving in a smooth, elliptical motion. Adjust resistance as needed.",
+      "Tips": "Keep your posture upright and use both your legs and arms to engage more muscles for a full-body workout."
+    },
+    "Lat Pulldown Machine": {
+      "Usage": "Sit down, grab the bar with a wide grip, and pull it down to your upper chest while keeping your back straight.",
+      "Tips": "Avoid leaning too far back; focus on squeezing your shoulder blades together at the bottom of the movement."
+    },
+    "Pec Deck Machine": {
+      "Usage": "Sit with your back against the pad, grab the handles, and bring them together in front of your chest.",
+      "Tips": "Use a slow and controlled motion, ensuring a full range of motion for optimal chest engagement."
+    },
+    "Roman Chair": {
+      "Usage": "Position yourself on the chair with your hips supported, secure your feet, and perform back extensions or leg raises.",
+      "Tips": "Avoid excessive swinging; engage your core and lower back to perform controlled movements."
+    },
+    "Rowing Machine": {
+      "Usage": "Strap your feet in, push off with your legs, pull the handle toward your chest, and then return smoothly.",
+      "Tips": "Focus on a strong leg drive followed by a smooth pull with your arms; avoid hunching your back."
+    },
+    "Smith Machine": {
+      "Usage": "Load the bar with weights, position it at the desired height, and rotate it to unlock before performing exercises like squats or bench presses.",
+      "Tips": "Keep your movements controlled and ensure proper foot placement to maintain balance."
+    },
+    "Spin Bike": {
+      "Usage": "Adjust the seat height, set resistance, and pedal at a steady pace while maintaining good posture.",
+      "Tips": "Engage your core and push through your heels to maximize leg activation."
+    },
+    "Squat Rack": {
+      "Usage": "Adjust the bar height, position yourself under the bar, and perform squats while keeping your back straight and knees aligned.",
+      "Tips": "Keep your weight on your heels and avoid letting your knees go past your toes."
+    },
+    "Stair Climber": {
+      "Usage": "Step onto the machine, adjust speed and resistance, and start stepping in a steady rhythm.",
+      "Tips": "Avoid leaning on the handles too much; keep an upright posture to engage more muscles."
+    },
+    "Swimming Pool": {
+      "Usage": "Choose a swimming style (freestyle, breaststroke, backstroke, etc.) and maintain a steady breathing pattern while swimming.",
+      "Tips": "Focus on smooth strokes and controlled breathing to enhance endurance."
+    },
+    "Treadmill": {
+      "Usage": "Set the speed and incline, then walk or run while maintaining a steady rhythm.",
+      "Tips": "Keep a natural stride, avoid holding onto the rails too much, and gradually increase speed or incline for a challenge."
+    }
+  }
+}
