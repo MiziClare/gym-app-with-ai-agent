@@ -60,6 +60,7 @@ const routes = [
   { path: '/login', name: 'Login', meta: { name: 'Login' }, component: () => import('../views/Login.vue') },
   { path: '/register', name: 'Register', meta: { name: 'Register' }, component: () => import('../views/Register.vue') },
   { path: '*', name: 'NotFound', meta: { name: 'Not Found' }, component: () => import('../views/404.vue') },
+  {path: '/ai', name: 'AI', meta: {name: 'AI'}, component: () => import('../views/customer.vue')},
 ]
 
 const router = new VueRouter({
