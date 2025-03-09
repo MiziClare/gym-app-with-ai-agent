@@ -1,7 +1,7 @@
 <template>
     <div class="ai-chat-container">
         <!-- Chat icon button -->
-        <div class="chat-icon" @click="toggleChat" v-if="!chatVisible">
+        <div class="chat-icon" @click="toggleChat" v-if="true">
             <img src="../assets/imgs/icon-ai.png" alt="AI Gym Service" />
         </div>
 
@@ -147,6 +147,7 @@ export default {
     width: 350px;
     height: 450px;
     border-radius: 10px;
+    margin-right: 80px;
     background-color: #fff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     display: flex;
