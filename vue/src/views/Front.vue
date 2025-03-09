@@ -70,17 +70,21 @@
         <router-view ref="child" @update:user="updateUser" />
       </div>
     </div>
+    <!-- 添加 AI 聊天组件 -->
+    <AIChat />
   </div>
 
 </template>
 
 <script>
 import Sidebar from '@/components/Sidebar.vue'
+import AIChat from '@/components/AIChat.vue'
 
 export default {
   name: "FrontLayout",
   components: {
-    Sidebar
+    Sidebar,
+    AIChat
   },
   data() {
     return {
