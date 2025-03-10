@@ -14,11 +14,15 @@
           <el-col :span="18">
             <div style="margin-bottom: 20px; font-size: 18px; font-weight: bold">Course: {{
               courseData.name
-            }}</div>
+              }}</div>
             <div style="margin-bottom: 20px; font-size: 18px">Coach: {{ courseData.coachName }}</div>
             <div style="margin-bottom: 20px; font-size: 18px; color: #333333">Duration: {{ courseData.time }}</div>
-            <div style="margin-bottom: 20px; font-size: 18px; color: #222222">Price: <span style="color: red">￡{{
-              courseData.price }}</span></div>
+            <div style="margin-bottom: 20px; font-size: 18px; color: #222222">Price Per Session: <span
+                style="color: red">￡{{
+                  courseData.price }}</span></div>
+            <div style="margin-bottom: 20px; font-size: 18px; color: #333333">Total Sessions: {{
+              courseData.totalSessions || 1 }}
+            </div>
             <div style="margin-top: 30px"><el-button type="primary" round @click="buy">Buy Now</el-button></div>
           </el-col>
         </el-row>
