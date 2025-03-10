@@ -26,6 +26,7 @@
         <el-table-column prop="name" label="Name" show-overflow-tooltip></el-table-column>
         <el-table-column prop="time" label="Duration" show-overflow-tooltip></el-table-column>
         <el-table-column prop="price" label="Price" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="totalSessions" label="Total Sessions" show-overflow-tooltip></el-table-column>
         <el-table-column prop="coachName" label="Coach" show-overflow-tooltip></el-table-column>
         <el-table-column prop="content" label="Description" show-overflow-tooltip>
           <template v-slot="scope">
@@ -66,6 +67,9 @@
         </el-form-item>
         <el-form-item prop="price" label="Price">
           <el-input v-model="form.price" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="totalSessions" label="Sessions">
+          <el-input-number v-model="form.totalSessions" :min="1" :max="100" autocomplete="off"></el-input-number>
         </el-form-item>
         <el-form-item prop="coachId" label="Coach">
           <el-select v-model="form.coachId" placeholder="Please select coach" style="width: 100%">

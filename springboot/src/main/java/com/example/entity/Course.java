@@ -15,6 +15,7 @@ public class Course implements Serializable {
     private Double price;
     private Integer coachId;
     private String content;
+    private Integer totalSessions;
 
     private String coachName;
 
@@ -72,6 +73,14 @@ public class Course implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getTotalSessions() {
+        return totalSessions;
+    }
+
+    public void setTotalSessions(Integer totalSessions) {
+        this.totalSessions = totalSessions;
     }
 
     public String getCoachName() {

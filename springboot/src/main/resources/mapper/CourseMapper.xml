@@ -6,7 +6,7 @@
 
     <sql id="Base_Column_List">
         <if test="true">
-            id,img,name,time,price,coach_id,content
+            id,img,name,time,price,coach_id,content,total_sessions
         </if>
     </sql>
 
@@ -43,6 +43,7 @@
             <if test="name != null">name,</if>
             <if test="price != null">price,</if>
             <if test="coachId != null">coach_id,</if>
+            <if test="totalSessions != null">total_sessions,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -52,6 +53,7 @@
             <if test="name != null">#{name},</if>
             <if test="price != null">#{price},</if>
             <if test="coachId != null">#{coachId},</if>
+            <if test="totalSessions != null">#{totalSessions},</if>
         </trim>
     </insert>
     <!--img,name,time,price,coach_id,content-->
@@ -75,6 +77,9 @@
             </if>
             <if test="coachId != null">
                 coach_id = #{coachId},
+            </if>
+            <if test="totalSessions != null">
+                total_sessions = #{totalSessions},
             </if>
         </set>
         where id = #{id}
