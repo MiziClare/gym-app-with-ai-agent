@@ -76,6 +76,26 @@
             <el-option v-for="item in coachData" :label="item.name" :value="item.id" :key="item.id"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="Schedule" v-if="form.id">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span>Course Schedule Management</span>
+            <el-button type="primary" size="mini" @click="openScheduleDialog">Manage Schedule</el-button>
+          </div>
+          <div v-if="editScheduleData && editScheduleData.length > 0">
+            <el-table :data="editScheduleData" border size="mini" style="width: 100%">
+              <el-table-column prop="weekday" label="Weekday" width="100"></el-table-column>
+              <el-table-column prop="startTime" label="Start Time" width="100">
+                <template v-slot="scope">
+                  {{ formatTime(scope.row.startTime) }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="room" label="Room"></el-table-column>
+            </el-table>
+          </div>
+          <div v-else style="color: #909399; text-align: center; padding: 10px 0; font-size: 13px;">
+            No schedule available for this course
+          </div>
+        </el-form-item>
         <el-form-item prop="content" label="Description">
           <div id="editor"></div>
         </el-form-item>
@@ -105,6 +125,45 @@
       </div>
       <div v-html="viewData" class="w-e-text w-e-text-container"></div>
     </el-dialog>
+    <el-dialog title="Course Schedule Management" :visible.sync="scheduleVisible" width="50%"
+      :close-on-click-modal="false" destroy-on-close>
+      <div style="margin-bottom: 20px; display: flex; justify-content: space-between;">
+        <span>Course: <strong>{{ form.name }}</strong></span>
+        <el-button type="primary" size="small" @click="addScheduleRow">Add Schedule</el-button>
+      </div>
+
+      <el-table :data="editScheduleData" border style="width: 100%">
+        <el-table-column prop="weekday" label="Weekday" width="150">
+          <template v-slot="scope">
+            <el-select v-model="scope.row.weekday" placeholder="Select day" style="width: 100%">
+              <el-option v-for="day in weekdays" :key="day" :label="day" :value="day"></el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="startTime" label="Start Time" width="150">
+          <template v-slot="scope">
+            <el-time-picker v-model="scope.row.timePickerValue" format="HH:mm" placeholder="Select time"
+              style="width: 100%" @change="updateStartTime(scope.row)"></el-time-picker>
+          </template>
+        </el-table-column>
+        <el-table-column prop="room" label="Room">
+          <template v-slot="scope">
+            <el-input v-model="scope.row.room" placeholder="Enter room"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="Operations" width="120" align="center">
+          <template v-slot="scope">
+            <el-button type="danger" icon="el-icon-delete" circle size="mini"
+              @click="removeScheduleRow(scope.$index)"></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="scheduleVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="saveSchedule">Save</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -129,8 +188,11 @@ export default {
       editor: null,
       viewData: null,
       viewVisible: false,
-      scheduleData: [], // 存储课程安排数据
-      viewCourseId: null, // 当前查看的课程ID
+      scheduleData: [], // store course schedule data
+      viewCourseId: null, // current view course id
+      scheduleVisible: false, // 课程安排对话框可见性
+      editScheduleData: [], // 编辑中的课程安排数据
+      weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     }
   },
   created() {
@@ -171,9 +233,10 @@ export default {
       this.fromVisible = true   // Open the popup
     },
     handleEdit(row) {   // Edit data
-      this.form = JSON.parse(JSON.stringify(row))  // Assign the value to the form object  注意要深拷贝数据
+      this.form = JSON.parse(JSON.stringify(row))
       this.initWangEditor(this.form.content)
-      this.fromVisible = true   // Open the popup
+      this.loadEditSchedule(this.form.id)
+      this.fromVisible = true
     },
     save() {   // The logic triggered by the save button will trigger the addition or update
       this.$refs.formRef.validate((valid) => {
@@ -269,6 +332,91 @@ export default {
       if (!timeString) return ''
       // handle LocalTime format, usually "HH:MM:SS" format
       return timeString.substring(0, 5) // only show hour and minute
+    },
+    // 加载编辑中的课程安排
+    loadEditSchedule(courseId) {
+      if (!courseId) return
+
+      this.$request.get('/courseSchedule/selectByCourseId/' + courseId).then(res => {
+        if (res.code === '200') {
+          this.editScheduleData = res.data.map(item => {
+            // 为时间选择器创建Date对象
+            const timeParts = item.startTime ? item.startTime.split(':') : ['00', '00', '00']
+            const date = new Date()
+            date.setHours(parseInt(timeParts[0]))
+            date.setMinutes(parseInt(timeParts[1]))
+            date.setSeconds(parseInt(timeParts[2]))
+
+            return {
+              ...item,
+              timePickerValue: date
+            }
+          })
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    // 打开课程安排管理对话框
+    openScheduleDialog() {
+      this.scheduleVisible = true
+    },
+    // 添加课程安排行
+    addScheduleRow() {
+      const now = new Date()
+      this.editScheduleData.push({
+        courseId: this.form.id,
+        weekday: 'Monday',
+        timePickerValue: now,
+        room: 'Room 01'
+      })
+    },
+    // 移除课程安排行
+    removeScheduleRow(index) {
+      this.editScheduleData.splice(index, 1)
+    },
+    // 更新开始时间
+    updateStartTime(row) {
+      if (row.timePickerValue) {
+        const hours = row.timePickerValue.getHours().toString().padStart(2, '0')
+        const minutes = row.timePickerValue.getMinutes().toString().padStart(2, '0')
+        row.startTime = `${hours}:${minutes}:00`
+      }
+    },
+    // 保存课程安排
+    saveSchedule() {
+      // 首先删除该课程的所有现有安排
+      this.$request.delete('/courseSchedule/deleteByCourseId/' + this.form.id).then(res => {
+        if (res.code === '200') {
+          // 然后添加新的安排
+          const promises = this.editScheduleData.map(item => {
+            // 确保每行都有startTime
+            if (item.timePickerValue && !item.startTime) {
+              this.updateStartTime(item)
+            }
+
+            const scheduleData = {
+              courseId: this.form.id,
+              weekday: item.weekday,
+              startTime: item.startTime,
+              room: item.room
+            }
+
+            return this.$request.post('/courseSchedule/add', scheduleData)
+          })
+
+          Promise.all(promises).then(() => {
+            this.$message.success('Schedule saved successfully')
+            this.scheduleVisible = false
+            // 重新加载课程安排
+            this.loadEditSchedule(this.form.id)
+          }).catch(err => {
+            this.$message.error('Failed to save schedule: ' + err.message)
+          })
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
     },
   }
 }
