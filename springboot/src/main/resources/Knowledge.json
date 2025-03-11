@@ -3,7 +3,8 @@
     "Courses": "When a user wants to book a class, they click the 'Courses' tab in the navigation bar to view detailed course information and make purchases.",
     "Equipments": "When a user wants to reserve gym equipment, they click the 'Equipments' tab in the navigation bar to view and book various fitness machines.",
     "Coaches": "When a user wants to learn about coaches or book a private training session, they click the 'Coaches' tab in the navigation bar to view coach profiles, read member reviews, and schedule sessions or leave messages.",
-    "Posts": "When a user wants to view posts (such as fitness experience sharing or fitness recipes), they click the 'Posts' tab in the navigation bar to see content posted by other members and coaches."
+    "Posts": "When a user wants to view posts (such as fitness experience sharing or fitness recipes), they click the 'Posts' tab in the navigation bar to see content posted by other members and coaches.",
+    "E-Card": "When a user wants to view, customize, and download their membership card, they click the 'E-Card' tab in the navigation bar to personalize their card with decorations and save it for future use."
   },
   "sidebar": {
     "Account": "Users can click the sidebar or the dropdown under the avatar labeled 'Account' to view or modify personal information, export or delete account data, and check or recharge their balance using card or e-wallet.",

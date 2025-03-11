@@ -55,7 +55,7 @@ const routes = [
       { path: 'experience', name: 'Experience', meta: { name: 'Sharing' }, component: () => import('../views/front/Experience') },
       { path: 'experienceDetail', name: 'ExperienceDetail', meta: { name: 'Post Details' }, component: () => import('../views/front/ExperienceDetail') },
       { path: 'vr', name: 'Vr', meta: { name: 'VR' }, component: () => import('../components/Vr') },
-      { path: 'card', name: 'Card', meta: { name: 'Member Card' }, component: () => import('../views/front/Card') },
+      { path: 'card', name: 'Card', meta: { name: 'Member Card', requiresUser: true }, component: () => import('../views/front/Card') },
     ]
   },
   { path: '/login', name: 'Login', meta: { name: 'Login' }, component: () => import('../views/Login.vue') },
@@ -103,6 +103,15 @@ router.beforeEach((to, from, next) => {
     // Check if the user is logged in
     if (!user.role) {
       next('/login');
+      return;
+    }
+  }
+  
+  // Check if user role is required
+  if (to.matched.some(record => record.meta.requiresUser)) {
+    // Check if the user is logged in and is a coach
+    if (user.role === 'COACH') {
+      next('/front/home');
       return;
     }
   }

@@ -12,7 +12,7 @@
           <el-menu :default-active="$route.path" mode="horizontal" router>
             <el-menu-item index="/front/home"><img src="@/assets/imgs/icon-home.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Home</el-menu-item>
-            <el-menu-item index="/front/card"><img src="@/assets/imgs/icon-card.png" alt=""
+            <el-menu-item index="/front/card" v-if="user.role !== 'COACH'"><img src="@/assets/imgs/icon-card.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">E-Card</el-menu-item>
             <el-menu-item index="/front/course"><img src="@/assets/imgs/icon-courses.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Courses</el-menu-item>
@@ -102,8 +102,22 @@ export default {
 
   mounted() {
     this.loadNotice()
+    // Listen for login status changes
+    window.addEventListener('storage', this.handleStorageChange)
+    // Ensure initial load gets the latest user information
+    this.updateUser()
+  },
+  beforeDestroy() {
+    // Remove event listener when component is destroyed
+    window.removeEventListener('storage', this.handleStorageChange)
   },
   methods: {
+    handleStorageChange(e) {
+      // When the user information in localStorage changes, update it
+      if (e.key === 'xm-user') {
+        this.updateUser()
+      }
+    },
     loadNotice() {
       this.$request.get('/notice/selectAll').then(res => {
         this.notice = res.data
