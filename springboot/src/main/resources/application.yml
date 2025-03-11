@@ -26,21 +26,20 @@ spring:
 
   # Mail Service
   mail:
-    host: smtp.mail.yahoo.com
-    port: 465
-    username: xiaoyi0127@yahoo.com
-    password: gknsxtxlxyecgnfh
+    host: smtp.mailersend.net
+    port: 587
+    username: MS_bWM0Iq@trial-3yxj6ljkmqxgdo2r.mlsender.net
+    password: mssp.FlYyYxN.z86org8y6n1lew13.rcSe2P4
     protocol: smtp
     default-encoding: UTF-8
     properties:
       mail:
         smtp:
           auth: true
-          ssl:
-            enable: true
-            required: true
-          socketFactory:
-            class: javax.net.ssl.SSLSocketFactory
+          starttls.enable: true
+    sender:
+      email: MS_bWM0Iq@trial-3yxj6ljkmqxgdo2r.mlsender.net
+      name: Gym Panel Team
 
 # Configure mybatis entity and xml mapping
 mybatis:
