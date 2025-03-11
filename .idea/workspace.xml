@@ -4,13 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Add VR.">
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Add course sessions.">
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/CourseScheduleController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/CourseSchedule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/mapper/CourseScheduleMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/CourseScheduleService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/springboot/src/main/resources/mapper/CourseScheduleMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/f0ddac49-e509-47d6-ae1a-b1f13b722628.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/Course.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/entity/Course.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/resources/mapper/CourseMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/resources/mapper/CourseMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/front/CourseDetail.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/Course.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,10 +23,10 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="CSS File" />
-        <option value="Interface" />
         <option value="HTML File" />
-        <option value="Class" />
         <option value="Vue Composition API Component" />
+        <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -132,6 +134,9 @@
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewState">
+    <option name="selectedTab" value="逻辑" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="默认任务">
       <changelist id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="" />
@@ -149,7 +154,7 @@
       <workItem from="1741499885425" duration="1598000" />
       <workItem from="1741501671190" duration="19107000" />
       <workItem from="1741647876487" duration="121000" />
-      <workItem from="1741648048759" duration="2284000" />
+      <workItem from="1741648048759" duration="3984000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -375,7 +380,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741526065810</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Add course sessions.">
+      <option name="closed" value="true" />
+      <created>1741650814820</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1741650814820</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -393,7 +406,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix the bug that route guards can't audit user's identity." />
     <MESSAGE value="管理端的器材预约管理功能已经实现。准备进行管理端ui修改。" />
     <MESSAGE value="Ready to develop the posting function." />
     <MESSAGE value="Development of the posting function is complete. Preparing for the development of the statistics function." />
@@ -418,6 +430,7 @@
     <MESSAGE value="Change ai model." />
     <MESSAGE value="Comments." />
     <MESSAGE value="Add VR." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add VR." />
+    <MESSAGE value="Add course sessions." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add course sessions." />
   </component>
 </project>
