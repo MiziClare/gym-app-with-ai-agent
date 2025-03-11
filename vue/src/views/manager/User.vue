@@ -18,8 +18,14 @@
         <el-table-column label="Avatar">
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
-              <el-image style="width: 40px; height: 40px; border-radius: 50%" v-if="scope.row.avatar"
-                :src="scope.row.avatar" :preview-src-list="[scope.row.avatar]"></el-image>
+              <el-image style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" v-if="scope.row.avatar"
+                :src="scope.row.avatar" :preview-src-list="[scope.row.avatar]" @click="viewUserProfile(scope.row)">
+              </el-image>
+              <div v-else
+                style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; cursor: pointer;"
+                @click="viewUserProfile(scope.row)">
+                <i class="el-icon-user-solid" style="font-size: 24px; color: #909399;"></i>
+              </div>
             </div>
           </template>
         </el-table-column>
@@ -186,6 +192,9 @@ export default {
     handleAvatarSuccess(response, file, fileList) {
       // Replace the avatar property with the uploaded image link
       this.form.avatar = response.data
+    },
+    viewUserProfile(user) {
+      this.$router.push(`/user/${user.username}`);
     },
   }
 }
