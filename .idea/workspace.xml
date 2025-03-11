@@ -4,42 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="SMTP test completed.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/MailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/controller/MailController.java" afterDir="false" />
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Purchase Mail Reminder added.">
       <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/MailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/OrdersService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/OrdersService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/SpringbootApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/SpringbootApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/Result.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/Result.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/CorsConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/CorsConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/JwtInterceptor.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/JwtInterceptor.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/Swagger2Config.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/Swagger2Config.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/WebConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/config/WebConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/enums/ResultCodeEnum.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/enums/ResultCodeEnum.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/common/enums/RoleEnum.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/common/enums/RoleEnum.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/AdminController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/AdminController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/CoachController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/CoachController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/FileController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/FileController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/NoticeController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/NoticeController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/WebController.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/controller/WebController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Account.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Account.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Admin.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Admin.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Coach.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Coach.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Notice.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/Notice.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/entity/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/exception/BusinessException.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/exception/BusinessException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/exception/CustomException.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/exception/CustomException.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/exception/GlobalExceptionHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/AdminMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/AdminMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/CoachMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/CoachMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/NoticeMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/NoticeMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/mapper/UserMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/AdminService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/AdminService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/CoachService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/CoachService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/NoticeService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/NoticeService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/service/UserService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/springboot/target/classes/com/example/utils/TokenUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/com/example/utils/TokenUtils.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -181,7 +147,7 @@
       <workItem from="1741499885425" duration="1598000" />
       <workItem from="1741501671190" duration="19107000" />
       <workItem from="1741647876487" duration="121000" />
-      <workItem from="1741648048759" duration="14246000" />
+      <workItem from="1741648048759" duration="14916000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -455,7 +421,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741663713903</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Purchase Mail Reminder added.">
+      <option name="closed" value="true" />
+      <created>1741666232542</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1741666232542</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -473,7 +447,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="User-side interface modification in progress, ready to modify the COACH page." />
     <MESSAGE value="More UI work." />
     <MESSAGE value="UI done!" />
     <MESSAGE value="Fix page scrolling UI problem" />
@@ -498,6 +471,7 @@
     <MESSAGE value="Add course schedul features on member interface." />
     <MESSAGE value="Equipment query sorting modified." />
     <MESSAGE value="SMTP test completed." />
-    <option name="LAST_COMMIT_MESSAGE" value="SMTP test completed." />
+    <MESSAGE value="Purchase Mail Reminder added." />
+    <option name="LAST_COMMIT_MESSAGE" value="Purchase Mail Reminder added." />
   </component>
 </project>
