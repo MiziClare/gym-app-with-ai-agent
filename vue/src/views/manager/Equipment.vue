@@ -26,7 +26,6 @@
         <el-table-column prop="name" label="Name" show-overflow-tooltip></el-table-column>
         <el-table-column prop="location" label="Postion"></el-table-column>
         <el-table-column prop="code" label="Code"></el-table-column>
-        <el-table-column prop="descr" label="Instructions">&#160 &#160 &#160 &#160 . . .</el-table-column>
         <el-table-column prop="status" label="Status"></el-table-column>
 
         <el-table-column label="Actions" width="180" align="center">
@@ -167,6 +166,7 @@ export default {
           pageNum: this.pageNum,
           pageSize: this.pageSize,
           name: this.name,
+          sort: 'asc'
         }
       }).then(res => {
         this.tableData = res.data?.list

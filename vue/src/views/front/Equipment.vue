@@ -95,7 +95,7 @@ export default {
         }
       }).then(res => {
         if (res.code === '200') {
-          this.equipmentData = res.data.reverse()
+          this.equipmentData = res.data
           this.equipmentData
             .sort((a, b) => {
               if (a.status === '🔴 In Use' && b.status === '✅ Available') return 1;
