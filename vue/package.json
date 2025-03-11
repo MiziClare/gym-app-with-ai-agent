@@ -14,8 +14,10 @@
     "element-ui": "^2.15.14",
     "font-awesome": "^4.7.0",
     "marked": "^15.0.7",
+    "qrcode": "^1.5.4",
     "vue": "^2.6.14",
     "vue_fitness": "file:",
+    "vue-qrcode-reader": "^5.7.1",
     "vue-router": "^3.5.1",
     "wangeditor": "^4.7.15"
   },

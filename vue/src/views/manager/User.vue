@@ -50,6 +50,10 @@
       </div>
     </div>
 
+    <!-- 添加固定的圆形扫描按钮 -->
+    <div class="scan-button" @click="handleScan">
+      <img src="@/assets/imgs/icon-scan.png" alt="Scan" />
+    </div>
 
     <el-dialog title="Add an User" :visible.sync="fromVisible" width="40%" :close-on-click-modal="false"
       destroy-on-close>
@@ -79,8 +83,6 @@
         <el-button type="primary" @click="save">Save</el-button>
       </div>
     </el-dialog>
-
-
   </div>
 </template>
 
@@ -196,8 +198,40 @@ export default {
     viewUserProfile(user) {
       this.$router.push(`/user/${user.username}`);
     },
+    handleScan() {
+      // 这里可以添加扫描功能的逻辑
+      this.$message.info('Scan functionality will be implemented here');
+    }
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.scan-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 999;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.scan-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.scan-button img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+</style>

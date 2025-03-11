@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Change to use MailerSend mail service.">
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Add scan button.">
+      <change afterPath="$PROJECT_DIR$/vue/src/assets/imgs/icon-scan.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/vue/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/manager/User.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/User.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,7 +97,7 @@
       <recent name="com.example.mapper" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.serve">
+  <component name="RunManager" selected="Spring Boot.SpringbootApplication">
     <configuration name="SpringbootApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="springboot" />
@@ -149,7 +150,7 @@
       <workItem from="1741499885425" duration="1598000" />
       <workItem from="1741501671190" duration="19107000" />
       <workItem from="1741647876487" duration="121000" />
-      <workItem from="1741648048759" duration="19515000" />
+      <workItem from="1741648048759" duration="21321000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -447,7 +448,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741670741246</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Add member card system in admin interface.">
+      <option name="closed" value="true" />
+      <created>1741672773296</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1741672773296</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -465,8 +474,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix page scrolling UI problem" />
-    <MESSAGE value="Add responsive layout and flex layout support to Course.vue." />
     <MESSAGE value="Login page GDPR implementation complete." />
     <MESSAGE value="Some UI work." />
     <MESSAGE value="User data export feature." />
@@ -490,6 +497,8 @@
     <MESSAGE value="Purchase Mail Reminder added." />
     <MESSAGE value="Purchase Mail Reminder updated." />
     <MESSAGE value="Change to use MailerSend mail service." />
-    <option name="LAST_COMMIT_MESSAGE" value="Change to use MailerSend mail service." />
+    <MESSAGE value="Add member card system in admin interface." />
+    <MESSAGE value="Add scan button." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add scan button." />
   </component>
 </project>
