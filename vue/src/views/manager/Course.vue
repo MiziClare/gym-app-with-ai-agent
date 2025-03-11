@@ -30,7 +30,7 @@
         <el-table-column prop="coachName" label="Coach" show-overflow-tooltip></el-table-column>
         <el-table-column prop="content" label="Description" show-overflow-tooltip>
           <template v-slot="scope">
-            <el-button type="primary" @click="viewEditor(scope.row.content)">View</el-button>
+            <el-button type="primary" @click="viewEditor(scope.row.content, scope.row.id)">View</el-button>
           </template>
         </el-table-column>
 
@@ -87,6 +87,22 @@
     </el-dialog>
     <el-dialog title="Course Description" :visible.sync="viewVisible" width="55%" :close-on-click-modal="false"
       destroy-on-close>
+      <div v-if="scheduleData && scheduleData.length > 0" style="margin-bottom: 20px;">
+        <h3 style="margin-bottom: 15px;">Course Schedule</h3>
+        <el-table :data="scheduleData" border style="width: 100%">
+          <el-table-column prop="weekday" label="Weekday" width="120"></el-table-column>
+          <el-table-column prop="startTime" label="Start Time" width="120">
+            <template v-slot="scope">
+              {{ formatTime(scope.row.startTime) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="room" label="Room"></el-table-column>
+        </el-table>
+      </div>
+      <div v-else style="margin-bottom: 20px;">
+        <h3 style="margin-bottom: 15px;">Course Schedule</h3>
+        <div style="color: #909399; text-align: center; padding: 20px 0;">No schedule available for this course</div>
+      </div>
       <div v-html="viewData" class="w-e-text w-e-text-container"></div>
     </el-dialog>
 
@@ -113,6 +129,8 @@ export default {
       editor: null,
       viewData: null,
       viewVisible: false,
+      scheduleData: [], // 存储课程安排数据
+      viewCourseId: null, // 当前查看的课程ID
     }
   },
   created() {
@@ -120,8 +138,10 @@ export default {
     this.loadCoach()
   },
   methods: {
-    viewEditor(content) {
+    viewEditor(content, courseId) {
       this.viewData = content
+      this.viewCourseId = courseId
+      this.loadCourseSchedule(courseId)
       this.viewVisible = true
     },
     initWangEditor(content) {
@@ -233,7 +253,23 @@ export default {
     },
     handleImgSuccess(res) {
       this.form.img = res.data
-    }
+    },
+    // load course schedule
+    loadCourseSchedule(courseId) {
+      this.$request.get('/courseSchedule/selectByCourseId/' + courseId).then(res => {
+        if (res.code === '200') {
+          this.scheduleData = res.data
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    // format time
+    formatTime(timeString) {
+      if (!timeString) return ''
+      // handle LocalTime format, usually "HH:MM:SS" format
+      return timeString.substring(0, 5) // only show hour and minute
+    },
   }
 }
 </script>

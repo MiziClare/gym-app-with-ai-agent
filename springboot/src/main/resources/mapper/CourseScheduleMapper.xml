@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CourseScheduleMapper">
+
+    <sql id="Base_Column_List">
+        <if test="true">
+            id, course_id, weekday, start_time, room
+        </if>
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.CourseSchedule">
+        select cs.*, c.name as courseName
+        from course_schedule cs
+        left join course c on cs.course_id = c.id
+        <where>
+            <if test="id != null">and cs.id = #{id}</if>
+            <if test="courseId != null">and cs.course_id = #{courseId}</if>
+            <if test="weekday != null">and cs.weekday = #{weekday}</if>
+            <if test="room != null">and cs.room like concat('%', #{room}, '%')</if>
+        </where>
+        order by cs.course_id, 
+        CASE cs.weekday 
+            WHEN 'Monday' THEN 1 
+            WHEN 'Tuesday' THEN 2 
+            WHEN 'Wednesday' THEN 3 
+            WHEN 'Thursday' THEN 4 
+            WHEN 'Friday' THEN 5 
+            WHEN 'Saturday' THEN 6 
+            WHEN 'Sunday' THEN 7 
+        END, 
+        cs.start_time
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.CourseSchedule">
+        select cs.*, c.name as courseName
+        from course_schedule cs
+        left join course c on cs.course_id = c.id
+        where cs.id = #{id}
+    </select>
+
+    <select id="selectByCourseId" resultType="com.example.entity.CourseSchedule">
+        select cs.*, c.name as courseName
+        from course_schedule cs
+        left join course c on cs.course_id = c.id
+        where cs.course_id = #{courseId}
+        order by 
+        CASE cs.weekday 
+            WHEN 'Monday' THEN 1 
+            WHEN 'Tuesday' THEN 2 
+            WHEN 'Wednesday' THEN 3 
+            WHEN 'Thursday' THEN 4 
+            WHEN 'Friday' THEN 5 
+            WHEN 'Saturday' THEN 6 
+            WHEN 'Sunday' THEN 7 
+        END, 
+        cs.start_time
+    </select>
+
+    <delete id="deleteById">
+        delete from course_schedule
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByCourseId">
+        delete from course_schedule
+        where course_id = #{courseId}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.CourseSchedule" useGeneratedKeys="true" keyProperty="id">
+        insert into course_schedule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="courseId != null">course_id,</if>
+            <if test="weekday != null">weekday,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="room != null">room,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="courseId != null">#{courseId},</if>
+            <if test="weekday != null">#{weekday},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="room != null">#{room},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.CourseSchedule">
+        update course_schedule
+        <set>
+            <if test="courseId != null">
+                course_id = #{courseId},
+            </if>
+            <if test="weekday != null">
+                weekday = #{weekday},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="room != null">
+                room = #{room},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
