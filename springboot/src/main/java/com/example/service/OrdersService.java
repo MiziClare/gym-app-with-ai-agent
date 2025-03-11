@@ -30,6 +30,8 @@ public class OrdersService {
     private CourseMapper courseMapper;
     @Resource
     private CoachMapper coachMapper;
+    @Resource
+    private MailService mailService;
 
     /**
      * Add
@@ -38,8 +40,15 @@ public class OrdersService {
         // First, check if the user's balance is sufficient
         User user = userMapper.selectById(orders.getUserId());
         if (user.getAccount() < orders.getPrice()) {
-            throw new CustomException("-1", "Insufficient balance. Please top up in your account.");
+            throw new CustomException("-1", "Insufficient balance, please recharge in your account.");
         }
+        
+        // Get course information
+        Course course = courseMapper.selectById(orders.getCourseId());
+        if (course == null) {
+            throw new CustomException("-1", "Course does not exist.");
+        }
+        
         orders.setTime(DateUtil.now());
         orders.setOrderNo(DateUtil.format(new Date(), "yyyyMMddHHmmss"));
         ordersMapper.insert(orders);
@@ -47,7 +56,21 @@ public class OrdersService {
         // Deduct the user's balance
         user.setAccount(user.getAccount() - orders.getPrice());
         userMapper.updateById(user);
-
+        
+        // Asynchronous sending of emails, do not block the main process
+        final User finalUser = user;
+        final Course finalCourse = course;
+        final Double finalPrice = orders.getPrice();
+        
+        new Thread(() -> {
+            try {
+                mailService.sendCoursePurchaseEmail(finalUser, finalCourse, finalPrice);
+            } catch (Exception e) {
+                // Record logs but do not affect the main process
+                System.err.println("Sending email failed: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     /**
