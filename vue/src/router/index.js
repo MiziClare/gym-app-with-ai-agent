@@ -24,6 +24,7 @@ const routes = [
       { path: 'password', name: 'Password', meta: { name: 'Password', requiresAdmin: true }, component: () => import('../views/manager/Password') },
       { path: 'notice', name: 'Notice', meta: { name: 'Notices', requiresAdmin: true }, component: () => import('../views/manager/Notice') },
       { path: 'user', name: 'User', meta: { name: 'Member List', requiresAdmin: true }, component: () => import('../views/manager/User') },
+      { path: 'user/:username', name: 'UserProfile', meta: { name: 'User Profile', requiresAdmin: true }, component: () => import('../views/manager/UserProfile') },
       { path: 'coach', name: 'Coach', meta: { name: 'Coach List', requiresAdmin: true }, component: () => import('../views/manager/Coach') },
       { path: 'reserve', name: 'Reserve', meta: { name: 'Coach Reservations', requiresAdmin: true }, component: () => import('../views/manager/Reserve') },
       { path: 'course', name: 'Course', meta: { name: 'Courses', requiresAdmin: true }, component: () => import('../views/manager/Course') },
