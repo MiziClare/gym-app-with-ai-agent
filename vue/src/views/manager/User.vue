@@ -51,7 +51,7 @@
     </div>
 
     <!-- 添加固定的圆形扫描按钮 -->
-    <div class="scan-button" @click="handleScan">
+    <div class="scan-button" @click="openScanDialog">
       <img src="@/assets/imgs/icon-scan.png" alt="Scan" />
     </div>
 
@@ -83,12 +83,34 @@
         <el-button type="primary" @click="save">Save</el-button>
       </div>
     </el-dialog>
+
+    <!-- Scan QR Code -->
+    <el-dialog title="Scan QR Code" :visible.sync="scanDialogVisible" width="500px" :close-on-click-modal="false">
+      <div class="scanner-container">
+        <qrcode-stream v-if="scanDialogVisible" @decode="onDecode" @init="onInit">
+          <div v-if="scanError" class="error-message">
+            {{ scanError }}
+          </div>
+        </qrcode-stream>
+      </div>
+      <div v-if="scanResult" class="scan-result">
+        <p>Scan Result: {{ scanResult }}</p>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="scanDialogVisible = false">Close</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { QrcodeStream } from 'vue-qrcode-reader'
+
 export default {
   name: "User",
+  components: {
+    QrcodeStream
+  },
   data() {
     return {
       tableData: [],  // All data
@@ -104,7 +126,10 @@ export default {
           { required: true, message: 'Please enter your username', trigger: 'blur' },
         ]
       },
-      ids: []
+      ids: [],
+      scanDialogVisible: false,
+      scanResult: '',
+      scanError: ''
     }
   },
   created() {
@@ -198,9 +223,52 @@ export default {
     viewUserProfile(user) {
       this.$router.push(`/user/${user.username}`);
     },
-    handleScan() {
-      // 这里可以添加扫描功能的逻辑
-      this.$message.info('Scan functionality will be implemented here');
+    openScanDialog() {
+      this.scanDialogVisible = true;
+      this.scanResult = '';
+      this.scanError = '';
+    },
+    onDecode(result) {
+      this.scanResult = result;
+
+      // Check if the result is a valid membership card URL
+      if (result && result.includes('/user/')) {
+        // Extract the username from the URL
+        const urlParts = result.split('/');
+        const username = urlParts[urlParts.length - 1];
+
+        if (username) {
+          // Delay closing the dialog and redirecting to the user profile page
+          setTimeout(() => {
+            this.scanDialogVisible = false;
+            this.$router.push(`/user/${username}`);
+          }, 1000);
+        }
+      }
+    },
+    onInit(promise) {
+      promise
+        .then(() => {
+          // Camera initialization successful
+          this.scanError = '';
+        })
+        .catch(error => {
+          if (error.name === 'NotAllowedError') {
+            this.scanError = 'Need camera permission to scan QR code';
+          } else if (error.name === 'NotFoundError') {
+            this.scanError = 'Camera device not found';
+          } else if (error.name === 'NotSupportedError') {
+            this.scanError = 'Your browser does not support camera functionality';
+          } else if (error.name === 'NotReadableError') {
+            this.scanError = 'Camera is occupied';
+          } else if (error.name === 'OverconstrainedError') {
+            this.scanError = 'Camera does not meet the requirements';
+          } else if (error.name === 'StreamApiNotSupportedError') {
+            this.scanError = 'Browser does not support stream API';
+          } else {
+            this.scanError = `Camera error: ${error.name}`;
+          }
+        });
     }
   }
 }
@@ -233,5 +301,35 @@ export default {
   width: 30px;
   height: 30px;
   object-fit: contain;
+}
+
+.scanner-container {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  position: relative;
+  background-color: #000;
+  border-radius: 8px;
+}
+
+.error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-align: center;
+  max-width: 80%;
+}
+
+.scan-result {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f0f9eb;
+  border-radius: 4px;
+  border-left: 4px solid #67c23a;
 }
 </style>

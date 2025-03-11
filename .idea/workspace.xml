@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Add scan button.">
-      <change afterPath="$PROJECT_DIR$/vue/src/assets/imgs/icon-scan.png" afterDir="false" />
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Add scan feature.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/vue/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/manager/User.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/manager/User.vue" afterDir="false" />
@@ -150,7 +149,7 @@
       <workItem from="1741499885425" duration="1598000" />
       <workItem from="1741501671190" duration="19107000" />
       <workItem from="1741647876487" duration="121000" />
-      <workItem from="1741648048759" duration="21321000" />
+      <workItem from="1741648048759" duration="22104000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -456,7 +455,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741672773296</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Add scan button.">
+      <option name="closed" value="true" />
+      <created>1741674994970</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1741674994970</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -474,7 +481,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Login page GDPR implementation complete." />
     <MESSAGE value="Some UI work." />
     <MESSAGE value="User data export feature." />
     <MESSAGE value="Order data export feature." />
@@ -499,6 +505,7 @@
     <MESSAGE value="Change to use MailerSend mail service." />
     <MESSAGE value="Add member card system in admin interface." />
     <MESSAGE value="Add scan button." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add scan button." />
+    <MESSAGE value="Add scan feature." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add scan feature." />
   </component>
 </project>
