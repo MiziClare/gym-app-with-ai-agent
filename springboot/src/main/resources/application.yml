@@ -24,6 +24,24 @@ spring:
       api-token: sk-teuivpffjzajnpulzvytghljvbaymtunthinwnxcizxgitjp
       model: deepseek-ai/DeepSeek-V2.5
 
+  # Mail Service
+  mail:
+    host: smtp.mail.yahoo.com
+    port: 465
+    username: xiaoyi0127@yahoo.com
+    password: gknsxtxlxyecgnfh
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            required: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+
 # Configure mybatis entity and xml mapping
 mybatis:
   mapper-locations: classpath:mapper/*.xml
