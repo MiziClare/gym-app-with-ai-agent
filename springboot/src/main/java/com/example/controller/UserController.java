@@ -9,23 +9,17 @@ import com.example.service.UserService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.github.pagehelper.PageInfo;
-import java.util.HashMap;
 import java.util.Map;
-import com.example.entity.Orders;
 import com.example.service.OrdersService;
-import com.example.entity.Reserve;
 import com.example.service.ReserveService;
-import com.example.entity.Eqreserve;
 import com.example.service.EqreserveService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import com.example.entity.Account;
 import com.example.utils.TokenUtils;
+import com.example.service.MailService;
 
 /**
  * API:
@@ -52,6 +46,9 @@ public class UserController {
 
     @Resource
     private EqreserveService eqreserveService;
+
+    @Resource
+    private MailService mailService;
 
     /**
      * Add
@@ -169,5 +166,37 @@ public class UserController {
     public Result deletePersonalData(@RequestBody User user) {
         userService.deletePersonalData(user);
         return Result.success();
+    }
+
+    /**
+     * Send membership card by email
+     */
+    @PostMapping("/sendCardByEmail")
+    public Result sendCardByEmail(@RequestBody Map<String, Object> params) {
+        try {
+            String email = (String) params.get("email");
+            String cardImage = (String) params.get("cardImage");
+            Integer userId = (Integer) params.get("userId");
+            
+            if (email == null || cardImage == null || userId == null) {
+                return Result.error("400", "Missing required parameters");
+            }
+            
+            // Get user information
+            User user = userService.selectById(userId);
+            if (user == null) {
+                return Result.error("404", "User not found");
+            }
+            
+            // Asynchronously handle email sending, return immediately
+            new Thread(() -> {
+                mailService.sendMembershipCardEmail(user, email, cardImage);
+            }).start();
+            
+            return Result.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("500", "Error: " + e.getMessage());
+        }
     }
 }

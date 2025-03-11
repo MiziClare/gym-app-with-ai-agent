@@ -10,6 +10,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.ByteArrayResource;
+import java.util.Base64;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -181,5 +183,65 @@ public class MailService {
         }
         
         return timeObj.toString();
+    }
+
+    /**
+     * Send membership card by email
+     * @param user User information
+     * @param toEmail Email address to send to
+     * @param cardImageBase64 Base64 encoded image of the membership card
+     * @return true if email sent successfully, false otherwise
+     */
+    @Async
+    public boolean sendMembershipCardEmail(User user, String toEmail, String cardImageBase64) {
+        try {
+            // Create HTML email
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            
+            helper.setFrom(senderEmail, senderName);
+            helper.setTo(toEmail);
+            helper.setSubject("Your Gym Membership Card");
+            
+            // Build HTML content
+            StringBuilder htmlContent = new StringBuilder();
+            htmlContent.append("<html><body>");
+            htmlContent.append("<h2>Dear ").append(user.getName()).append(",</h2>");
+            htmlContent.append("<p>Here is your gym membership card as requested.</p>");
+            
+            // Process the base64 image data
+            String base64Image = cardImageBase64;
+            if (base64Image.startsWith("data:image")) {
+                base64Image = base64Image.substring(base64Image.indexOf(",") + 1);
+            }
+            
+            // Add the image as an attachment with a content ID
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            helper.addInline("membershipCard", new ByteArrayResource(imageBytes), "image/png");
+            
+            // Reference the image in the HTML using the content ID
+            htmlContent.append("<p><img src='cid:membershipCard' alt='Membership Card' style='max-width:100%;'></p>");
+            
+            // Also add the image as a regular attachment so it can be saved
+            helper.addAttachment("membership_card.png", new ByteArrayResource(imageBytes), "image/png");
+            
+            htmlContent.append("<p>You can save this image for future reference or print it out.</p>");
+            htmlContent.append("<p>Thank you for being a valued member of our gym!</p>");
+            htmlContent.append("<p>Best regards,<br>");
+            htmlContent.append(senderName).append("</p>");
+            htmlContent.append("</body></html>");
+            
+            // Set HTML content
+            helper.setText(htmlContent.toString(), true);
+            
+            // Send email
+            mailSender.send(mimeMessage);
+            return true;
+            
+        } catch (Exception e) {
+            System.err.println("Failed to send membership card email: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }
