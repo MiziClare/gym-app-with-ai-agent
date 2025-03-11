@@ -55,6 +55,7 @@ const routes = [
       { path: 'experience', name: 'Experience', meta: { name: 'Sharing' }, component: () => import('../views/front/Experience') },
       { path: 'experienceDetail', name: 'ExperienceDetail', meta: { name: 'Post Details' }, component: () => import('../views/front/ExperienceDetail') },
       { path: 'vr', name: 'Vr', meta: { name: 'VR' }, component: () => import('../components/Vr') },
+      { path: 'card', name: 'Card', meta: { name: 'Member Card' }, component: () => import('../views/front/Card') },
     ]
   },
   { path: '/login', name: 'Login', meta: { name: 'Login' }, component: () => import('../views/Login.vue') },
