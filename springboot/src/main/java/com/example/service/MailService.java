@@ -4,6 +4,7 @@ import com.example.entity.Course;
 import com.example.entity.CourseSchedule;
 import com.example.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -23,11 +24,19 @@ public class MailService {
     
     @Resource
     private CourseScheduleService courseScheduleService;
+    
+    // Read sender email from configuration file
+    @Value("${spring.mail.sender.email}")
+    private String senderEmail;
+    
+    // Read sender name from configuration file
+    @Value("${spring.mail.sender.name}")
+    private String senderName;
 
     public void sendSimpleMail() {
         // Create a simple email message object
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("xiaoyi0127@yahoo.com"); // Sender email
+        message.setFrom(senderEmail); // Use the configured sender email
         message.setTo("mizi99207@gmail.com");  // Receiver email
         message.setSubject("Test Mail");         // Email subject
         message.setText("This is a test email from Spring Boot!"); // Email body
@@ -56,7 +65,7 @@ public class MailService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             
-            helper.setFrom("xiaoyi0127@yahoo.com"); // Sender email
+            helper.setFrom(senderEmail); // Use the configured sender email
             helper.setTo(user.getEmail());  // Receiver email
             helper.setSubject("Course Purchase Success Notification"); // Email subject
             
@@ -103,7 +112,7 @@ public class MailService {
             htmlContent.append("<p>You can view your course and appointment schedule in your 'Orders' page.</p>");
             htmlContent.append("<p>If you have any questions, please contact our customer service team at any time.</p>");
             htmlContent.append("<p>I wish you a happy fitness journey!<br>");
-            htmlContent.append("Gym Panel Team</p>");
+            htmlContent.append(senderName).append("</p>"); // Use the configured sender name
             htmlContent.append("</body></html>");
             
             // Set HTML content
@@ -126,7 +135,7 @@ public class MailService {
      */
     private void sendSimpleTextPurchaseEmail(User user, Course course, Double price) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("xiaoyi0127@yahoo.com");
+        message.setFrom(senderEmail); // Use the configured sender email
         message.setTo(user.getEmail());
         message.setSubject("Course Purchase Success Notification");
         
@@ -141,8 +150,8 @@ public class MailService {
             "You can view your course and appointment schedule in your 'Orders' page.\n\n" +
             "If you have any questions, please contact our customer service team at any time.\n\n" +
             "I wish you a happy fitness journey!\n" +
-            "Gym Panel Team",
-            user.getName(), course.getName(), course.getCoachName(), price
+            "%s",
+            user.getName(), course.getName(), course.getCoachName(), price, senderName
         );
         
         message.setText(content);

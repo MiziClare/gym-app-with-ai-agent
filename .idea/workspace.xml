@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Purchase Mail Reminder added.">
+    <list default="true" id="6904165b-6489-496a-ae92-27081623a168" name="更改" comment="Purchase Mail Reminder updated.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/java/com/example/service/MailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/springboot/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/springboot/target/classes/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +150,7 @@
       <workItem from="1741499885425" duration="1598000" />
       <workItem from="1741501671190" duration="19107000" />
       <workItem from="1741647876487" duration="121000" />
-      <workItem from="1741648048759" duration="14916000" />
+      <workItem from="1741648048759" duration="17462000" />
     </task>
     <task id="LOCAL-00001" summary="Complete the back-end development of the course.">
       <option name="closed" value="true" />
@@ -429,7 +432,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741666232542</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Purchase Mail Reminder updated.">
+      <option name="closed" value="true" />
+      <created>1741666931360</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1741666931360</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -447,7 +458,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="More UI work." />
     <MESSAGE value="UI done!" />
     <MESSAGE value="Fix page scrolling UI problem" />
     <MESSAGE value="Add responsive layout and flex layout support to Course.vue." />
@@ -472,6 +482,7 @@
     <MESSAGE value="Equipment query sorting modified." />
     <MESSAGE value="SMTP test completed." />
     <MESSAGE value="Purchase Mail Reminder added." />
-    <option name="LAST_COMMIT_MESSAGE" value="Purchase Mail Reminder added." />
+    <MESSAGE value="Purchase Mail Reminder updated." />
+    <option name="LAST_COMMIT_MESSAGE" value="Purchase Mail Reminder updated." />
   </component>
 </project>
