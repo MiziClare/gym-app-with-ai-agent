@@ -27,7 +27,8 @@ public class WebConfig implements  WebMvcConfigurer {
                         "/swagger-ui/**",
                         "/v2/api-docs",
                         "/webjars/**",
-                        "/chat/**"
+                        "/chat/**",
+                        "/sendMail"
                 );
     }
 
