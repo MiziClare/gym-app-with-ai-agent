@@ -12,8 +12,12 @@
           <el-menu :default-active="$route.path" mode="horizontal" router>
             <el-menu-item index="/front/home"><img src="@/assets/imgs/icon-home.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Home</el-menu-item>
-            <el-menu-item index="/front/card" v-if="user.role !== 'COACH'"><img src="@/assets/imgs/icon-card.png" alt=""
+            <el-menu-item index="/front/card" v-if="user.role === 'USER'"><img src="@/assets/imgs/icon-card.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">E-Card</el-menu-item>
+
+            <el-menu-item index="/front/chat" v-if="user.role === 'COACH'"><img src="@/assets/imgs/icon-chat.png" alt=""
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Chat</el-menu-item>
+
             <el-menu-item index="/front/course"><img src="@/assets/imgs/icon-courses.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Courses</el-menu-item>
             <el-menu-item index="/front/equipment">
