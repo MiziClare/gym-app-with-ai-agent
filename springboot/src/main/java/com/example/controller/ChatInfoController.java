@@ -7,6 +7,8 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
+import com.example.entity.Account;
+import com.example.utils.TokenUtils;
 
 /**
  * Chat information controller
@@ -23,6 +25,11 @@ public class ChatInfoController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody ChatInfo chatInfo) {
+        Account currentUser = TokenUtils.getCurrentUser();
+        
+        // 强制设置角色为当前用户的角色
+        chatInfo.setRole(currentUser.getRole());
+        
         chatInfoService.add(chatInfo);
         return Result.success();
     }

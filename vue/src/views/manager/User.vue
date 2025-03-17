@@ -18,9 +18,17 @@
         <el-table-column label="Avatar">
           <template v-slot="scope">
             <div style="display: flex; align-items: center">
-              <el-image style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" v-if="scope.row.avatar"
-                :src="scope.row.avatar" :preview-src-list="[scope.row.avatar]" @click="viewUserProfile(scope.row)">
-              </el-image>
+              <template v-if="scope.row.avatar">
+                <el-image style="width: 40px; height: 40px; border-radius: 50%;" :src="scope.row.avatar"
+                  :preview-src-list="[]">
+                  <div slot="error" class="image-slot"
+                    style="width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;"
+                    @click="viewUserProfile(scope.row)">
+                    <i class="el-icon-user-solid" style="font-size: 24px; color: #909399;"></i>
+                  </div>
+                </el-image>
+                <div class="avatar-overlay" @click="viewUserProfile(scope.row)"></div>
+              </template>
               <div v-else
                 style="width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; cursor: pointer;"
                 @click="viewUserProfile(scope.row)">
@@ -331,5 +339,18 @@ export default {
   background-color: #f0f9eb;
   border-radius: 4px;
   border-left: 4px solid #67c23a;
+}
+
+.avatar-overlay {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.el-image {
+  position: relative;
 }
 </style>

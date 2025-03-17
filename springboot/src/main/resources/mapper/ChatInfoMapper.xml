@@ -51,6 +51,7 @@
         from chat_info
         where (chat_info.user_id = #{userId} and chat_info.chat_user_id = #{chatUserId})
            or (chat_info.user_id = #{chatUserId} and chat_info.chat_user_id = #{userId})
+        order by id asc
     </select>
 
     <delete id="deleteById">

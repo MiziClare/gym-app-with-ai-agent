@@ -15,6 +15,9 @@
             <div class="glass-card">
               <div class="card-image">
                 <img @click="$router.push('/front/coachDetail?id=' + item.id)" :src="item.avatar" :alt="item.name">
+                <div class="chat-button">
+                  <img @click="chat(item.id)" src="@/assets/imgs/icon-startchat.png" alt="start chat" class="chat-icon">
+                </div>
               </div>
               <div class="card-content">
                 <h3>{{ item.name }}</h3>
@@ -31,7 +34,7 @@
         </div>
       </div>
     </div>
-    <!-- 预约信息窗口 -->
+    <!-- Reservation information window -->
     <el-dialog title="Reservations" :visible.sync="fromVisible" width="40%" top="30vh" :close-on-click-modal="false"
       destroy-on-close custom-class="glass-dialog" append-to-body>
       <el-form label-width="100px" style="padding-right: 50px">
@@ -95,6 +98,34 @@ export default {
           this.coachId = null
           this.content = null
           this.fromVisible = false
+        }
+      })
+    },
+    chat(userId) {
+      //   Check if there is a chat group
+      this.$request.post('/chatGroup/isChatGroupById', {
+        userId: this.user.id,
+        chatUserId: userId,
+        role: 'USER'
+      }).then(res => {
+        if (res.code === '200') {
+          //   If there is a chat group, directly jump to the chat page
+          this.$router.push('/front/chat')
+        } else {
+          this.addChatGroup(userId)
+        }
+      })
+    },
+    addChatGroup(id) {
+      this.$request.post('/chatGroup/add', {
+        userId: this.user.id,
+        chatUserId: id,
+        role: 'USER'
+      }).then(res => {
+        if (res.code === '200') {
+          this.$router.push('/front/chat')
+        } else {
+          this.$message.error(res.msg)
         }
       })
     }
@@ -231,6 +262,33 @@ export default {
   position: relative;
   border-radius: 25px 25px 0 0;
   cursor: pointer;
+}
+
+.chat-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.chat-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.chat-icon {
+  width: 22px;
+  height: 22px;
 }
 
 .card-image::after {

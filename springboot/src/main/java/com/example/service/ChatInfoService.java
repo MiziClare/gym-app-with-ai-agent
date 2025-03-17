@@ -37,6 +37,18 @@ public class ChatInfoService {
      */
     public void add(ChatInfo chatInfo) {
         chatInfo.setTime(DateUtil.now());
+        
+        // 设置默认的已读状态为"Unread"
+        if (chatInfo.getIsread() == null) {
+            chatInfo.setIsread("Unread");
+        }
+        
+        // 确保角色信息正确
+        Account currentUser = TokenUtils.getCurrentUser();
+        if (currentUser != null && chatInfo.getRole() == null) {
+            chatInfo.setRole(currentUser.getRole());
+        }
+        
         chatInfoMapper.insert(chatInfo);
     }
 
@@ -94,30 +106,71 @@ public class ChatInfoService {
         Account currentUser = TokenUtils.getCurrentUser();
         Integer userId = currentUser.getId();
         List<ChatInfo> chatInfos = chatInfoMapper.selectUserChatById(userId, chatUserId);
+        
         for (ChatInfo chatInfo : chatInfos) {
-            if (chatInfo.getRole().equals("USER")) {
-                User user = userMapper.selectById(chatInfo.getUserId());
-                if (ObjectUtil.isNotEmpty(user)) {
-                    chatInfo.setUserName(user.getName());
-                    chatInfo.setUserAvatar(user.getAvatar());
+            // 当前登录用户是普通用户，与教练聊天
+            if (currentUser.getRole().equals("USER")) {
+                if (chatInfo.getUserId().equals(userId)) {
+                    // 用户发送的消息
+                    User user = userMapper.selectById(chatInfo.getUserId());
+                    if (ObjectUtil.isNotEmpty(user)) {
+                        chatInfo.setUserName(user.getName());
+                        chatInfo.setUserAvatar(user.getAvatar());
+                    }
+                    
+                    // 接收消息的教练
+                    Coach coach = coachMapper.selectById(chatInfo.getChatUserId());
+                    if (ObjectUtil.isNotEmpty(coach)) {
+                        chatInfo.setChatUserName(coach.getName());
+                        chatInfo.setChatUserAvatar(coach.getAvatar());
+                    }
+                } else {
+                    // 教练发送的消息
+                    Coach coach = coachMapper.selectById(chatInfo.getUserId());
+                    if (ObjectUtil.isNotEmpty(coach)) {
+                        chatInfo.setUserName(coach.getName());
+                        chatInfo.setUserAvatar(coach.getAvatar());
+                    }
+                    
+                    // 接收消息的用户
+                    User user = userMapper.selectById(chatInfo.getChatUserId());
+                    if (ObjectUtil.isNotEmpty(user)) {
+                        chatInfo.setChatUserName(user.getName());
+                        chatInfo.setChatUserAvatar(user.getAvatar());
+                    }
                 }
-                Coach coach = coachMapper.selectById(chatInfo.getChatUserId());
-                if (ObjectUtil.isNotEmpty(coach)) {
-                    chatInfo.setChatUserName(coach.getName());
-                    chatInfo.setChatUserAvatar(coach.getAvatar());
+            } 
+            // 当前登录用户是教练，与普通用户聊天
+            else if (currentUser.getRole().equals("COACH")) {
+                if (chatInfo.getUserId().equals(userId)) {
+                    // 教练发送的消息
+                    Coach coach = coachMapper.selectById(chatInfo.getUserId());
+                    if (ObjectUtil.isNotEmpty(coach)) {
+                        chatInfo.setUserName(coach.getName());
+                        chatInfo.setUserAvatar(coach.getAvatar());
+                    }
+                    
+                    // 接收消息的用户
+                    User user = userMapper.selectById(chatInfo.getChatUserId());
+                    if (ObjectUtil.isNotEmpty(user)) {
+                        chatInfo.setChatUserName(user.getName());
+                        chatInfo.setChatUserAvatar(user.getAvatar());
+                    }
+                } else {
+                    // 用户发送的消息
+                    User user = userMapper.selectById(chatInfo.getUserId());
+                    if (ObjectUtil.isNotEmpty(user)) {
+                        chatInfo.setUserName(user.getName());
+                        chatInfo.setUserAvatar(user.getAvatar());
+                    }
+                    
+                    // 接收消息的教练
+                    Coach coach = coachMapper.selectById(chatInfo.getChatUserId());
+                    if (ObjectUtil.isNotEmpty(coach)) {
+                        chatInfo.setChatUserName(coach.getName());
+                        chatInfo.setChatUserAvatar(coach.getAvatar());
+                    }
                 }
-            } else {
-                Coach coach = coachMapper.selectById(chatInfo.getUserId());
-                if (ObjectUtil.isNotEmpty(coach)) {
-                    chatInfo.setUserName(coach.getName());
-                    chatInfo.setUserAvatar(coach.getAvatar());
-                }
-                User user = userMapper.selectById(chatInfo.getChatUserId());
-                if (ObjectUtil.isNotEmpty(user)) {
-                    chatInfo.setChatUserName(user.getName());
-                    chatInfo.setChatUserAvatar(user.getAvatar());
-                }
-
             }
         }
         return chatInfos;

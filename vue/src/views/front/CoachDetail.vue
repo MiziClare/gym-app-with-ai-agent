@@ -118,7 +118,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 /* Add back button style */
 .back-button {
   position: absolute;

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 
 import javax.annotation.Resource;
 
@@ -28,17 +29,24 @@ public class WebConfig implements  WebMvcConfigurer {
                         "/v2/api-docs",
                         "/webjars/**",
                         "/chat/**",
-                        "/sendMail"
+                        "/sendMail",
+                        "/front/chat/**",
+                        "/front/coachChat/**",
+                        "/chat",
+                        "/front/chat",
+                        "/index.html",
+                        "/chatServer/**"
                 );
     }
 
-//    // Allow CORS
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**")
-//                .allowedOrigins("http://localhost:8080")
-//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                .allowedHeaders("*")
-//                .allowCredentials(true);
-//    }
+    // Add a view controller to handle the front-end routing refresh problem
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        // Forward all non-static resource requests to index.html
+        registry.addViewController("/{spring:^(?!chatServer).*}")
+            .setViewName("forward:/index.html");
+    registry.addViewController("/**/{spring:^(?!chatServer).*}")
+            .setViewName("forward:/index.html");
+    }
+
 }

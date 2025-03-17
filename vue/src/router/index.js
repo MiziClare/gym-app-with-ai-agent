@@ -56,6 +56,8 @@ const routes = [
       { path: 'experienceDetail', name: 'ExperienceDetail', meta: { name: 'Post Details' }, component: () => import('../views/front/ExperienceDetail') },
       { path: 'vr', name: 'Vr', meta: { name: 'VR' }, component: () => import('../components/Vr') },
       { path: 'card', name: 'Card', meta: { name: 'Member Card', requiresUser: true }, component: () => import('../views/front/Card') },
+      { path: 'chat', name: 'Chat', meta: { name: 'Chat with Coach' }, component: () => import('../views/front/Chat') },
+      { path: 'coachChat', name: 'CoachChat', meta: { name: 'Member Consultations' }, component: () => import('../views/front/CoachChat') },
     ]
   },
   { path: '/login', name: 'Login', meta: { name: 'Login' }, component: () => import('../views/Login.vue') },
