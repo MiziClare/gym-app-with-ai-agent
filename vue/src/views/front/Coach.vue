@@ -184,7 +184,6 @@ export default {
   text-align: center;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transform: scale(1.05);
-  cursor: pointer;
   font-family: 'Montserrat', sans-serif;
 }
 

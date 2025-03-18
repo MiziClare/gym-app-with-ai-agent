@@ -21,7 +21,11 @@
               <el-tag type="info" v-else>User</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="time" label="Post Time"></el-table-column>
+          <el-table-column prop="time" label="Post Time" show-overflow-tooltip>
+            <template v-slot="scope">
+              {{ scope.row.time.slice(0, 16) }}
+            </template>
+          </el-table-column>
         </el-table>
 
         <div class="pagination" style="margin-top: 20px; display: flex; justify-content: center;">
