@@ -16,5 +16,6 @@ module.exports = defineConfig({
           args[0].title = "Gym Panel";
           return args;
         })
-  }
+  },
+  publicPath: '/'
 })

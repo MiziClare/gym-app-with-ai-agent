@@ -35,7 +35,8 @@ public class WebConfig implements  WebMvcConfigurer {
                         "/chat",
                         "/front/chat",
                         "/index.html",
-                        "/chatServer/**"
+                        "/chatServer/**",
+                        "/front/**"
                 );
     }
 

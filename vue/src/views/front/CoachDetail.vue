@@ -125,7 +125,7 @@ export default {
   top: -20px;
   left: 0;
   background-color: rgba(53, 84, 118, 0.1);
-  color: white;
+  color: #34495e;
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
