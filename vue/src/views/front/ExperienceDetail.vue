@@ -10,7 +10,7 @@
       </div>
       <div style="text-align: center; margin-top: 10px; color: #666666">
         <span>Author: {{ experienceData.userName }}</span>
-        <span style="margin-left: 20px">Time: {{ experienceData.time }}</span>
+        <span style="margin-left: 20px">Time: {{ experienceData.time.slice(0, 16) }}</span>
       </div>
       <div style="margin-top: 30px" v-html="experienceData.content" class="w-e-text w-e-text-container"></div>
     </div>
@@ -62,7 +62,7 @@ p {
   top: -20px;
   left: 0;
   background-color: rgba(53, 84, 118, 0.1);
-  color: white;
+  color: #34495e;
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
