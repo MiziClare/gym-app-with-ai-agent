@@ -147,7 +147,7 @@ export default {
   align-items: center;
   justify-content: center;
   color: #666;
-  transform: scale(1.07);
+  transform: scale(1.1);
   padding: 0 !important;
 }
 
