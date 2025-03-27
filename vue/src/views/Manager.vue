@@ -47,7 +47,6 @@
             <el-menu-item index="/notice">Notices</el-menu-item>
             <el-menu-item index="/course">Courses</el-menu-item>
             <el-menu-item index="/equipment">Equipments</el-menu-item>
-            <el-menu-item index="/orders">Course Orders</el-menu-item>
             <el-menu-item index="/experience">Posts</el-menu-item>
           </el-submenu>
 
@@ -57,6 +56,7 @@
               <span>Bookings</span>
             </template>
             <el-menu-item index="/eqReserve">Equipment Reservations</el-menu-item>
+            <el-menu-item index="/orders">Course Orders</el-menu-item>
             <el-menu-item index="/reserve">Coach Reservations</el-menu-item>
           </el-submenu>
 
