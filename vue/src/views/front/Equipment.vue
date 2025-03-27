@@ -9,6 +9,17 @@
         <el-button type="warning" plain style="margin-left: 10px" icon="el-icon-refresh" round
           @click="reset"></el-button>
       </div>
+
+      <!-- prompt area -->
+      <div class="glass-header">
+        <h1>
+          <img src="../../assets/imgs/icon-barbell.png" alt="info icon" class="title-icon">
+          &#12288;Equipment Information
+        </h1>
+        <p>Normally no reservation required - equipment is open for walk-in use. This page provides availability
+          information.</p>
+      </div>
+
       <div style="margin-top: 30px">
         <el-row :gutter="20">
           <el-col :xs="12" :sm="8" :md="6" :lg="6" v-for="item in equipmentData" style="margin-bottom: 30px">
@@ -150,6 +161,68 @@ export default {
 <style scoped>
 .main-content {
   font-family: 'Roboto', sans-serif;
+}
+
+/* add glass effect title area style */
+.glass-header {
+  background: rgba(245, 247, 250, 0.8);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 30px 0;
+  border: 1px solid rgba(230, 235, 240, 0.8);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.05),
+    inset 0 0 32px rgba(255, 255, 255, 0.8);
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: scale(1);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.glass-header:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.1),
+    inset 0 0 45px rgba(255, 255, 255, 0.9);
+  background: rgba(245, 247, 250, 0.9);
+}
+
+.glass-header h1 {
+  color: #355476;
+  font-size: 28px;
+  margin: 0;
+  margin-bottom: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glass-header p {
+  color: #667788;
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.title-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-right: 2px;
+  transform: translateY(-1px);
+  filter: brightness(0.5);
+  opacity: 0.9;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.glass-header:hover .title-icon {
+  transform: translateY(-2px) scale(1.1);
 }
 
 /* Add the following CSS styles */
