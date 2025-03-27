@@ -60,7 +60,7 @@ public class TokenUtils {
     }
 
     /**
-     * Get the current logged in user information
+     * Get the current logged-in user information
      */
     public static Account getCurrentUser() {
         try {
