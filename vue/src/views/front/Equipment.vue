@@ -8,6 +8,11 @@
           @click="loadEquipment"></el-button>
         <el-button type="warning" plain style="margin-left: 10px" icon="el-icon-refresh" round
           @click="reset"></el-button>
+        <!-- to /front/eqreserve -->
+        <el-tooltip content="View Equipment Reservation Status" placement="top">
+          <el-button type="primary" plain style="margin-left: 10px" icon="el-icon-edit" round
+            @click="goToEqReserve"></el-button>
+        </el-tooltip>
       </div>
 
       <!-- prompt area -->
@@ -153,6 +158,9 @@ export default {
           this.$message.error(res.msg)
         }
       })
+    },
+    goToEqReserve() {
+      this.$router.push('/front/eqreserve');
     }
   }
 }

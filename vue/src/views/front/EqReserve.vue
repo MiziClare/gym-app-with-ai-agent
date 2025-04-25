@@ -1,10 +1,10 @@
 <template>
   <div class="main-content">
     <div style="width: 80%; margin: 20px auto">
-      <div style="margin: 20px 0; color: #666666; font-size: 17px">我的器材预约记录（{{ total }}）</div>
-      <div class="table">
+      <div style="margin: 20px 0; color: #666666; font-size: 17px">Equipment Reservation Record ({{ total }})</div>
+      <div class="table" style="width: 100%;">
         <el-table :data="tableData" stripe>
-          <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
+          <el-table-column prop="id" label="ID" width="80" align="center" sortable></el-table-column>
           <el-table-column prop="equipmentImg" label="Equipment Image" show-overflow-tooltip>
             <template v-slot="scope">
               <div style="display: flex; align-items: center">
@@ -71,11 +71,11 @@ export default {
     del(id) {   // Single delete
       this.$confirm('Are you sure you want to cancel the reservation?', 'Confirm Cancel', { type: "warning" }).then(response => {
         this.$request.delete('/eqreserve/delete/' + id).then(res => {
-          if (res.code === '200') {   // 表示操作成功
+          if (res.code === '200') {
             this.$message.success('Operation successful')
             this.load(1)
           } else {
-            this.$message.error(res.msg)  // 弹出错误的信息
+            this.$message.error(res.msg)
           }
         })
       }).catch(() => {

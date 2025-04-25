@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * jwt拦截器
+ * jwt interceptor
  */
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
@@ -41,6 +41,15 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        String uri = request.getRequestURI();
+        // swagger, error
+        if (uri.contains("/swagger") || uri.contains("/error")) {
+            return true;
+        }
+
+        if (request.getAttribute("javax.servlet.error.status_code") != null) {
+            return true;
+        }
 
         // 1. Get the token from the http request header
         String token = request.getHeader(Constants.TOKEN);
