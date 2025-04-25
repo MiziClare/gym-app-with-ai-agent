@@ -22,7 +22,7 @@
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Courses</el-menu-item>
             <el-menu-item index="/front/equipment">
               <img src="@/assets/imgs/icon-treadmill.png" alt=""
-                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Equipments
+                style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Equipment
             </el-menu-item>
             <el-menu-item index="/front/coach"><img src="@/assets/imgs/icon-coach.png" alt=""
                 style="width: 20px; margin-right: 5px; display: inline-block; vertical-align: middle;">Coaches</el-menu-item>

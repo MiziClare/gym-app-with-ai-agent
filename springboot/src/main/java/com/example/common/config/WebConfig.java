@@ -5,6 +5,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import javax.annotation.Resource;
 
@@ -36,18 +37,29 @@ public class WebConfig implements  WebMvcConfigurer {
                         "/front/chat",
                         "/index.html",
                         "/chatServer/**",
-                        "/front/**"
+                        "/front/**",
+                        "/error/**",
+                        "/error"
                 );
     }
 
-    // Add a view controller to handle the front-end routing refresh problem
+    // Add a resource handler to ensure that Swagger UI resources can be accessed correctly
     @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        // Forward all non-static resource requests to index.html
-        registry.addViewController("/{spring:^(?!chatServer).*}")
-            .setViewName("forward:/index.html");
-    registry.addViewController("/**/{spring:^(?!chatServer).*}")
-            .setViewName("forward:/index.html");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
+
+//     // Add a view controller to handle the front-end routing refresh problem
+//     @Override
+//     public void addViewControllers(ViewControllerRegistry registry) {
+//         registry.addViewController("/{spring:^(?!chatServer|swagger-ui|swagger-resources|v2).*}")
+//                 .setViewName("forward:/index.html");
+//         registry.addViewController("/**/{spring:^(?!chatServer|swagger-ui|swagger-resources|v2).*}")
+//                 .setViewName("forward:/index.html");
+//     }
 
 }
