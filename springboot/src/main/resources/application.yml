@@ -1,9 +1,7 @@
 server:
   port: 9090
 
-# auto restart
-spring.devtools.restart.enabled: true
-spring.devtools.restart.additional-paths: src/main/java
+
 
 # Database configuration
 spring:
