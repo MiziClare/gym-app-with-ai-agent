@@ -27,7 +27,7 @@ public class ChatInfoController {
     public Result add(@RequestBody ChatInfo chatInfo) {
         Account currentUser = TokenUtils.getCurrentUser();
         
-        // 强制设置角色为当前用户的角色
+        // Force set the role to the current user's role
         chatInfo.setRole(currentUser.getRole());
         
         chatInfoService.add(chatInfo);

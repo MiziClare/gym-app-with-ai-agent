@@ -39,7 +39,7 @@ public class MailService {
         // Create a simple email message object
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderEmail); // Use the configured sender email
-        message.setTo("mizi99207@gmail.com");  // Receiver email
+        message.setTo("xxx@example.com");  // Receiver email
         message.setSubject("Test Mail");         // Email subject
         message.setText("This is a test email from Spring Boot!"); // Email body
 

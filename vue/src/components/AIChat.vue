@@ -102,7 +102,7 @@ export default {
             });
         },
         renderMarkdown(text) {
-            // 将 Markdown 转换为 HTML 并进行安全处理
+            // Convert Markdown to HTML and sanitize it
             const rawHtml = marked(text);
             return DOMPurify.sanitize(rawHtml);
         }
