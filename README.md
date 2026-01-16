@@ -1,6 +1,6 @@
 # 🏋️ A Web-based Gym Management App with Agent Powered Customer Service
 
-A comprehensive, multi-role fitness management platform designed to streamline gym operations and enhance member experience.
+A comprehensive, multi-role fitness management platform designed to streamline gym operations and enhance member experience using Spring Boot and Vue.
 ---
 
 ## 🌟 Key Features
