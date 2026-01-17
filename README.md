@@ -46,9 +46,9 @@ A comprehensive, multi-role fitness management platform designed to streamline g
 ---
 
 ### 👤 Member & Coach Interaction
-| Member Home | Course Selection | Real-time Chat (WebSocket) |
+| Member Home | Equipment Booking | Real-time Chat (WebSocket) |
 | :---: | :---: | :---: |
-| <img src="./screenshots/member_home.png" width="300"> | <img src="./screenshots/member_course.png" width="300"> | <img src="./screenshots/coach_chat.png" width="300"> |
+| <img src="./screenshots/member_home.png" width="300"> | <img src="./member_equipment_list.png" width = 300"> | <img src="./screenshots/coach_chat.png" width="300"> |
 
 ---
 
