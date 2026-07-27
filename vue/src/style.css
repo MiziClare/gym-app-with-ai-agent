@@ -204,12 +204,18 @@ h1, h2, h3, p { overflow-wrap: break-word; }
 .post-card p { color: #68788b; line-height: 1.6; }
 .member-card { width: min(680px, 100%); min-height: 370px; margin: 15px auto; padding: 42px; position: relative; overflow: hidden; color: #31475e; background: linear-gradient(135deg,#ffedb4,#fff8dd); border-radius: 24px; box-shadow: 0 25px 60px rgba(76,65,32,.17); }
 .member-card::after { content: ""; position: absolute; width: 280px; height: 280px; right: -80px; bottom: -110px; border: 48px solid rgba(239,130,119,.35); border-radius: 50%; }
-.member-card img { width: 120px; }
+.member-card .member-logo { width: 120px; }
 .member-card p { margin: 40px 0 6px; font-size: 11px; letter-spacing: 2px; }
 .member-card h2 { margin: 0 0 8px; font-size: 32px; }
 .member-card strong { color: #df786e; letter-spacing: 2px; }
-.barcode { margin: 35px 0 6px; font-family: monospace; font-size: 24px; letter-spacing: 3px; }
+.membership-pass { width: 190px; height: 190px; position: absolute; z-index: 1; top: 88px; right: 42px; display: grid; place-items: center; color: #68788b; background: #fff8dd; border-radius: 14px; }
+.membership-pass img { width: 180px; height: 180px; }
 .member-card small { font-weight: 800; }
+.member-card em { margin-top: 8px; display: block; color: #7a8792; font-size: 11px; font-style: normal; }
+@media (max-width: 620px) {
+  .member-card { padding: 30px; }
+  .membership-pass { margin: 28px 0 18px; position: relative; top: auto; right: auto; }
+}
 .chat-panel { height: 650px; display: grid; grid-template-columns: 250px 1fr; overflow: hidden; }
 .chat-panel > aside { padding: 12px; border-right: 1px solid #e6eaf0; background: #fbfaf5; overflow-y: auto; }
 .chat-panel > aside button { width: 100%; padding: 11px; display: flex; align-items: center; gap: 10px; text-align: left; color: #4d5f73; background: transparent; border: 0; border-radius: 9px; }

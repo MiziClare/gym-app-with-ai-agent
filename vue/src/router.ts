@@ -9,6 +9,7 @@ import AdminView from './views/AdminView.vue'
 import ClassesView from './views/ClassesView.vue'
 import BookingsView from './views/BookingsView.vue'
 import AssistantView from './views/AssistantView.vue'
+import ScanView from './views/ScanView.vue'
 
 type Role = 'ADMIN' | 'COACH' | 'MEMBER'
 
@@ -28,6 +29,7 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/front/home' },
     { path: '/login', alias: '/sign-in', component: AuthView, meta: { guest: true } },
+    { path: '/scan', component: ScanView, meta: { roles: ['ADMIN'] as Role[] } },
     {
       path: '/front',
       component: FrontLayout,
@@ -99,6 +101,9 @@ router.beforeEach(async (to) => {
     return { path: '/login', query: { next: to.fullPath } }
   }
   const roles = to.meta.roles as Role[] | undefined
+  if (roles && !session.user) {
+    return { path: '/login', query: { next: to.fullPath } }
+  }
   if (roles && !roles.includes(session.user?.role as Role)) {
     return session.user?.role === 'ADMIN' ? '/home' : '/front/home'
   }

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onUnmounted, reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import QRCode from 'qrcode'
 import { api, messageOf } from '../api'
 import { session } from '../state'
 
@@ -19,7 +20,9 @@ const selectedStart = ref('')
 const busyPeriods = ref<Row[]>([])
 const availabilityLoading = ref(false)
 const reserving = ref(false)
+const qrCodeUrl = ref('')
 let availabilityRequest = 0
+let passRefreshTimer: ReturnType<typeof setTimeout> | undefined
 
 const reservationDays = computed(() => Array.from({ length: 7 }, (_, offset) => {
   const value = new Date()
@@ -64,8 +67,11 @@ const titles: Record<string, [string, string]> = {
 }
 
 watch(feature, load, { immediate: true })
+onUnmounted(stopPassRefresh)
 
 async function load() {
+  stopPassRefresh()
+  qrCodeUrl.value = ''
   loading.value = true
   rows.value = []
   secondary.value = []
@@ -93,7 +99,10 @@ async function load() {
     if (['community', 'myPosts'].includes(feature.value)) {
       rows.value = (await api.get(feature.value === 'myPosts' ? '/posts/me' : '/posts')).data
     }
-    if (feature.value === 'card') rows.value = [(await api.get('/membership/me')).data]
+    if (feature.value === 'card') {
+      rows.value = [(await api.get('/membership/me')).data]
+      await loadMembershipPass()
+    }
     if (feature.value === 'chat') {
       rows.value = (await api.get('/messages/peers')).data
       if (rows.value[0]) await choosePeer(rows.value[0])
@@ -103,6 +112,27 @@ async function load() {
   } finally {
     loading.value = false
   }
+}
+
+async function loadMembershipPass() {
+  const { data } = await api.get<{ token: string; refreshAt: string }>('/membership/me/pass')
+  const value = `${location.origin}/scan#${data.token}`
+  const image = await QRCode.toDataURL(value, {
+    width: 220,
+    margin: 1,
+    color: { dark: '#31475e', light: '#fff8dd' },
+  })
+  if (feature.value !== 'card') return
+  qrCodeUrl.value = image
+  const delay = Math.max(1000, new Date(data.refreshAt).getTime() - Date.now())
+  passRefreshTimer = setTimeout(() => {
+    loadMembershipPass().catch(error => ElMessage.error(messageOf(error)))
+  }, delay)
+}
+
+function stopPassRefresh() {
+  if (passRefreshTimer) clearTimeout(passRefreshTimer)
+  passRefreshTimer = undefined
 }
 
 async function createAppointment() {
@@ -343,12 +373,16 @@ watch(reservationDuration, () => { selectedStart.value = '' })
     </template>
 
     <section v-else-if="feature === 'card'" class="member-card">
-      <img src="../assets/imgs/logo.png" alt="Gym Panel">
+      <img class="member-logo" src="../assets/imgs/logo.png" alt="Gym Panel">
       <p>MEMBERSHIP CARD</p>
       <h2>{{ rows[0]?.displayName }}</h2>
       <strong>{{ rows[0]?.memberNumber }}</strong>
-      <div class="barcode">|||| ||| || |||| | |||</div>
+      <div class="membership-pass">
+        <img v-if="qrCodeUrl" :src="qrCodeUrl" alt="Short-lived membership QR code">
+        <span v-else>Preparing secure pass…</span>
+      </div>
       <small>{{ rows[0]?.planName || 'No membership plan' }} · {{ rows[0]?.status }}</small>
+      <em>Secure code refreshes every 30 seconds</em>
     </section>
 
     <section v-else-if="feature === 'chat'" class="chat-panel legacy-card">

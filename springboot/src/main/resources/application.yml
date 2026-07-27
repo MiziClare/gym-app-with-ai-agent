@@ -39,6 +39,7 @@ mybatis:
 app:
   demo-data: ${DEMO_DATA:true}
   cors-origin: ${CORS_ORIGIN:http://localhost:5173}
+  membership-pass-secret: ${MEMBERSHIP_PASS_SECRET:}
 
 logging:
   level:
