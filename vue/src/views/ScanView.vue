@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, messageOf } from '../api'
+import { session } from '../state'
 
 type ScanResult = {
   memberId: number
@@ -11,6 +12,7 @@ type ScanResult = {
   status: string
   endsOn?: string
   active: boolean
+  accessScope: 'ADMIN' | 'ASSIGNED_STUDENT' | 'CURRENT_SESSION'
 }
 
 const route = useRoute()
@@ -39,6 +41,9 @@ onMounted(async () => {
       <div v-if="result" :class="['scan-status', { active: result.active }]">
         {{ result.active ? 'Active membership' : 'Access requires review' }}
       </div>
+      <p v-if="result?.accessScope !== 'ADMIN'" class="scan-scope">
+        {{ result?.accessScope === 'ASSIGNED_STUDENT' ? 'Assigned student' : 'Current session attendee' }}
+      </p>
       <h1 v-if="result">{{ result.displayName }}</h1>
       <dl v-if="result">
         <div><dt>Member number</dt><dd>{{ result.memberNumber }}</dd></div>
@@ -48,7 +53,9 @@ onMounted(async () => {
       </dl>
       <p v-else-if="error" class="scan-error" role="alert">{{ error }}</p>
       <p v-else>Verifying membership pass…</p>
-      <RouterLink class="button dark" to="/user">Back to members</RouterLink>
+      <RouterLink class="button dark" :to="session.user?.role === 'ADMIN' ? '/user' : '/front/home'">
+        {{ session.user?.role === 'ADMIN' ? 'Back to members' : 'Back to dashboard' }}
+      </RouterLink>
     </section>
   </main>
 </template>
@@ -59,6 +66,7 @@ onMounted(async () => {
 .scan-card h1 { margin: 18px 0 24px; font-size: 36px; }
 .scan-status { width: fit-content; padding: 7px 11px; color: #8b4b31; background: #fff0e8; border-radius: 999px; font-weight: 800; }
 .scan-status.active { color: #245f3c; background: #e7f5e4; }
+.scan-scope { color: #68788b; font-size: 13px; }
 dl { margin: 0 0 28px; }
 dl div { padding: 13px 0; display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid #e7ebe5; }
 dt { color: #718077; }

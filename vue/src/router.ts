@@ -29,7 +29,7 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/front/home' },
     { path: '/login', alias: '/sign-in', component: AuthView, meta: { guest: true } },
-    { path: '/scan', component: ScanView, meta: { roles: ['ADMIN'] as Role[] } },
+    { path: '/scan', component: ScanView, meta: { roles: ['ADMIN', 'COACH'] as Role[] } },
     {
       path: '/front',
       component: FrontLayout,

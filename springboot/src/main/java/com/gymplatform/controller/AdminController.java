@@ -8,9 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,6 +171,67 @@ public class AdminController {
                 """);
     }
 
+    @GetMapping("/coach-assignments")
+    List<Map<String, Object>> coachAssignments() {
+        return jdbc.queryForList("""
+                SELECT assignment.id, assignment.coach_id AS coachId,
+                       coach.display_name AS coachName,
+                       assignment.member_id AS memberId,
+                       member.display_name AS memberName,
+                       assignment.starts_on AS startsOn,
+                       assignment.ends_on AS endsOn,
+                       assignment.status
+                FROM coach_member_assignments assignment
+                JOIN users coach ON coach.id = assignment.coach_id
+                JOIN users member ON member.id = assignment.member_id
+                ORDER BY assignment.status, coach.display_name, member.display_name
+                """);
+    }
+
+    @PostMapping("/coach-assignments")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    void createCoachAssignment(@Valid @RequestBody CoachAssignmentRequest body) {
+        if (body.endsOn() != null && body.endsOn().isBefore(body.startsOn())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End date cannot precede start date");
+        }
+        if (countUser(body.coachId(), "COACH") == 0 || countUser(body.memberId(), "MEMBER") == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coach or member not found");
+        }
+        var conflicts = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM coach_member_assignments
+                WHERE coach_id = ? AND member_id = ? AND status = 'ACTIVE'
+                  AND starts_on <= COALESCE(?, DATE('9999-12-31'))
+                  AND COALESCE(ends_on, DATE('9999-12-31')) >= ?
+                """, Integer.class,
+                body.coachId(), body.memberId(), body.endsOn(), body.startsOn());
+        if (conflicts != null && conflicts > 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Coach assignment already overlaps");
+        }
+        jdbc.update("""
+                INSERT INTO coach_member_assignments
+                    (coach_id, member_id, starts_on, ends_on)
+                VALUES (?, ?, ?, ?)
+                """, body.coachId(), body.memberId(), body.startsOn(), body.endsOn());
+    }
+
+    @DeleteMapping("/coach-assignments/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void endCoachAssignment(@PathVariable Long id) {
+        if (jdbc.update("""
+                UPDATE coach_member_assignments
+                SET status = 'ENDED',
+                    ends_on = CASE
+                        WHEN starts_on > CURRENT_DATE THEN starts_on
+                        ELSE LEAST(COALESCE(ends_on, CURRENT_DATE), CURRENT_DATE)
+                    END
+                WHERE id = ? AND status = 'ACTIVE'
+                """, id) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Active coach assignment not found");
+        }
+    }
+
     @GetMapping("/bookings")
     List<Map<String, Object>> bookings() {
         return jdbc.queryForList("""
@@ -207,6 +270,16 @@ public class AdminController {
         return value == null ? 0 : value;
     }
 
+    private int countUser(Long id, String role) {
+        var value = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE id = ? AND role = ? AND active = TRUE",
+                Integer.class,
+                id,
+                role
+        );
+        return value == null ? 0 : value;
+    }
+
     public record NoticeRequest(
             @NotBlank @Size(max = 120) String title,
             @NotBlank @Size(max = 1000) String content
@@ -229,5 +302,12 @@ public class AdminController {
             @NotNull @Min(10) @Max(240) Integer durationMinutes,
             @NotNull @Min(1) @Max(200) Integer defaultCapacity,
             @NotBlank @Size(max = 120) String coverKey
+    ) {}
+
+    public record CoachAssignmentRequest(
+            @NotNull Long coachId,
+            @NotNull Long memberId,
+            @NotNull LocalDate startsOn,
+            LocalDate endsOn
     ) {}
 }

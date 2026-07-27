@@ -88,7 +88,32 @@ public class DemoDataInitializer implements ApplicationRunner {
         }
 
         seedDemoMembership();
+        seedDemoCoachAssignment();
         seedLegacyFeatures();
+    }
+
+    private void seedDemoCoachAssignment() {
+        var coachIds = jdbc.queryForList(
+                "SELECT id FROM users WHERE username = 'coach' AND role = 'COACH'",
+                Long.class
+        );
+        var memberIds = jdbc.queryForList(
+                "SELECT id FROM users WHERE username = 'member' AND role = 'MEMBER'",
+                Long.class
+        );
+        if (coachIds.isEmpty() || memberIds.isEmpty()) {
+            return;
+        }
+        jdbc.update("""
+                INSERT INTO coach_member_assignments (coach_id, member_id, starts_on)
+                SELECT ?, ?, CURRENT_DATE
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM coach_member_assignments
+                    WHERE coach_id = ? AND member_id = ? AND status = 'ACTIVE'
+                )
+                """,
+                coachIds.getFirst(), memberIds.getFirst(),
+                coachIds.getFirst(), memberIds.getFirst());
     }
 
     private void seedDemoMembership() {

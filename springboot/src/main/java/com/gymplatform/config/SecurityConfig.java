@@ -64,7 +64,7 @@ public class SecurityConfig {
                                 "/api/notices", "/api/coaches", "/api/equipment").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/session", "/api/auth/register").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/staff/scans/**").hasRole("ADMIN")
+                        .requestMatchers("/api/staff/scans/**").hasAnyRole("ADMIN", "COACH")
                         .requestMatchers("/api/coach/**").hasRole("COACH")
                         .requestMatchers("/api/equipment-reservations/**", "/api/coach-appointments/**")
                                 .hasRole("MEMBER")
