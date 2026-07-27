@@ -10,10 +10,14 @@ const currentTitle = computed(() => String(route.meta.title ?? 'Dashboard'))
 const iconFiles = import.meta.glob('../assets/imgs/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>
 const iconUrl = (name: string) => iconFiles[`../assets/imgs/${name}`]
 const groups = [
-  { label: 'Today', links: [['Dashboard', '/home', 'icon-home.png']] },
+  { label: 'Today', links: [
+    ['Dashboard', '/home', 'icon-home.png'],
+    ['Scan member', '/scan', 'icon-card.png'],
+  ] },
   { label: 'Members', links: [
     ['Members', '/user', 'icon-account.png'],
     ['Coaches', '/coach', 'icon-coach.png'],
+    ['Coach assignments', '/coachAssignments', 'icon-reservations.png'],
   ] },
   { label: 'Operations', links: [
     ['Classes', '/course', 'icon-courses.png'],

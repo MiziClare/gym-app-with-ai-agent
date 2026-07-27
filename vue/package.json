@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "node --test --experimental-strip-types --experimental-test-isolation=none test/*.test.ts",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.11.0",
     "element-plus": "^2.11.1",
+    "qr-scanner": "^1.4.2",
     "qrcode": "^1.5.4",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"

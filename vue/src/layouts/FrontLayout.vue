@@ -39,6 +39,7 @@ const memberGroups = [
 const coachGroups = [
   { label: 'Today', links: [
     ['Dashboard', '/front/home', 'icon-home.png'],
+    ['Scan member', '/scan', 'icon-card.png'],
     ['Appointments', '/front/reserve', 'icon-reservations.png'],
     ['Classes', '/front/course', 'icon-courses.png'],
     ['Member chat', '/front/coachChat', 'icon-chat.png'],

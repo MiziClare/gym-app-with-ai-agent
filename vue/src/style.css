@@ -252,7 +252,8 @@ h1, h2, h3, p { overflow-wrap: break-word; }
 .bar-row i { max-width: 100%; height: 9px; display: block; background: #efaa87; border-radius: 99px; }
 .status-row { padding: 13px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #edf0f3; color: #6d7b8b; }
 .admin-form { margin-bottom: 18px; display: grid; grid-template-columns: 220px 1fr auto; gap: 10px; }
-.admin-form input { min-width: 0; padding: 9px 11px; border: 1px solid #dce2e8; border-radius: 6px; }
+.admin-form input, .admin-form select { min-width: 0; padding: 9px 11px; border: 1px solid #dce2e8; border-radius: 6px; }
+.assignment-form { grid-template-columns: repeat(4, minmax(130px, 1fr)) auto; }
 .equipment-form { grid-template-columns: 180px 160px 1fr auto; }
 .course-form { grid-template-columns: 180px 1fr 110px 100px auto; }
 .coach-note { display: block; padding: 10px; color: #7b8794; background: #f3f5f7; border-radius: 7px; text-align: center; font-size: 11px; }
