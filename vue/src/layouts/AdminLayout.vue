@@ -20,6 +20,7 @@ const groups = [
     ['Coach assignments', '/coachAssignments', 'icon-reservations.png'],
   ] },
   { label: 'Operations', links: [
+    ['Gym visits', '/visits', 'icon-card.png'],
     ['Classes', '/course', 'icon-courses.png'],
     ['Class bookings', '/orders', 'icon-orders.png'],
     ['Coach bookings', '/reserve', 'icon-reservations.png'],

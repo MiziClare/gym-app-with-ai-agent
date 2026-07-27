@@ -33,6 +33,7 @@ public class AdminController {
                 "coachCount", count("SELECT COUNT(*) FROM users WHERE role = 'COACH'"),
                 "courseCount", count("SELECT COUNT(*) FROM courses WHERE active = TRUE"),
                 "bookingCount", count("SELECT COUNT(*) FROM bookings WHERE status = 'CONFIRMED'"),
+                "currentOccupancy", count("SELECT COUNT(*) FROM member_visits WHERE checked_out_at IS NULL"),
                 "equipmentCount", count("SELECT COUNT(*) FROM equipment WHERE status <> 'RETIRED'"),
                 "postCount", count("SELECT COUNT(*) FROM posts"),
                 "bookingByCourse", jdbc.queryForList("""
@@ -243,6 +244,23 @@ public class AdminController {
                 JOIN users member ON member.id = b.member_id
                 JOIN users coach ON coach.id = s.coach_id
                 ORDER BY s.starts_at DESC
+                """);
+    }
+
+    @GetMapping("/member-visits")
+    List<Map<String, Object>> memberVisits() {
+        return jdbc.queryForList("""
+                SELECT visit.id, member.display_name AS memberName,
+                       visit.checked_in_at AS checkedInAt,
+                       check_in_staff.display_name AS checkedInBy,
+                       visit.checked_out_at AS checkedOutAt,
+                       check_out_staff.display_name AS checkedOutBy
+                FROM member_visits visit
+                JOIN users member ON member.id = visit.member_id
+                JOIN users check_in_staff ON check_in_staff.id = visit.checked_in_by
+                LEFT JOIN users check_out_staff ON check_out_staff.id = visit.checked_out_by
+                ORDER BY visit.checked_in_at DESC
+                LIMIT 500
                 """);
     }
 

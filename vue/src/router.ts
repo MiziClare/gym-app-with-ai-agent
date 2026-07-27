@@ -73,6 +73,7 @@ const router = createRouter({
         admin('reserve', 'appointments', 'Coach bookings'),
         admin('course', 'courses', 'Classes'),
         admin('orders', 'bookings', 'Class bookings'),
+        admin('visits', 'visits', 'Gym visits'),
         admin('equipment', 'equipment', 'Equipment'),
         admin('eqReserve', 'equipmentReservations', 'Equipment bookings'),
         admin('experience', 'posts', 'Community posts'),

@@ -17,7 +17,7 @@ const assignmentOptions = reactive<{ coaches: Row[]; members: Row[] }>({ coaches
 const names: Record<string, string> = {
   overview: 'Dashboard', admins: 'Administrators', members: 'Members', coaches: 'Coaches',
   notices: 'Notices', courses: 'Courses', bookings: 'Course Bookings', appointments: 'Coach Bookings',
-  coachAssignments: 'Coach Assignments', equipment: 'Equipment',
+  coachAssignments: 'Coach Assignments', visits: 'Gym Visits', equipment: 'Equipment',
   equipmentReservations: 'Equipment Bookings', posts: 'Community Posts', profile: 'My Account',
 }
 const columns = computed(() => Object.keys(rows.value[0] || {}).filter(key =>
@@ -48,7 +48,8 @@ async function load() {
       const paths: Record<string, string> = {
         notices: '/admin/notices', courses: '/courses', bookings: '/admin/bookings',
         appointments: '/admin/coach-appointments', equipment: '/equipment',
-        equipmentReservations: '/admin/equipment-reservations', posts: '/admin/posts',
+        equipmentReservations: '/admin/equipment-reservations',
+        visits: '/admin/member-visits', posts: '/admin/posts',
       }
       rows.value = (await api.get(paths[module.value])).data
     }
@@ -116,7 +117,7 @@ function show(value: unknown) {
 
     <template v-else-if="module === 'overview'">
       <div class="metric-grid">
-        <article v-for="[key, title] in [['memberCount','Members'],['coachCount','Coaches'],['courseCount','Courses'],['bookingCount','Bookings'],['equipmentCount','Equipment'],['postCount','Posts']]" :key="key">
+        <article v-for="[key, title] in [['currentOccupancy','In gym now'],['memberCount','Members'],['coachCount','Coaches'],['courseCount','Courses'],['bookingCount','Bookings'],['equipmentCount','Equipment'],['postCount','Posts']]" :key="key">
           <span>{{ title }}</span><strong>{{ overview[key] ?? 0 }}</strong>
         </article>
       </div>
