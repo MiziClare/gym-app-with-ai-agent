@@ -107,11 +107,26 @@ public class LegacyFeatureController {
             );
         }
         var memberId = currentUserService.require(authentication).id();
+        jdbc.queryForObject(
+                "SELECT id FROM users WHERE id = ? FOR UPDATE",
+                Long.class, memberId);
         var available = jdbc.queryForList(
                 "SELECT id FROM equipment WHERE id = ? AND status = 'AVAILABLE' FOR UPDATE",
                 Long.class, body.equipmentId());
         if (available.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment is not available");
+        }
+        var memberConflicts = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM equipment_reservations
+                WHERE member_id = ? AND status = 'CONFIRMED'
+                  AND starts_at < ? AND ends_at > ?
+                """, Integer.class, memberId, body.endsAt(), body.startsAt());
+        if (memberConflicts != null && memberConflicts > 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "You already have equipment reserved for that time"
+            );
         }
         var conflicts = jdbc.queryForObject("""
                 SELECT COUNT(*)

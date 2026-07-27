@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,5 +38,36 @@ class LegacyFeatureControllerTest {
         assertEquals(400, invalidRange.getStatusCode().value());
         assertEquals(400, tooLong.getStatusCode().value());
         verifyNoInteractions(jdbc);
+    }
+
+    @Test
+    void rejectsOverlappingEquipmentForTheSameMember() {
+        var jdbc = mock(JdbcTemplate.class);
+        var currentUser = mock(CurrentUserService.class);
+        var authentication = mock(Authentication.class);
+        when(currentUser.require(authentication)).thenReturn(
+                new User(1L, "member", "", "Member", "member@example.test",
+                        Role.MEMBER, true, Instant.now())
+        );
+        when(jdbc.queryForList(
+                contains("SELECT id FROM equipment"),
+                eq(Long.class), eq(2L)
+        )).thenReturn(List.of(2L));
+        when(jdbc.queryForObject(
+                contains("WHERE member_id = ?"),
+                eq(Integer.class), eq(1L), any(Instant.class), any(Instant.class)
+        )).thenReturn(1);
+        var startsAt = Instant.now().plusSeconds(7200);
+
+        var error = assertThrows(ResponseStatusException.class,
+                () -> new LegacyFeatureController(jdbc, currentUser)
+                        .reserveEquipment(new LegacyFeatureController.EquipmentReservationRequest(
+                                2L, startsAt, startsAt.plusSeconds(30 * 60)), authentication));
+
+        assertEquals(409, error.getStatusCode().value());
+        verify(jdbc).queryForObject(
+                contains("SELECT id FROM users"),
+                eq(Long.class), eq(1L)
+        );
     }
 }
