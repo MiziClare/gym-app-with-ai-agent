@@ -14,21 +14,28 @@ type ScanResult = {
   status: string
   endsOn?: string
   active: boolean
+  allowEntry: boolean
   accessScope: 'ADMIN' | 'ASSIGNED_STUDENT' | 'CURRENT_SESSION'
+  checkedIn: boolean
 }
 
 const route = useRoute()
 const video = ref<HTMLVideoElement>()
 const result = ref<ScanResult | null>(null)
 const error = ref('')
+const notice = ref('')
+const visitSaving = ref(false)
 const mode = ref<'idle' | 'camera' | 'loading'>('idle')
 let scanner: QrScanner | null = null
+let passToken = ''
 
 async function resolveToken(token: string) {
   mode.value = 'loading'
   error.value = ''
+  notice.value = ''
   try {
     result.value = (await api.post<ScanResult>('/staff/scans/resolve', { token })).data
+    passToken = token
   } catch (caught) {
     error.value = messageOf(caught)
   } finally {
@@ -38,6 +45,7 @@ async function resolveToken(token: string) {
 
 async function startCamera() {
   result.value = null
+  passToken = ''
   error.value = ''
   mode.value = 'camera'
   await nextTick()
@@ -77,6 +85,22 @@ function stopCamera() {
   mode.value = 'idle'
 }
 
+async function updateVisit(action: 'check-in' | 'check-out') {
+  if (!result.value || !passToken) return
+  visitSaving.value = true
+  error.value = ''
+  notice.value = ''
+  try {
+    await api.post(`/staff/scans/${action}`, { token: passToken })
+    result.value.checkedIn = action === 'check-in'
+    notice.value = action === 'check-in' ? 'Member checked in.' : 'Member checked out.'
+  } catch (caught) {
+    error.value = messageOf(caught)
+  } finally {
+    visitSaving.value = false
+  }
+}
+
 onMounted(async () => {
   const token = route.hash.slice(1)
   history.replaceState(history.state, '', route.path)
@@ -95,6 +119,7 @@ onBeforeUnmount(stopCamera)
         <div :class="['scan-status', { active: result.active }]">
           {{ result.active ? 'Active membership' : 'Access requires review' }}
         </div>
+        <p class="visit-status">{{ result.checkedIn ? 'Currently in gym' : 'Not checked in' }}</p>
         <p v-if="result.accessScope !== 'ADMIN'" class="scan-scope">
           {{ result.accessScope === 'ASSIGNED_STUDENT' ? 'Assigned student' : 'Current session attendee' }}
         </p>
@@ -115,8 +140,18 @@ onBeforeUnmount(stopCamera)
       <p v-else>Use this device’s camera to scan a member card.</p>
 
       <p v-if="error" class="scan-error" role="alert">{{ error }}</p>
+      <p v-if="notice" class="scan-notice" role="status">{{ notice }}</p>
 
       <div class="scan-actions">
+        <button
+          v-if="result && (result.checkedIn || (result.active && result.allowEntry))"
+          class="button dark"
+          type="button"
+          :disabled="visitSaving"
+          @click="updateVisit(result.checkedIn ? 'check-out' : 'check-in')"
+        >
+          {{ visitSaving ? 'Saving…' : result.checkedIn ? 'Check out' : 'Check in' }}
+        </button>
         <button v-if="mode === 'camera'" class="button" type="button" @click="stopCamera">Cancel</button>
         <button v-else-if="mode !== 'loading'" class="button dark" type="button" @click="startCamera">
           {{ result || error ? 'Scan another member' : 'Start camera' }}
@@ -135,6 +170,7 @@ onBeforeUnmount(stopCamera)
 .scan-card h1 { margin: 18px 0 24px; font-size: 36px; }
 .scan-status { width: fit-content; padding: 7px 11px; color: #8b4b31; background: #fff0e8; border-radius: 999px; font-weight: 800; }
 .scan-status.active { color: #245f3c; background: #e7f5e4; }
+.visit-status { font-weight: 750; }
 .scan-scope { color: #68788b; font-size: 13px; }
 .camera { margin: 18px 0; }
 .camera video { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #17201b; border-radius: 14px; }
@@ -145,4 +181,5 @@ dl div { padding: 13px 0; display: flex; justify-content: space-between; gap: 20
 dt { color: #718077; }
 dd { margin: 0; font-weight: 750; text-align: right; }
 .scan-error { color: #a53e35; }
+.scan-notice { color: #245f3c; }
 </style>

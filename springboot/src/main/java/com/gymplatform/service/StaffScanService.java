@@ -5,6 +5,7 @@ import com.gymplatform.domain.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -18,6 +19,39 @@ public class StaffScanService {
     }
 
     public StaffScanResult resolve(String token, User staff) {
+        return authorize(token, staff, true);
+    }
+
+    @Transactional
+    public void checkIn(String token, User staff) {
+        var member = authorize(token, staff, false);
+        if (!member.active() || !member.allowEntry()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Membership does not allow gym entry");
+        }
+        lockMember(member.memberId());
+        if (hasOpenVisit(member.memberId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Member is already checked in");
+        }
+        jdbc.update("""
+                INSERT INTO member_visits (member_id, checked_in_by)
+                VALUES (?, ?)
+                """, member.memberId(), staff.id());
+    }
+
+    @Transactional
+    public void checkOut(String token, User staff) {
+        var member = authorize(token, staff, false);
+        lockMember(member.memberId());
+        if (jdbc.update("""
+                UPDATE member_visits
+                SET checked_out_at = CURRENT_TIMESTAMP, checked_out_by = ?
+                WHERE member_id = ? AND checked_out_at IS NULL
+                """, staff.id(), member.memberId()) == 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Member is not checked in");
+        }
+    }
+
+    private StaffScanResult authorize(String token, User staff, boolean recordAudit) {
         Long memberId = null;
         try {
             var member = membershipPassService.resolve(token);
@@ -31,7 +65,9 @@ public class StaffScanService {
                         "This member is not assigned to this coach or attending a current session"
                 );
             }
-            audit(staff.id(), memberId, "APPROVED", scope, null);
+            if (recordAudit) {
+                audit(staff.id(), memberId, "APPROVED", scope, null);
+            }
             return new StaffScanResult(
                     member.memberId(),
                     member.memberNumber(),
@@ -40,12 +76,32 @@ public class StaffScanService {
                     member.status(),
                     member.endsOn(),
                     member.active(),
-                    scope
+                    member.allowEntry(),
+                    scope,
+                    hasOpenVisit(member.memberId())
             );
         } catch (ResponseStatusException error) {
-            audit(staff.id(), memberId, "DENIED", null, error.getReason());
+            if (recordAudit) {
+                audit(staff.id(), memberId, "DENIED", null, error.getReason());
+            }
             throw error;
         }
+    }
+
+    private void lockMember(Long memberId) {
+        jdbc.queryForObject(
+                "SELECT member_id FROM member_profiles WHERE member_id = ? FOR UPDATE",
+                Long.class,
+                memberId
+        );
+    }
+
+    private boolean hasOpenVisit(Long memberId) {
+        var count = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM member_visits
+                WHERE member_id = ? AND checked_out_at IS NULL
+                """, Integer.class, memberId);
+        return count != null && count > 0;
     }
 
     private String coachAccessScope(Long coachId, Long memberId) {
@@ -110,6 +166,8 @@ public class StaffScanService {
             String status,
             java.time.LocalDate endsOn,
             boolean active,
-            String accessScope
+            boolean allowEntry,
+            String accessScope,
+            boolean checkedIn
     ) {}
 }

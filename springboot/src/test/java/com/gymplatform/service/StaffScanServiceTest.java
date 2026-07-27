@@ -20,7 +20,7 @@ class StaffScanServiceTest {
     private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
     private final StaffScanService service = new StaffScanService(passService, jdbc);
     private final MembershipPassService.ScanResult member = new MembershipPassService.ScanResult(
-            4L, "GF-000004", "Member", "Unlimited", "ACTIVE", null, true
+            4L, "GF-000004", "Member", "Unlimited", "ACTIVE", null, true, true
     );
 
     @Test
@@ -48,5 +48,20 @@ class StaffScanServiceTest {
                 contains("INSERT INTO staff_scan_audit"),
                 eq(9L), eq(4L), anyString(), nullable(String.class), nullable(String.class)
         );
+    }
+
+    @Test
+    void checksInActiveMemberOnlyOnce() {
+        var admin = new User(
+                1L, "admin", "", "Admin", "admin@example.test",
+                Role.ADMIN, true, Instant.now()
+        );
+        when(passService.resolve("valid")).thenReturn(member);
+        when(jdbc.queryForObject(contains("FROM member_visits"), eq(Integer.class), eq(4L)))
+                .thenReturn(0);
+
+        service.checkIn("valid", admin);
+
+        verify(jdbc).update(contains("INSERT INTO member_visits"), eq(4L), eq(1L));
     }
 }

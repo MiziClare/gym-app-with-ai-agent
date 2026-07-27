@@ -88,7 +88,8 @@ public class MembershipPassService {
                 membership.planName(),
                 membership.status(),
                 membership.endsOn(),
-                membership.active()
+                membership.active(),
+                membership.allowEntry()
         );
     }
 
@@ -171,6 +172,7 @@ public class MembershipPassService {
             String planName,
             String status,
             java.time.LocalDate endsOn,
-            boolean active
+            boolean active,
+            boolean allowEntry
     ) {}
 }
