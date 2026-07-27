@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: gym_portfolio
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-gymflow-local}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-gymflow-local}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - gymflow-db:/var/lib/mysql
+
+  api:
+    build: ./springboot
+    environment:
+      DB_URL: jdbc:mysql://db:3306/gym_portfolio?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-gymflow-local}
+      DEMO_DATA: ${DEMO_DATA:-true}
+      CORS_ORIGIN: http://localhost:8080
+      AI_PROVIDER: ${AI_PROVIDER:-none}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./vue
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  gymflow-db:

@@ -1,60 +1,88 @@
-# 🏋️ A Web-based Gym Management App with Agent Powered Customer Service
+# Gym Panel
 
-A comprehensive, multi-role fitness management platform designed to streamline gym operations and enhance member experience using Spring Boot and Vue.
----
+Gym Panel is a modernized rebuild of my undergraduate final-year project. It keeps the original member, coach and administrator workflows and the original warm-yellow/dark-blue visual identity, while replacing the legacy implementation with a secure, maintainable stack.
 
-## 🌟 Key Features
+![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
+![Spring Boot 4.1](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?logo=springboot&logoColor=white)
+![Vue 3](https://img.shields.io/badge/Vue-3-42B883?logo=vuedotjs&logoColor=white)
+![MySQL 8](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
 
-### 👥 Multi-Role Support (Admin, Coach, Member)
-- **Admin:** Data visualization dashboards (ECharts) for monitoring revenue, equipment usage, and user trends.
-- **Coach:** Personal training schedule management and real-time interaction with members.
-- **Member:** Course booking, equipment reservation, and digital membership card access.
+## Restored product scope
 
+- Member portal: home, profile, coaches, coach appointments, courses, class bookings, equipment, equipment reservations, community posts, VR preview, membership e-card, coach chat and AI assistant.
+- Coach portal: profile, member appointments, courses, community and member chat.
+- Administrator portal: dashboard, users, coaches, notices, courses, bookings, equipment, equipment reservations and post moderation.
+- Original URLs such as `/front/course`, `/front/equipment`, `/home`, `/user` and `/notice` remain available.
 
-### 🤖 AI-Powered Customer Service
-- Integrated **Spring AI** to provide a smart chatbot capable of handling course queries, appointment bookings, and general fitness FAQs.
+## Modernization
 
+- Java 21, Spring Boot, Spring Security, MyBatis and Flyway.
+- Vue 3, TypeScript and Vite with responsive layouts.
+- Server sessions, BCrypt, CSRF protection and role-based authorization.
+- Transactional class capacity checks and ownership checks on user actions.
+- Optional Spring AI assistant; booking or cancellation changes require explicit confirmation.
+- Environment-based secrets. The original `fyp_fitness` schema is untouched; this app uses `gym_portfolio`.
 
-### ⚡ Modern Tech Enhancements
-- **Real-time Communication:** Built with **WebSocket** for instant messaging between coaches and members.
-- **VR Experience:** Virtual gym previews using **A-Frame** to help new members explore facilities.
-- **Security:** Robust authentication via **JWT**; fully **GDPR** compliant.
+## Run locally in VS Code
 
----
+Requirements: Java 21, Maven, Node.js 22+, MySQL 8.
 
-## 🛠 Tech Stack
+Open the repository folder, then use two VS Code terminals.
 
-- **Backend:** Java (Spring Boot), Spring AI, MySQL, JWT, WebSocket
-- **Frontend:** Vue.js, ElementUI, ECharts, A-Frame (VR)
+PowerShell terminal 1:
 
----
+```powershell
+cd springboot
+$env:DB_USERNAME = "root"
+$env:DB_PASSWORD = "your-local-mysql-password"
+mvn spring-boot:run
+```
 
-## 📸 System Preview
+PowerShell terminal 2:
 
-### 🖥️ Administrative & Business Analytics
-| Admin Dashboard | Equipment Management | Operational Overview |
-| :---: | :---: | :---: |
-| <img src="./screenshots/admin_dashboard.png" width="300"> | <img src="./screenshots/admin_equipment.png" width="300"> | <img src="./screenshots/functional_overview.png" width="300"> |
+```powershell
+cd vue
+npm ci
+npm run dev
+```
 
----
+Open `http://localhost:5173`. The API runs on `http://localhost:9090`.
 
-### 🤖 AI Integration & Innovation
-| AI Customer Service (Spring AI) | VR Gym Preview (A-Frame) | Digital Membership Card |
-| :---: | :---: | :---: |
-| <img src="./screenshots/ai_customer_service.png" width="300"> | <img src="./screenshots/gym_aframe_demo.png" width="300"> | <img src="./screenshots/ecard.png" width="300"> |
+Demo users share the password `GymDemo123!`:
 
----
+| Role | Username |
+| --- | --- |
+| Member | `member` |
+| Coach | `coach` |
+| Administrator | `admin` |
 
-### 👤 Member & Coach Interaction
-| Member Home | Equipment Booking | Real-time Chat (WebSocket) |
-| :---: | :---: | :---: |
-| <img src="./screenshots/member_home.png" width="300"> | <img src="./screenshots/member_equipment_list.png" width = "300"> | <img src="./screenshots/coach_chat.png" width="300"> |
+## Verify
 
----
+```powershell
+cd springboot
+mvn clean test
 
-### 🔍 Else
-| Course Details | E-Card Scanning | Community Forum |
-| :---: | :---: | :---: |
-| <img src="./screenshots/member_course_details.png" width="300"> | <img src="./screenshots/ecard_scanning.png" width="300"> | <img src="./screenshots/member_post.png" width="300"> |
+cd ../vue
+npm run build
+```
 
----
+## Optional AI
+
+The core app works with AI disabled. To enable an OpenAI-compatible provider:
+
+```powershell
+$env:AI_PROVIDER = "openai"
+$env:AI_API_KEY = "your-key"
+$env:AI_MODEL = "gpt-4o-mini"
+```
+
+Keep credentials in environment variables or an ignored local `.env` file.
+
+## Docker
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Open `http://localhost:8080`.

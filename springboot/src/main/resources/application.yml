@@ -1,59 +1,45 @@
 server:
-  port: 9090
-
-# auto restart
-spring.devtools.restart.enabled: true
-spring.devtools.restart.additional-paths: src/main/java
-
-# Database configuration
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root   # MySQL Workbench username
-    password: Zxy@5628610 # MySQL Workbench password
-    url: jdbc:mysql://localhost:3309/fyp_fitness?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+  port: ${SERVER_PORT:9090}
   servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+      timeout: 2h
 
-  # AI service configuration
+spring:
+  application:
+    name: gym-platform-api
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/gym_portfolio?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  flyway:
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+  web:
+    resources:
+      add-mappings: false
   ai:
-    deepseek:
-      url: https://api.siliconflow.cn/v1/chat/completions
-      api-token: sk-teuivpffjzajnpulzvytghljvbaymtunthinwnxcizxgitjp
-      model: deepseek-ai/DeepSeek-V2.5
+    model:
+      chat: ${AI_PROVIDER:none}
+    openai:
+      base-url: ${AI_BASE_URL:https://api.openai.com}
+      api-key: ${AI_API_KEY:disabled}
+      chat:
+        options:
+          model: ${AI_MODEL:gpt-4o-mini}
+          temperature: 0.2
 
-  # Mail Service
-  mail:
-    host: smtp.mailersend.net
-    port: 587
-    username: MS_bWM0Iq@trial-3yxj6ljkmqxgdo2r.mlsender.net
-    password: mssp.FlYyYxN.z86org8y6n1lew13.rcSe2P4
-    protocol: smtp
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls.enable: true
-    sender:
-      email: MS_bWM0Iq@trial-3yxj6ljkmqxgdo2r.mlsender.net
-      name: Gym Panel Team
-
-# Configure mybatis entity and xml mapping
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.example.entity
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
 
-# Pagination
-pagehelper:
-  helper-dialect: mysql
-  reasonable: true
-  support-methods-arguments: true
-  params: count=countSql
+app:
+  demo-data: ${DEMO_DATA:true}
+  cors-origin: ${CORS_ORIGIN:http://localhost:5173}
 
-ip: localhost
+logging:
+  level:
+    com.gymplatform: INFO

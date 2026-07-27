@@ -2,8 +2,9 @@
 node_modules
 **/node_modules
 **/node_modules/**
-package-lock.json
-yarn.lock
+.env
+*.local
+.playwright-cli/
 
 .idea/
 *.iml
@@ -15,5 +16,6 @@ yarn.lock
 target/
 dist/
 
-
-... 
+# Runtime uploads and local databases
+uploads/
+*.db

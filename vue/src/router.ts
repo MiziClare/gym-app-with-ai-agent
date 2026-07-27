@@ -1,0 +1,107 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { loadSession, session } from './state'
+import AuthView from './views/AuthView.vue'
+import FrontLayout from './layouts/FrontLayout.vue'
+import AdminLayout from './layouts/AdminLayout.vue'
+import FrontHomeView from './views/FrontHomeView.vue'
+import FrontFeatureView from './views/FrontFeatureView.vue'
+import AdminView from './views/AdminView.vue'
+import ClassesView from './views/ClassesView.vue'
+import BookingsView from './views/BookingsView.vue'
+import AssistantView from './views/AssistantView.vue'
+
+type Role = 'ADMIN' | 'COACH' | 'MEMBER'
+
+const feature = (path: string, name: string, title: string, roles: Role[] = ['MEMBER', 'COACH']) => ({
+  path,
+  component: FrontFeatureView,
+  meta: { feature: name, title, roles },
+})
+const admin = (path: string, name: string, title: string) => ({
+  path,
+  component: AdminView,
+  meta: { module: name, title, roles: ['ADMIN'] as Role[] },
+})
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', redirect: '/front/home' },
+    { path: '/login', alias: '/sign-in', component: AuthView, meta: { guest: true } },
+    {
+      path: '/front',
+      component: FrontLayout,
+      meta: { front: true },
+      children: [
+        { path: '', redirect: '/front/home' },
+        { path: 'home', component: FrontHomeView, meta: { title: 'Overview', roles: ['MEMBER', 'COACH'] as Role[] } },
+        { path: 'course', alias: 'courseDetail', component: ClassesView, meta: { title: 'Classes', roles: ['MEMBER', 'COACH'] as Role[] } },
+        { path: 'orders', component: BookingsView, meta: { title: 'My classes', roles: ['MEMBER'] as Role[] } },
+        { path: 'ai', component: AssistantView, meta: { title: 'AI assistant', roles: ['MEMBER'] as Role[] } },
+        feature('person', 'profile', 'My profile', ['MEMBER']),
+        feature('coachPerson', 'profile', 'My profile', ['COACH']),
+        feature('coach', 'coaches', 'Coaches', ['MEMBER']),
+        feature('coachDetail', 'coaches', 'Coach details', ['MEMBER']),
+        feature('reserve', 'appointments', 'Coach bookings'),
+        feature('equipment', 'equipment', 'Equipment', ['MEMBER']),
+        feature('eqReserve', 'equipmentReservations', 'Equipment bookings', ['MEMBER']),
+        feature('experience', 'community', 'Community'),
+        feature('experienceDetail', 'community', 'Post details'),
+        feature('myExperience', 'myPosts', 'My posts', ['MEMBER']),
+        feature('card', 'card', 'Member card', ['MEMBER']),
+        feature('vr', 'vr', 'Virtual gym', ['MEMBER']),
+        feature('chat', 'chat', 'Coach chat', ['MEMBER']),
+        feature('coachChat', 'chat', 'Member chat', ['COACH']),
+      ],
+    },
+    {
+      path: '/',
+      component: AdminLayout,
+      meta: { admin: true },
+      children: [
+        admin('home', 'overview', 'Dashboard'),
+        admin('admin', 'admins', 'Administrators'),
+        admin('adminPerson', 'profile', 'My profile'),
+        admin('password', 'profile', 'Security'),
+        admin('notice', 'notices', 'Notices'),
+        admin('user', 'members', 'Members'),
+        admin('user/:username', 'members', 'Member details'),
+        admin('coach', 'coaches', 'Coaches'),
+        admin('reserve', 'appointments', 'Coach bookings'),
+        admin('course', 'courses', 'Classes'),
+        admin('orders', 'bookings', 'Class bookings'),
+        admin('equipment', 'equipment', 'Equipment'),
+        admin('eqReserve', 'equipmentReservations', 'Equipment bookings'),
+        admin('experience', 'posts', 'Community posts'),
+      ],
+    },
+    { path: '/classes', redirect: '/front/course' },
+    { path: '/bookings', redirect: '/front/orders' },
+    { path: '/assistant', redirect: '/front/ai' },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
+  ],
+  scrollBehavior: () => ({ top: 0 }),
+})
+
+router.beforeEach(async (to) => {
+  if (!session.ready) {
+    await loadSession().catch(() => {
+      session.ready = true
+    })
+  }
+  if (to.meta.guest && session.user) {
+    return session.user.role === 'ADMIN' ? '/home' : '/front/home'
+  }
+  if (to.meta.admin && session.user?.role !== 'ADMIN') {
+    return { path: '/login', query: { next: to.fullPath } }
+  }
+  if (to.meta.front && !['MEMBER', 'COACH'].includes(session.user?.role ?? '')) {
+    return { path: '/login', query: { next: to.fullPath } }
+  }
+  const roles = to.meta.roles as Role[] | undefined
+  if (roles && !roles.includes(session.user?.role as Role)) {
+    return session.user?.role === 'ADMIN' ? '/home' : '/front/home'
+  }
+})
+
+export default router
