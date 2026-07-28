@@ -112,14 +112,18 @@ public class MembershipPassService {
     PassClaims verify(String token, Instant now) {
         try {
             var parts = token.split("\\.", -1);
-            if (parts.length != 2 || !MessageDigest.isEqual(
-                    Base64.getUrlDecoder().decode(parts[1]),
-                    sign(parts[0])
-            )) {
+            if (parts.length != 2) {
+                throw invalidPass();
+            }
+            var payload = Base64.getUrlDecoder().decode(parts[0]);
+            var signature = Base64.getUrlDecoder().decode(parts[1]);
+            if (!parts[0].equals(encode(payload))
+                    || !parts[1].equals(encode(signature))
+                    || !MessageDigest.isEqual(signature, sign(parts[0]))) {
                 throw invalidPass();
             }
             var claims = new String(
-                    Base64.getUrlDecoder().decode(parts[0]),
+                    payload,
                     StandardCharsets.UTF_8
             ).split("\\|", -1);
             if (claims.length != 4) {
