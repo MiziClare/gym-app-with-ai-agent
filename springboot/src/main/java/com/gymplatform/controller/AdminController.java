@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -251,23 +252,59 @@ public class AdminController {
     @GetMapping("/closed-days")
     List<Map<String, Object>> closedDays() {
         return jdbc.queryForList("""
-                SELECT id, closed_on AS closedOn, reason, created_at AS createdAt
+                SELECT id, closed_on AS closedOn, starts_at AS startsAt,
+                       ends_at AS endsAt, reason, created_at AS createdAt
                 FROM gym_closed_days
-                ORDER BY closed_on DESC
+                ORDER BY closed_on DESC, starts_at
                 """);
     }
 
     @PostMapping("/closed-days")
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     void createClosedDay(@Valid @RequestBody ClosedDayRequest body) {
         if (body.closedOn().isBefore(LocalDate.now())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past dates cannot be closed");
         }
+        var partial = body.startsAt() != null || body.endsAt() != null;
+        if (partial && (body.startsAt() == null || body.endsAt() == null
+                || !body.endsAt().isAfter(body.startsAt()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valid start and end times are required");
+        }
+        if (!partial) {
+            jdbc.update("DELETE FROM gym_closed_days WHERE closed_on = ?", body.closedOn());
+        } else {
+            var conflicts = jdbc.queryForObject("""
+                    SELECT COUNT(*) FROM gym_closed_days
+                    WHERE closed_on = ?
+                      AND (starts_at IS NULL OR (starts_at < ? AND ends_at > ?))
+                    """, Integer.class, body.closedOn(), body.endsAt(), body.startsAt());
+            if (conflicts != null && conflicts > 0) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Closure overlaps an existing closure");
+            }
+        }
         jdbc.update("""
-                INSERT INTO gym_closed_days (closed_on, reason)
-                VALUES (?, ?)
-                ON DUPLICATE KEY UPDATE reason = VALUES(reason)
-                """, body.closedOn(), body.reason().trim());
+                INSERT INTO gym_closed_days (closed_on, starts_at, ends_at, reason)
+                VALUES (?, ?, ?, ?)
+                """, body.closedOn(), body.startsAt(), body.endsAt(), body.reason().trim());
+    }
+
+    @GetMapping("/operation-hours")
+    Map<String, Object> operationHours() {
+        return jdbc.queryForMap("""
+                SELECT opens_at AS opensAt, closes_at AS closesAt
+                FROM gym_operation_hours WHERE id = 1
+                """);
+    }
+
+    @PutMapping("/operation-hours")
+    void updateOperationHours(@Valid @RequestBody OperationHoursRequest body) {
+        if (!body.closesAt().isAfter(body.opensAt())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Closing time must be after opening time");
+        }
+        jdbc.update("""
+                UPDATE gym_operation_hours SET opens_at = ?, closes_at = ? WHERE id = 1
+                """, body.opensAt(), body.closesAt());
     }
 
     @DeleteMapping("/closed-days/{id}")
@@ -463,6 +500,13 @@ public class AdminController {
 
     public record ClosedDayRequest(
             @NotNull LocalDate closedOn,
+            LocalTime startsAt,
+            LocalTime endsAt,
             @NotBlank @Size(max = 160) String reason
+    ) {}
+
+    public record OperationHoursRequest(
+            @NotNull LocalTime opensAt,
+            @NotNull LocalTime closesAt
     ) {}
 }

@@ -1,6 +1,7 @@
 package com.gymplatform.controller;
 
 import com.gymplatform.service.CurrentUserService;
+import com.gymplatform.service.GymOperations;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
@@ -81,11 +82,20 @@ public class LegacyFeatureController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid calendar range");
         }
         return jdbc.queryForList("""
-                SELECT id, closed_on AS closedOn, reason
+                SELECT id, closed_on AS closedOn, starts_at AS startsAt,
+                       ends_at AS endsAt, reason
                 FROM gym_closed_days
                 WHERE closed_on BETWEEN ? AND ?
                 ORDER BY closed_on
                 """, from, to);
+    }
+
+    @GetMapping("/operations/hours")
+    Map<String, Object> operationHours() {
+        return jdbc.queryForMap("""
+                SELECT opens_at AS opensAt, closes_at AS closesAt
+                FROM gym_operation_hours WHERE id = 1
+                """);
     }
 
     @GetMapping("/coach-availability")
@@ -175,9 +185,7 @@ public class LegacyFeatureController {
             );
         }
         var memberId = currentUserService.require(authentication).id();
-        if (isClosed(localDate(body.startsAt()))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gym is closed on that date");
-        }
+        GymOperations.requireOpen(jdbc, body.startsAt(), body.endsAt());
         jdbc.queryForObject(
                 "SELECT id FROM users WHERE id = ? FOR UPDATE",
                 Long.class, memberId);
@@ -257,9 +265,7 @@ public class LegacyFeatureController {
         var startsOn = localDate(body.startsAt());
         var startsAt = localTime(body.startsAt());
         var endsAt = startsAt.plusHours(1);
-        if (isClosed(startsOn)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gym is closed on that date");
-        }
+        GymOperations.requireOpen(jdbc, body.startsAt(), body.startsAt().plus(Duration.ofHours(1)));
         var availableCoaches = jdbc.queryForList(
                 "SELECT id FROM users WHERE id = ? AND role = 'COACH' AND active = TRUE FOR UPDATE",
                 Long.class, body.coachId());
@@ -436,13 +442,6 @@ public class LegacyFeatureController {
                 WHERE coach_id = ?
                 ORDER BY day_of_week, starts_at
                 """, coachId);
-    }
-
-    private boolean isClosed(LocalDate date) {
-        var closed = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM gym_closed_days WHERE closed_on = ?",
-                Integer.class, date);
-        return closed != null && closed > 0;
     }
 
     private LocalDate localDate(Instant value) {

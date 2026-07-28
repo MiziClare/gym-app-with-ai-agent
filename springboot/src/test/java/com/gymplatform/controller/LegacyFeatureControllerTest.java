@@ -54,6 +54,10 @@ class LegacyFeatureControllerTest {
                 eq(Long.class), eq(2L)
         )).thenReturn(List.of(2L));
         when(jdbc.queryForObject(
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(1);
+        when(jdbc.queryForObject(
                 contains("WHERE member_id = ?"),
                 eq(Integer.class), eq(1L), any(Instant.class), any(Instant.class)
         )).thenReturn(1);
@@ -84,6 +88,10 @@ class LegacyFeatureControllerTest {
                 contains("SELECT id FROM users"),
                 eq(Long.class), eq(2L)
         )).thenReturn(List.of(2L));
+        when(jdbc.queryForObject(
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(1);
         when(jdbc.queryForObject(
                 contains("FROM coach_availability"),
                 eq(Integer.class), eq(2L), anyInt(), any(), any()

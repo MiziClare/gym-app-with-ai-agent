@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +31,17 @@ public class GymMapController {
     GymMapResponse getMap(@RequestParam Instant from, @RequestParam Instant to) {
         validateRange(from, to);
         var generatedAt = Instant.now();
-        var closedToday = Boolean.TRUE.equals(jdbc.queryForObject(
-                "SELECT COUNT(*) > 0 FROM gym_closed_days WHERE closed_on = ?",
-                Boolean.class, LocalDate.now()
-        ));
+        var now = LocalTime.now();
+        var closedToday = Boolean.TRUE.equals(jdbc.queryForObject("""
+                SELECT NOT EXISTS (
+                    SELECT 1 FROM gym_operation_hours
+                    WHERE id = 1 AND opens_at <= ? AND closes_at > ?
+                ) OR EXISTS (
+                    SELECT 1 FROM gym_closed_days
+                    WHERE closed_on = ?
+                      AND (starts_at IS NULL OR (starts_at <= ? AND ends_at > ?))
+                )
+                """, Boolean.class, now, now, LocalDate.now(), now, now));
         var occupancy = jdbc.queryForObject(
                 "SELECT COUNT(*) FROM member_visits WHERE checked_out_at IS NULL",
                 Integer.class

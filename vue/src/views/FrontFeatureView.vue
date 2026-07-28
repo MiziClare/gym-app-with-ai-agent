@@ -22,6 +22,9 @@ const reservationDuration = ref(30)
 const selectedStart = ref('')
 const busyPeriods = ref<Row[]>([])
 const closedDays = ref<Row[]>([])
+const operationHours = reactive({ opensAt: '06:00', closesAt: '22:00' })
+const calendarMonthDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+const selectedCalendarDate = ref(localDate(new Date()))
 const coachAvailability = ref<Row[]>([])
 const availabilityLoading = ref(false)
 const reserving = ref(false)
@@ -29,8 +32,9 @@ const qrCodeUrl = ref('')
 let availabilityRequest = 0
 let passRefreshTimer: ReturnType<typeof setTimeout> | undefined
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-const closedDateSet = computed(() => new Set(closedDays.value.map(closedOn).filter(Boolean)))
+const closedDateSet = computed(() => new Set(closedDays.value.filter(item => !item.startsAt).map(closedOn).filter(Boolean)))
 
 const reservationDays = computed(() => Array.from({ length: 7 }, (_, offset) => {
   const value = new Date()
@@ -42,28 +46,56 @@ const reservationDays = computed(() => Array.from({ length: 7 }, (_, offset) => 
   }
 }))
 
-const calendarDays = computed(() => Array.from({ length: 35 }, (_, offset) => {
+const rollingCalendarDays = computed(() => Array.from({ length: 14 }, (_, offset) => {
   const value = new Date()
   value.setDate(value.getDate() + offset)
   const key = localDate(value)
-  const closed = closedDays.value.find(item => closedOn(item) === key)
+  const closures = closedDays.value.filter(item => closedOn(item) === key)
   return {
     value: key,
     day: new Intl.DateTimeFormat('en-CA', { weekday: 'short' }).format(value),
     date: new Intl.DateTimeFormat('en-CA', { month: 'short', day: 'numeric' }).format(value),
-    closed,
+    closed: closures.some(item => !item.startsAt),
+    partial: closures.some(item => item.startsAt),
   }
 }))
+
+const calendarMonth = computed(() => new Intl.DateTimeFormat('en-CA', { month: 'long', year: 'numeric' }).format(calendarMonthDate.value))
+const calendarDays = computed(() => {
+  const month = calendarMonthDate.value
+  const first = new Date(month.getFullYear(), month.getMonth(), 1)
+  const start = new Date(first)
+  start.setDate(first.getDate() - ((first.getDay() + 6) % 7))
+  return Array.from({ length: 42 }, (_, offset) => {
+    const value = new Date(start)
+    value.setDate(start.getDate() + offset)
+    const key = localDate(value)
+    const closures = closedDays.value.filter(item => closedOn(item) === key)
+    return {
+      value: key,
+      day: value.getDate(),
+      muted: value.getMonth() !== month.getMonth(),
+      selected: selectedCalendarDate.value === key,
+      closures,
+      closed: closures.some(item => !item.startsAt),
+      partial: closures.some(item => item.startsAt),
+    }
+  })
+})
+const visibleClosedCount = computed(() => calendarDays.value.filter(day => day.closures.length && !day.muted).length)
+const selectedCalendarClosures = computed(() => closedDays.value.filter(item => closedOn(item) === selectedCalendarDate.value))
 
 const timeSlots = computed(() => {
   const slots = []
   const day = new Date(`${reservationDate.value}T00:00:00`)
-  for (let minutes = 6 * 60; minutes + reservationDuration.value <= 22 * 60; minutes += 30) {
+  const opensAt = timeMinutes(operationHours.opensAt)
+  const closesAt = timeMinutes(operationHours.closesAt)
+  for (let minutes = opensAt; minutes + reservationDuration.value <= closesAt; minutes += 30) {
     const startsAt = new Date(day)
     startsAt.setMinutes(minutes)
     const endsAt = new Date(startsAt.getTime() + reservationDuration.value * 60_000)
     const available = startsAt.getTime() > Date.now()
-      && !closedDateSet.value.has(reservationDate.value)
+      && !isClosedDuring(reservationDate.value, minutes, minutes + reservationDuration.value)
       && !busyPeriods.value.some(item =>
         startsAt < new Date(item.endsAt) && endsAt > new Date(item.startsAt))
     slots.push({
@@ -78,9 +110,11 @@ const timeSlots = computed(() => {
 const appointmentSlots = computed(() => {
   const slots = []
   const day = new Date(`${appointmentDate.value}T00:00:00`)
-  for (let hour = 7; hour <= 20; hour += 1) {
+  const opensAt = Math.ceil(timeMinutes(operationHours.opensAt) / 60) * 60
+  const closesAt = timeMinutes(operationHours.closesAt)
+  for (let minutes = opensAt; minutes + 60 <= closesAt; minutes += 60) {
     const startsAt = new Date(day)
-    startsAt.setHours(hour, 0, 0, 0)
+    startsAt.setMinutes(minutes)
     const dayOfWeek = ((startsAt.getDay() + 6) % 7) + 1
     const startTime = startsAt.toTimeString().slice(0, 5)
     const endTime = new Date(startsAt.getTime() + 60 * 60_000).toTimeString().slice(0, 5)
@@ -92,7 +126,7 @@ const appointmentSlots = computed(() => {
     slots.push({
       value: startsAt.toISOString(),
       label: new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit' }).format(startsAt),
-      available: startsAt.getTime() > Date.now() && !closedDateSet.value.has(appointmentDate.value) && open,
+      available: startsAt.getTime() > Date.now() && !isClosedDuring(appointmentDate.value, minutes, minutes + 60) && open,
     })
   }
   return slots
@@ -104,7 +138,7 @@ const titles: Record<string, [string, string]> = {
   appointments: ['Coach Booking', session.user?.role === 'COACH' ? 'Review member appointment requests' : 'Book time with a coach'],
   equipment: ['Gym Equipment', 'Browse available training equipment'],
   equipmentReservations: ['Equipment Booking', 'Reserve a time slot and review your bookings'],
-  operationCalendar: ['Operations Calendar', 'See gym closed days and coach availability'],
+  operationCalendar: ['Operations Calendar', 'View regular hours and scheduled closures'],
   community: ['Fitness Community', 'Share experience and learn from other members'],
   myPosts: ['My Posts', 'Manage the experience you have shared'],
   card: ['Membership E-card', 'Your digital gym identity'],
@@ -319,17 +353,60 @@ function closedReason(item: Row) {
   return item.reason || 'Closed'
 }
 
-function timeText(value: string) {
+function closureLabel(item: Row) {
+  return item.startsAt
+    ? `Closed ${timeText(item.startsAt)}–${timeText(item.endsAt)} · ${closedReason(item)}`
+    : `Closed all day · ${closedReason(item)}`
+}
+
+function timeText(value: unknown) {
   return String(value).slice(0, 5)
 }
 
+function timeMinutes(value: unknown) {
+  const [hours, minutes] = timeText(value).split(':').map(Number)
+  return hours * 60 + minutes
+}
+
+function isClosedDuring(date: string, startsAt: number, endsAt: number) {
+  return closedDays.value.some(item => closedOn(item) === date
+    && (!item.startsAt || (timeMinutes(item.startsAt) < endsAt && timeMinutes(item.endsAt) > startsAt)))
+}
+
 async function loadOperationsCalendar() {
-  const from = localDate(new Date())
-  const toDate = new Date()
-  toDate.setDate(toDate.getDate() + 34)
-  closedDays.value = (await api.get('/operations/calendar', {
-    params: { from, to: localDate(toDate) },
-  })).data
+  let fromDate = new Date()
+  let toDate = new Date()
+  if (feature.value === 'operationCalendar') {
+    const first = new Date(calendarMonthDate.value)
+    fromDate = new Date(first)
+    fromDate.setDate(first.getDate() - ((first.getDay() + 6) % 7))
+    toDate = new Date(fromDate)
+    toDate.setDate(toDate.getDate() + 41)
+  } else {
+    toDate.setDate(toDate.getDate() + 34)
+  }
+  const [closures, hours] = await Promise.all([
+    api.get('/operations/calendar', { params: { from: localDate(fromDate), to: localDate(toDate) } }),
+    api.get('/operations/hours'),
+  ])
+  closedDays.value = closures.data
+  operationHours.opensAt = timeText(hours.data.opensAt)
+  operationHours.closesAt = timeText(hours.data.closesAt)
+}
+
+async function moveOperationsCalendar(months: number) {
+  const value = new Date(calendarMonthDate.value)
+  value.setMonth(value.getMonth() + months)
+  calendarMonthDate.value = value
+  selectedCalendarDate.value = localDate(value)
+  await loadOperationsCalendar()
+}
+
+async function resetOperationsCalendar() {
+  const today = new Date()
+  calendarMonthDate.value = new Date(today.getFullYear(), today.getMonth(), 1)
+  selectedCalendarDate.value = localDate(today)
+  await loadOperationsCalendar()
 }
 
 async function loadCoachAvailability() {
@@ -397,12 +474,36 @@ watch(() => form.coachId, () => {
       </article>
     </section>
 
-    <section v-else-if="feature === 'operationCalendar'" class="calendar-panel legacy-card">
-      <article v-for="day in calendarDays" :key="day.value" :class="{ closed: day.closed }">
-        <small>{{ day.day }}</small>
-        <strong>{{ day.date }}</strong>
-        <span>{{ day.closed ? closedReason(day.closed) : 'Open' }}</span>
-      </article>
+    <section v-else-if="feature === 'operationCalendar'" class="legacy-card dashboard-calendar front-calendar">
+      <div class="panel-title"><div><h2>Operations calendar</h2><p>Select a day to see its full operating details.</p></div></div>
+      <div class="calendar-workspace dashboard-calendar-workspace">
+        <div class="calendar-main">
+          <div class="calendar-toolbar">
+            <div><strong>{{ calendarMonth }}</strong><span>{{ visibleClosedCount }} affected</span></div>
+            <div class="calendar-nav">
+              <button type="button" aria-label="Previous month" @click="moveOperationsCalendar(-1)">Prev</button>
+              <button type="button" @click="resetOperationsCalendar">Today</button>
+              <button type="button" aria-label="Next month" @click="moveOperationsCalendar(1)">Next</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays"><span v-for="day in weekdayLabels" :key="day">{{ day }}</span></div>
+          <div class="admin-calendar">
+            <button v-for="day in calendarDays" :key="day.value" type="button" :title="day.closed ? 'Closed all day' : day.partial ? 'Partial closure' : `Open ${operationHours.opensAt}–${operationHours.closesAt}`" :class="{ closed: day.closed, partial: day.partial, selected: day.selected, muted: day.muted }" @click="selectedCalendarDate = day.value">
+              <strong>{{ day.day }}</strong><span class="day-status">{{ day.closed ? 'Closed' : day.partial ? 'Limited' : 'Open' }}</span>
+            </button>
+          </div>
+        </div>
+        <aside class="calendar-editor calendar-details">
+          <small>SELECTED DAY</small>
+          <strong>{{ selectedCalendarDate }}</strong>
+          <span class="selected-status" :class="{ closed: selectedCalendarClosures.some(item => !item.startsAt), partial: selectedCalendarClosures.some(item => item.startsAt) }">{{ selectedCalendarClosures.some(item => !item.startsAt) ? 'Closed' : selectedCalendarClosures.length ? 'Limited hours' : 'Open' }}</span>
+          <p v-if="!selectedCalendarClosures.some(item => !item.startsAt)" class="calendar-hours"><b>{{ operationHours.opensAt }}–{{ operationHours.closesAt }}</b><span>Default operating hours</span></p>
+          <ul v-if="selectedCalendarClosures.length" class="closure-list">
+            <li v-for="item in selectedCalendarClosures" :key="item.id"><span>{{ closureLabel(item) }}</span></li>
+          </ul>
+          <p v-else class="calendar-note">No exceptions scheduled for this day.</p>
+        </aside>
+      </div>
     </section>
 
     <template v-else-if="feature === 'appointments'">
@@ -484,8 +585,8 @@ watch(() => form.coachId, () => {
         <section>
           <header class="reservation-step"><span>2</span><div><h2>Gym calendar</h2><p>Closed days cannot be booked.</p></div></header>
           <div class="mini-calendar">
-            <article v-for="day in calendarDays.slice(0, 14)" :key="day.value" :class="{ closed: day.closed }">
-              <small>{{ day.day }}</small><strong>{{ day.date }}</strong><span>{{ day.closed ? closedReason(day.closed) : 'Open' }}</span>
+            <article v-for="day in rollingCalendarDays" :key="day.value" :class="{ closed: day.closed, partial: day.partial }">
+              <small>{{ day.day }}</small><strong>{{ day.date }}</strong><span>{{ day.closed ? 'Closed' : day.partial ? 'Limited' : 'Open' }}</span>
             </article>
           </div>
         </section>

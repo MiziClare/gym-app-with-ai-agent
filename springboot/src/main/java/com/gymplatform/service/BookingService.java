@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -34,13 +33,7 @@ public class BookingService {
         if (!session.startsAt().isAfter(Instant.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Session has already started");
         }
-        var closed = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM gym_closed_days WHERE closed_on = ?",
-                Integer.class,
-                session.startsAt().atZone(ZoneId.systemDefault()).toLocalDate());
-        if (closed != null && closed > 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gym is closed on that date");
-        }
+        GymOperations.requireOpen(jdbc, session.startsAt(), session.endsAt());
         if (bookingMapper.countConfirmedForMember(sessionId, memberId) > 0) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Session is already booked");
         }

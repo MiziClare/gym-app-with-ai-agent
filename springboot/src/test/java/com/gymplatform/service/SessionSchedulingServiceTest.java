@@ -25,8 +25,9 @@ class SessionSchedulingServiceTest {
                 contains("FROM courses"), eq(Long.class), eq(2L)
         )).thenReturn(List.of(2L));
         when(jdbc.queryForObject(
-                contains("gym_closed_days"), eq(Integer.class), any()
-        )).thenReturn(0);
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(1);
         when(jdbc.queryForList(
                 contains("FROM equipment"), eq(Long.class), eq(8L)
         )).thenReturn(List.of(8L));
@@ -52,8 +53,10 @@ class SessionSchedulingServiceTest {
         );
         when(jdbc.queryForList(contains("FROM courses"), eq(Long.class), eq(2L)))
                 .thenReturn(List.of(2L));
-        when(jdbc.queryForObject(contains("gym_closed_days"), eq(Integer.class), any()))
-                .thenReturn(0);
+        when(jdbc.queryForObject(
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(1);
         when(jdbc.queryForList(contains("FROM gym_spaces"), eq(Long.class), eq(9L)))
                 .thenReturn(List.of(9L));
         when(jdbc.queryForObject(

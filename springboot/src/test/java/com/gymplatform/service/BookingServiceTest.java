@@ -32,7 +32,10 @@ class BookingServiceTest {
                 new CourseSession(7L, 2L, 3L, Instant.now().plusSeconds(3600),
                         Instant.now().plusSeconds(7200), 2, "OPEN")
         );
-        when(jdbc.queryForObject(contains("gym_closed_days"), eq(Integer.class), any())).thenReturn(0);
+        when(jdbc.queryForObject(
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(1);
         when(bookingMapper.countConfirmedForMember(7L, 11L)).thenReturn(0);
         when(bookingMapper.countConfirmed(7L)).thenReturn(1);
 
@@ -48,7 +51,10 @@ class BookingServiceTest {
                 new CourseSession(7L, 2L, 3L, Instant.now().plusSeconds(3600),
                         Instant.now().plusSeconds(7200), 1, "OPEN")
         );
-        when(jdbc.queryForObject(contains("gym_closed_days"), eq(Integer.class), any())).thenReturn(0);
+        when(jdbc.queryForObject(
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(1);
         when(bookingMapper.countConfirmedForMember(7L, 11L)).thenReturn(0);
         when(bookingMapper.countConfirmed(7L)).thenReturn(1);
 
@@ -65,7 +71,10 @@ class BookingServiceTest {
                 new CourseSession(7L, 2L, 3L, Instant.now().plusSeconds(3600),
                         Instant.now().plusSeconds(7200), 2, "OPEN")
         );
-        when(jdbc.queryForObject(contains("gym_closed_days"), eq(Integer.class), any())).thenReturn(1);
+        when(jdbc.queryForObject(
+                contains("gym_operation_hours"), eq(Integer.class),
+                any(), any(), any(), any(), any()
+        )).thenReturn(0);
 
         var error = assertThrows(ResponseStatusException.class, () -> service.book(7L, 11L));
 

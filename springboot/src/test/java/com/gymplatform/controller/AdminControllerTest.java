@@ -18,7 +18,8 @@ class AdminControllerTest {
         var jdbc = mock(JdbcTemplate.class);
         var error = assertThrows(ResponseStatusException.class,
                 () -> new AdminController(jdbc, mock(SessionSchedulingService.class)).createClosedDay(
-                        new AdminController.ClosedDayRequest(LocalDate.now().minusDays(1), "Closed")));
+                        new AdminController.ClosedDayRequest(
+                                LocalDate.now().minusDays(1), null, null, "Closed")));
 
         assertEquals(400, error.getStatusCode().value());
         verifyNoInteractions(jdbc);

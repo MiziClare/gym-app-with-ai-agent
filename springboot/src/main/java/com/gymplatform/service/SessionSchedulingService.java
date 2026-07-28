@@ -29,13 +29,7 @@ public class SessionSchedulingService {
                 Long.class, request.courseId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found");
         }
-        var closed = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM gym_closed_days WHERE closed_on = ?",
-                Integer.class,
-                request.startsAt().atZone(ZoneId.systemDefault()).toLocalDate());
-        if (closed != null && closed > 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gym is closed on that date");
-        }
+        GymOperations.requireOpen(jdbc, request.startsAt(), request.endsAt());
         if (request.coachId() != null) {
             requireAvailableCoach(request);
         }
