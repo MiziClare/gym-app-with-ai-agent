@@ -59,6 +59,11 @@ function date(value: string) {
         <div class="booking-info">
           <h3>{{ item.courseName }}</h3>
           <p>{{ date(item.startsAt) }} · Coach {{ item.coachName }}</p>
+          <RouterLink
+            v-if="item.spaceId"
+            class="booking-location"
+            :to="`/front/gym-map?spaceId=${item.spaceId}`"
+          >{{ item.floorName }} · {{ item.spaceName }}</RouterLink>
         </div>
         <span class="status" :class="{ cancelled: item.status !== 'CONFIRMED' }">{{ item.status }}</span>
         <button v-if="item.status === 'CONFIRMED'" class="button ghost small" type="button" @click="cancel(item)">Cancel</button>
@@ -81,6 +86,7 @@ time { width: 64px; height: 64px; display: grid; place-content: center; text-ali
 time strong { font-size: 22px; line-height: 1; }
 time span { margin-top: 3px; color: var(--muted); font-size: 10px; text-transform: uppercase; }
 .booking-info p { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+.booking-location { margin-top: 6px; display: inline-block; color: #49745a; font-size: 12px; font-weight: 800; }
 .status { padding: 6px 9px; color: #2c6244; background: #eef8df; border-radius: 999px; font-size: 10px; font-weight: 800; }
 .status.cancelled { color: #777; background: #eee; }
 .empty h3 { margin-bottom: 8px; }

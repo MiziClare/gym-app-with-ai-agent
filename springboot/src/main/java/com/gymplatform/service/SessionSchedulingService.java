@@ -39,6 +39,9 @@ public class SessionSchedulingService {
         if (request.coachId() != null) {
             requireAvailableCoach(request);
         }
+        if (request.spaceId() != null) {
+            requireAvailableSpace(request.spaceId(), request.startsAt(), request.endsAt());
+        }
 
         var resources = new TreeSet<>(request.resourceIds());
         if (resources.size() != request.resourceIds().size()) {
@@ -106,7 +109,7 @@ public class SessionSchedulingService {
     private void requireAvailableResource(Long resourceId, Instant startsAt, Instant endsAt) {
         if (jdbc.queryForList("""
                 SELECT id FROM equipment
-                WHERE id = ? AND status = 'AVAILABLE'
+                WHERE id = ? AND status = 'AVAILABLE' AND resource_type = 'EQUIPMENT'
                 FOR UPDATE
                 """, Long.class, resourceId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource is not available");
@@ -131,12 +134,29 @@ public class SessionSchedulingService {
         }
     }
 
+    private void requireAvailableSpace(Long spaceId, Instant startsAt, Instant endsAt) {
+        if (jdbc.queryForList(
+                "SELECT id FROM gym_spaces WHERE id = ? FOR UPDATE",
+                Long.class, spaceId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Space not found");
+        }
+        var conflicts = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM course_sessions
+                WHERE space_id = ? AND status = 'OPEN'
+                  AND starts_at < ? AND ends_at > ?
+                """, Integer.class, spaceId, endsAt, startsAt);
+        if (conflicts != null && conflicts > 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Space is already booked for that time");
+        }
+    }
+
     public record ScheduleRequest(
             Long courseId,
             Long coachId,
             Instant startsAt,
             Instant endsAt,
             int capacity,
+            Long spaceId,
             List<Long> resourceIds
     ) {}
 }

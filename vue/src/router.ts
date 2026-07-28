@@ -6,6 +6,8 @@ import AdminLayout from './layouts/AdminLayout.vue'
 import FrontHomeView from './views/FrontHomeView.vue'
 import FrontFeatureView from './views/FrontFeatureView.vue'
 import AdminView from './views/AdminView.vue'
+import GymLayoutView from './views/GymLayoutView.vue'
+import GymMapView from './views/GymMapView.vue'
 import ClassesView from './views/ClassesView.vue'
 import BookingsView from './views/BookingsView.vue'
 import AssistantView from './views/AssistantView.vue'
@@ -39,6 +41,7 @@ const router = createRouter({
         { path: 'home', component: FrontHomeView, meta: { title: 'Overview', roles: ['MEMBER', 'COACH'] as Role[] } },
         { path: 'course', alias: 'courseDetail', component: ClassesView, meta: { title: 'Classes', roles: ['MEMBER', 'COACH'] as Role[] } },
         { path: 'orders', component: BookingsView, meta: { title: 'My classes', roles: ['MEMBER'] as Role[] } },
+        { path: 'gym-map', component: GymMapView, meta: { title: 'Gym map', roles: ['MEMBER', 'COACH'] as Role[] } },
         { path: 'ai', component: AssistantView, meta: { title: 'AI assistant', roles: ['MEMBER'] as Role[] } },
         feature('person', 'profile', 'My profile', ['MEMBER']),
         feature('coachPerson', 'profile', 'My profile', ['COACH']),
@@ -46,7 +49,7 @@ const router = createRouter({
         feature('coachDetail', 'coaches', 'Coach details', ['MEMBER']),
         feature('reserve', 'appointments', 'Coach bookings'),
         feature('equipment', 'equipment', 'Equipment', ['MEMBER']),
-        feature('eqReserve', 'equipmentReservations', 'Equipment bookings', ['MEMBER']),
+        { path: 'eqReserve', redirect: '/front/equipment' },
         feature('calendar', 'operationCalendar', 'Operations calendar'),
         feature('experience', 'community', 'Community'),
         feature('experienceDetail', 'community', 'Post details'),
@@ -73,6 +76,7 @@ const router = createRouter({
         admin('coachAssignments', 'coachAssignments', 'Coach assignments'),
         admin('reserve', 'appointments', 'Coach bookings'),
         admin('calendar', 'closedDays', 'Operations calendar'),
+        { path: 'gym-layout', component: GymLayoutView, meta: { title: 'Gym layout', roles: ['ADMIN'] as Role[] } },
         admin('course', 'courses', 'Classes'),
         admin('sessions', 'sessions', 'Class schedule'),
         admin('orders', 'bookings', 'Class bookings'),

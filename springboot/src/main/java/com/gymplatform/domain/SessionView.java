@@ -12,6 +12,9 @@ public record SessionView(
         Instant endsAt,
         int capacity,
         int bookedCount,
-        String status
+        String status,
+        Long spaceId,
+        String floorName,
+        String spaceName
 ) {
 }

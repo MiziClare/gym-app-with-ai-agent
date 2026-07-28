@@ -19,3 +19,7 @@ dist/
 # Runtime uploads and local databases
 uploads/
 *.db
+
+# Scripts
+start-dev.cmd
+start-dev.ps1

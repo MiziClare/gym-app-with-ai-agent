@@ -514,8 +514,12 @@ watch(() => form.coachId, () => {
       <article v-for="item in rows" :key="item.id" class="legacy-card equipment-card">
         <div class="equipment-art"><img src="../assets/imgs/icon-treadmill.png" alt=""></div>
         <small>{{ item.category }}</small><h3>{{ item.name }}</h3><p>{{ item.description }}</p><span class="pill">{{ item.status }}</span>
-        <RouterLink v-if="item.status === 'AVAILABLE'" class="legacy-button" to="/front/eqReserve">Reserve</RouterLink>
-        <span v-else class="equipment-unavailable">Currently unavailable</span>
+        <RouterLink
+          v-if="item.spaceId"
+          class="legacy-button"
+          :to="`/front/gym-map?spaceId=${item.spaceId}`"
+        >{{ item.floorName }} · {{ item.spaceName }}</RouterLink>
+        <span v-else class="equipment-unavailable">Location not assigned</span>
       </article>
     </section>
 

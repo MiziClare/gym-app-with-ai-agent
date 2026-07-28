@@ -10,6 +10,9 @@ public record BookingView(
         Instant startsAt,
         Instant endsAt,
         String status,
-        Instant createdAt
+        Instant createdAt,
+        Long spaceId,
+        String floorName,
+        String spaceName
 ) {
 }

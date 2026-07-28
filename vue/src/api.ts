@@ -19,6 +19,9 @@ export type Session = {
   capacity: number
   bookedCount: number
   status: string
+  spaceId: number | null
+  floorName: string | null
+  spaceName: string | null
 }
 
 export type Booking = {
@@ -30,6 +33,9 @@ export type Booking = {
   endsAt: string
   status: string
   createdAt: string
+  spaceId: number | null
+  floorName: string | null
+  spaceName: string | null
 }
 
 export type ProposedAction = {
@@ -61,6 +67,7 @@ api.interceptors.response.use((response) => {
 
 export function messageOf(error: unknown) {
   if (axios.isAxiosError(error)) {
+    if (!error.response) return 'Cannot reach the API. Start or wait for the backend, then try again.'
     if (error.response?.status === 503) {
       return 'Gym Guide is disabled. Configure an AI provider to enable it.'
     }

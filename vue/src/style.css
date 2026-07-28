@@ -307,9 +307,9 @@ h1, h2, h3, p { overflow-wrap: break-word; }
 .admin-form { margin-bottom: 18px; display: grid; grid-template-columns: 220px 1fr auto; gap: 10px; }
 .admin-form input, .admin-form select { min-width: 0; padding: 9px 11px; border: 1px solid #dce2e8; border-radius: 6px; }
 .assignment-form { grid-template-columns: repeat(4, minmax(130px, 1fr)) auto; }
-.equipment-form { grid-template-columns: 130px 180px 150px 1fr auto; }
+.equipment-form { grid-template-columns: 180px 150px 190px 1fr auto; }
 .course-form { grid-template-columns: 180px 1fr 110px 100px auto; }
-.session-form { grid-template-columns: repeat(2, minmax(150px, 1fr)) repeat(2, minmax(185px, 1fr)) 90px minmax(180px, 1fr) auto; }
+.session-form { grid-template-columns: repeat(2, minmax(140px, 1fr)) repeat(2, minmax(175px, 1fr)) 80px minmax(160px, 1fr) minmax(170px, 1fr) auto; }
 .session-form select[multiple] { min-height: 70px; }
 .coach-note { display: block; padding: 10px; color: #7b8794; background: #f3f5f7; border-radius: 7px; text-align: center; font-size: 11px; }
 .table-wrap { padding: 0; overflow-x: auto; }
@@ -317,7 +317,98 @@ table { width: 100%; border-collapse: collapse; font-size: 12px; }
 th { padding: 13px 15px; text-align: left; color: #748293; background: #f8f9fb; white-space: nowrap; }
 td { max-width: 320px; padding: 13px 15px; color: #4b5e72; border-top: 1px solid #edf0f3; overflow: hidden; text-overflow: ellipsis; }
 .table-actions { display: flex; gap: 5px; }
+.table-actions select { min-width: 150px; padding: 5px 7px; border: 1px solid #dce2e8; border-radius: 4px; font-size: 10px; }
 .table-actions button { padding: 5px 7px; color: #4c6378; background: #edf2f5; border: 0; border-radius: 4px; font-size: 10px; }
+
+.layout-title { align-items: center; }
+.layout-title span { display: block; margin-top: 7px; color: #8793a0; font-size: 12px; }
+.layout-actions, .floor-controls, .layout-tools > div { display: flex; gap: 8px; }
+.layout-title .layout-actions button, .floor-toolbar button, .layout-tools button, .layout-inspector button {
+  padding: 9px 13px; color: #496074; background: #edf2f5; border: 0; border-radius: 7px; font-weight: 800;
+}
+.layout-title .layout-actions button:last-child, .layout-tools button { color: white; background: #3f5c74; }
+.layout-title button:disabled, .floor-toolbar button:disabled { cursor: not-allowed; opacity: .45; }
+.floor-toolbar { margin-bottom: 16px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.floor-tabs { min-width: 0; display: flex; gap: 5px; overflow-x: auto; }
+.floor-tabs button { flex: 0 0 auto; background: transparent; }
+.floor-tabs button.active { color: #8d473f; background: #fff0ee; }
+.floor-tabs .add-floor { color: #d2745d; }
+.floor-controls button { padding: 8px 11px; }
+.floor-controls .danger, .layout-inspector .danger { color: #9b4a45; background: #fff0ee; }
+.layout-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 16px; align-items: start; }
+.layout-canvas-card { min-width: 0; padding: 16px; }
+.layout-tools { margin-bottom: 13px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.layout-tools span { color: #8a96a4; font-size: 10px; }
+.layout-canvas-scroll { overflow: auto; border: 1px solid #dfe7ec; border-radius: 12px; background: #f8fafb; }
+.layout-canvas { display: block; width: 100%; min-width: 620px; aspect-ratio: 16 / 10; touch-action: none; user-select: none; }
+.layout-space { outline: none; cursor: grab; }
+.layout-space:active { cursor: grabbing; }
+.layout-space > rect:first-child { fill: rgba(239,155,119,.22); stroke: #dc8469; stroke-width: .35; }
+.layout-space.area > rect:first-child { fill: rgba(83,142,156,.14); stroke: #5d99a5; stroke-dasharray: 1.2 1; }
+.layout-space.selected > rect:first-child, .layout-space:focus > rect:first-child { stroke: #2f455b; stroke-width: .7; }
+.layout-space text { pointer-events: none; fill: #344c61; font-size: 2.6px; font-weight: 800; }
+.layout-space .space-kind { fill: #738393; font-size: 1.5px; letter-spacing: .25px; }
+.layout-space .resize-handle { cursor: nwse-resize; fill: #2f455b; stroke: white; stroke-width: .3; }
+.layout-inspector { display: grid; gap: 12px; position: sticky; top: 84px; }
+.layout-inspector small { color: #d48468; font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+.layout-inspector label { display: grid; gap: 5px; color: #617184; font-size: 10px; font-weight: 800; }
+.layout-inspector input, .layout-inspector select { min-width: 0; padding: 9px; border: 1px solid #dce2e8; border-radius: 7px; }
+.layout-inspector p { margin: 0; color: #8793a0; font-size: 11px; line-height: 1.5; }
+.layout-inspector button:disabled { cursor: not-allowed; opacity: .45; }
+.geometry-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+
+.gym-map-page { max-width: 1320px; }
+.gym-map-head { align-items: end; }
+.gym-map-summary { display: flex; align-items: stretch; gap: 10px; }
+.gym-map-summary > div { min-width: 115px; padding: 11px 14px; display: grid; background: white; border: 1px solid var(--line); border-radius: 12px; }
+.gym-map-summary strong { color: #30465e; font-size: 19px; }
+.gym-map-summary span { margin-top: 2px; color: var(--muted); font-size: 10px; }
+.gym-map-floors { margin-bottom: 16px; padding: 10px; }
+.gym-map-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+.gym-map-canvas-card { min-width: 0; padding: 16px; }
+.gym-map-legend { margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 14px; color: #6e7e8d; font-size: 10px; font-weight: 800; }
+.gym-map-legend span { display: flex; align-items: center; gap: 5px; }
+.gym-map-legend i { width: 9px; height: 9px; display: block; background: #dcebcf; border-radius: 3px; }
+.gym-map-legend .status-closed i { background: #ead8d5; }
+.gym-map-legend .status-in_use i { background: #f7d6a8; }
+.gym-map-legend .status-limited_equipment i { background: #f2e7ad; }
+.gym-map-space { cursor: pointer; }
+.gym-map-space.status-closed > rect:first-child { fill: #ead8d5; stroke: #a76d68; }
+.gym-map-space.status-in_use > rect:first-child { fill: #f7d6a8; stroke: #c27b35; }
+.gym-map-space.status-limited_equipment > rect:first-child { fill: #f2e7ad; stroke: #a38b32; }
+.gym-map-space.status-available > rect:first-child { fill: #dcebcf; stroke: #6e9567; }
+.gym-map-space.area > rect:first-child { fill-opacity: .72; stroke-dasharray: 1.2 1; }
+.gym-map-space.selected > rect:first-child, .gym-map-space:focus > rect:first-child { stroke: #273e52; stroke-width: .8; }
+.gym-map-note { margin: 12px 2px 0; color: var(--muted); font-size: 10px; }
+.gym-map-detail { padding: 20px; position: sticky; top: 84px; }
+.gym-map-detail-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
+.gym-map-detail-head small { color: #d48468; font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+.gym-map-detail-head h2 { margin: 5px 0 3px; color: #30465e; font-size: 23px; }
+.gym-map-detail-head p { margin: 0; color: var(--muted); font-size: 11px; }
+.gym-map-status { padding: 6px 9px; color: #41644a; background: #eaf5df; border-radius: 999px; font-size: 9px; font-weight: 900; white-space: nowrap; }
+.gym-map-status.status-closed { color: #8c4d48; background: #f6e5e2; }
+.gym-map-status.status-in_use { color: #8a5624; background: #fff0d8; }
+.gym-map-status.status-limited_equipment { color: #75651f; background: #faf3c9; }
+.current-activity { margin-top: 18px; padding: 15px; background: #fff4d9; border-radius: 12px; }
+.current-activity small { color: #9a6b2f; font-size: 8px; font-weight: 900; letter-spacing: 1px; }
+.current-activity h3 { margin: 6px 0 4px; color: #4b4e42; }
+.current-activity p, .current-activity span { margin: 0; color: #7a725f; font-size: 10px; }
+.current-activity span { margin-top: 7px; display: block; font-weight: 800; }
+.gym-map-section { margin-top: 21px; }
+.gym-map-section > h3, .section-row h3 { margin: 0 0 10px; color: #405367; font-size: 13px; }
+.section-row { display: flex; justify-content: space-between; }
+.section-row a { color: #547961; font-size: 10px; font-weight: 800; }
+.space-timeline, .space-equipment { margin: 0; padding: 0; list-style: none; }
+.space-timeline li, .space-equipment li { padding: 11px 0; display: flex; align-items: start; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); }
+.space-timeline li > div { display: grid; gap: 3px; }
+.space-timeline strong, .space-equipment strong { color: #485b6d; font-size: 11px; }
+.space-timeline span, .space-timeline small, .space-equipment small { color: var(--muted); font-size: 9px; }
+.space-timeline em { color: #8a7652; font-size: 8px; font-style: normal; font-weight: 900; text-transform: uppercase; }
+.space-timeline a { color: #52745d; font-size: 9px; font-weight: 800; }
+.space-equipment span { display: grid; gap: 3px; }
+.space-equipment em { padding: 4px 7px; color: #41644a; background: #eaf5df; border-radius: 999px; font-size: 8px; font-style: normal; font-weight: 900; }
+.space-equipment em.maintenance { color: #8c632e; background: #fff0d8; }
+.detail-empty { margin: 15px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
 
 .login-page { min-height: 100vh; padding: 40px; display: grid; place-items: center; background: linear-gradient(rgba(31,52,70,.56),rgba(31,52,70,.56)), url("./assets/imgs/bg.jpg") center/cover fixed; }
 .login-card { width: min(960px, 100%); min-height: 600px; display: grid; grid-template-columns: 1.05fr .95fr; overflow: hidden; background: white; border-radius: 22px; box-shadow: 0 30px 90px rgba(14,30,44,.35); }
@@ -345,6 +436,10 @@ td { max-width: 320px; padding: 13px 15px; color: #4b5e72; border-top: 1px solid
 .front-main .assistant-page aside h1 { color: #30465e; }
 .front-main .assistant-page .chat { border-radius: 15px; }
 
+@media (max-width: 1200px) {
+  .gym-map-workspace { grid-template-columns: 1fr; }
+  .gym-map-detail { position: static; }
+}
 @media (max-width: 1000px) {
   .topbar-notice { display: none; }
   .legacy-card-grid { grid-template-columns: repeat(2, 1fr); }
@@ -394,6 +489,16 @@ td { max-width: 320px; padding: 13px 15px; color: #4b5e72; border-top: 1px solid
   .admin-calendar .day-status { padding: 0; color: inherit; background: transparent; font-size: 8px; }
   .admin-calendar button.closed .day-status { color: #9b4a45; background: transparent; }
   .admin-form, .equipment-form { grid-template-columns: 1fr; }
+  .layout-title, .floor-toolbar, .layout-tools { align-items: stretch; flex-direction: column; }
+  .layout-title .layout-actions button { flex: 1; }
+  .floor-controls { justify-content: flex-end; }
+  .layout-workspace { grid-template-columns: 1fr; }
+  .layout-inspector { position: static; }
+  .gym-map-head { align-items: stretch; }
+  .gym-map-summary { overflow-x: auto; }
+  .gym-map-summary > div { flex: 0 0 115px; }
+  .gym-map-workspace { grid-template-columns: 1fr; }
+  .gym-map-detail { position: static; }
   .login-page { padding: 18px; }
   .login-card { grid-template-columns: 1fr; }
   .login-art { display: none; }

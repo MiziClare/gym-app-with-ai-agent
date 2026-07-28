@@ -15,18 +15,21 @@ public interface SessionMapper {
                    s.coach_id, u.display_name AS coach_name,
                    s.starts_at, s.ends_at, s.capacity,
                    SUM(CASE WHEN b.status = 'CONFIRMED' THEN 1 ELSE 0 END) AS booked_count,
-                   s.status
+                   s.status, s.space_id, floor.name AS floor_name, space.name AS space_name
             FROM course_sessions s
             JOIN courses c ON c.id = s.course_id
             LEFT JOIN users u ON u.id = s.coach_id
             LEFT JOIN bookings b ON b.session_id = s.id
+            LEFT JOIN gym_spaces space ON space.id = s.space_id
+            LEFT JOIN gym_floors floor ON floor.id = space.floor_id
             WHERE s.status = 'OPEN'
               AND s.starts_at &gt;= #{from}
               AND s.starts_at &lt; #{to}
             <if test="courseId != null">AND s.course_id = #{courseId}</if>
             <if test="coachId != null">AND s.coach_id = #{coachId}</if>
             GROUP BY s.id, s.course_id, c.name, s.coach_id, u.display_name,
-                     s.starts_at, s.ends_at, s.capacity, s.status
+                     s.starts_at, s.ends_at, s.capacity, s.status,
+                     s.space_id, floor.name, space.name
             ORDER BY s.starts_at
             </script>
             """)

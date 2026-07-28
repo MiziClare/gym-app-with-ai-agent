@@ -132,15 +132,12 @@ public class AdminController {
     @PostMapping("/equipment")
     @ResponseStatus(HttpStatus.CREATED)
     void createEquipment(@Valid @RequestBody EquipmentRequest body) {
-        var resourceType = body.resourceType() == null ? "EQUIPMENT" : body.resourceType();
-        if (!Set.of("EQUIPMENT", "ROOM").contains(resourceType)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported resource type");
-        }
+        requireSpace(body.spaceId());
         jdbc.update("""
-                INSERT INTO equipment (name, category, description, cover_key, resource_type)
-                VALUES (?, ?, ?, ?, ?)
-                """, body.name().trim(), body.category().trim(),
-                body.description().trim(), body.coverKey().trim(), resourceType);
+                INSERT INTO equipment (name, category, description, cover_key, resource_type, space_id)
+                VALUES (?, ?, ?, ?, 'EQUIPMENT', ?)
+                """, body.name().trim(), body.category().trim(), body.description().trim(),
+                body.coverKey().trim(), body.spaceId());
     }
 
     @PatchMapping("/equipment/{id}/status")
@@ -157,13 +154,28 @@ public class AdminController {
         }
     }
 
+    @PatchMapping("/equipment/{id}/space")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateEquipmentSpace(@PathVariable Long id, @Valid @RequestBody SpaceAssignmentRequest body) {
+        requireSpace(body.spaceId());
+        if (jdbc.update("""
+                UPDATE equipment SET space_id = ?
+                WHERE id = ? AND resource_type = 'EQUIPMENT'
+                """, body.spaceId(), id) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
+        }
+    }
+
     @GetMapping("/resources")
     List<Map<String, Object>> resources() {
         return jdbc.queryForList("""
-                SELECT id, name, resource_type AS resourceType, category, status
+                SELECT equipment.id, equipment.name, equipment.category, equipment.status,
+                       equipment.space_id AS spaceId, space.name AS spaceName, floor.name AS floorName
                 FROM equipment
-                WHERE status <> 'RETIRED'
-                ORDER BY resource_type DESC, name
+                LEFT JOIN gym_spaces space ON space.id = equipment.space_id
+                LEFT JOIN gym_floors floor ON floor.id = space.floor_id
+                WHERE equipment.status <> 'RETIRED' AND equipment.resource_type = 'EQUIPMENT'
+                ORDER BY equipment.name
                 """);
     }
 
@@ -174,14 +186,18 @@ public class AdminController {
                        coach.display_name AS coachName,
                        session.starts_at AS startsAt, session.ends_at AS endsAt,
                        session.capacity, session.status,
+                       floor.name AS floorName, space.name AS spaceName,
                        GROUP_CONCAT(resource.name ORDER BY resource.name SEPARATOR ', ') AS resources
                 FROM course_sessions session
                 JOIN courses course ON course.id = session.course_id
                 LEFT JOIN users coach ON coach.id = session.coach_id
+                LEFT JOIN gym_spaces space ON space.id = session.space_id
+                LEFT JOIN gym_floors floor ON floor.id = space.floor_id
                 LEFT JOIN course_session_resources requirement ON requirement.session_id = session.id
                 LEFT JOIN equipment resource ON resource.id = requirement.equipment_id
                 GROUP BY session.id, course.name, coach.display_name,
-                         session.starts_at, session.ends_at, session.capacity, session.status
+                         session.starts_at, session.ends_at, session.capacity, session.status,
+                         floor.name, space.name
                 ORDER BY session.starts_at DESC
                 LIMIT 500
                 """);
@@ -192,7 +208,7 @@ public class AdminController {
     Map<String, Long> createCourseSession(@Valid @RequestBody CourseSessionRequest body) {
         var id = sessionSchedulingService.schedule(new SessionSchedulingService.ScheduleRequest(
                 body.courseId(), body.coachId(), body.startsAt(), body.endsAt(),
-                body.capacity(), body.resourceIds()
+                body.capacity(), body.spaceId(), body.resourceIds()
         ));
         return Map.of("id", id);
     }
@@ -394,6 +410,13 @@ public class AdminController {
         return value == null ? 0 : value;
     }
 
+    private void requireSpace(Long spaceId) {
+        if (spaceId != null && jdbc.queryForList(
+                "SELECT id FROM gym_spaces WHERE id = ?", Long.class, spaceId).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Space not found");
+        }
+    }
+
     public record NoticeRequest(
             @NotBlank @Size(max = 120) String title,
             @NotBlank @Size(max = 1000) String content
@@ -404,10 +427,12 @@ public class AdminController {
             @NotBlank @Size(max = 80) String category,
             @NotBlank @Size(max = 1000) String description,
             @NotBlank @Size(max = 120) String coverKey,
-            @Size(max = 16) String resourceType
+            Long spaceId
     ) {}
 
     public record EquipmentStatusRequest(@NotBlank String status) {}
+
+    public record SpaceAssignmentRequest(Long spaceId) {}
 
     public record ActiveRequest(@NotNull Boolean active) {}
 
@@ -425,6 +450,7 @@ public class AdminController {
             @NotNull @Future Instant startsAt,
             @NotNull @Future Instant endsAt,
             @NotNull @Min(1) @Max(200) Integer capacity,
+            Long spaceId,
             @NotNull @Size(max = 20) List<@NotNull Long> resourceIds
     ) {}
 

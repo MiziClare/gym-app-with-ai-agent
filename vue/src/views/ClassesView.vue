@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRoute } from 'vue-router'
 import { api, messageOf, type Booking, type Session } from '../api'
 import { session as auth } from '../state'
 
 const sessions = ref<Session[]>([])
+const route = useRoute()
 const query = ref('')
 const loading = ref(true)
 const bookingId = ref<number | null>(null)
@@ -12,9 +14,13 @@ const bookedSessionIds = ref(new Set<number>())
 
 const filtered = computed(() => {
   const needle = query.value.trim().toLowerCase()
-  return needle
-    ? sessions.value.filter(item => `${item.courseName} ${item.coachName}`.toLowerCase().includes(needle))
+  const target = Number(route.query.sessionId)
+  const candidates = Number.isFinite(target)
+    ? sessions.value.filter(item => item.id === target)
     : sessions.value
+  return needle
+    ? candidates.filter(item => `${item.courseName} ${item.coachName}`.toLowerCase().includes(needle))
+    : candidates
 })
 
 onMounted(load)
@@ -22,7 +28,11 @@ onMounted(load)
 async function load() {
   loading.value = true
   try {
-    sessions.value = (await api.get<Session[]>('/sessions')).data
+    const target = Number(route.query.sessionId)
+    const params = Number.isFinite(target)
+      ? { from: new Date(new Date().setHours(0, 0, 0, 0)).toISOString() }
+      : undefined
+    sessions.value = (await api.get<Session[]>('/sessions', { params })).data
     if (auth.user?.role === 'MEMBER') {
       const mine = (await api.get<Booking[]>('/bookings/me')).data
       bookedSessionIds.value = new Set(
@@ -86,6 +96,11 @@ function date(value: string) {
             <p>{{ date(item.startsAt) }}</p>
             <h3>{{ item.courseName }}</h3>
             <small>Coach {{ item.coachName }}</small>
+            <RouterLink
+              v-if="item.spaceId"
+              class="class-location"
+              :to="`/front/gym-map?spaceId=${item.spaceId}`"
+            >{{ item.floorName }} · {{ item.spaceName }}</RouterLink>
           </div>
           <div class="capacity">
             <span>{{ item.bookedCount }} / {{ item.capacity }} booked</span>
@@ -123,6 +138,7 @@ function date(value: string) {
 .class-body { padding: 22px; }
 .class-body p { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
 .class-body small { display: block; margin-top: 7px; color: var(--muted); }
+.class-location { width: fit-content; margin-top: 8px; display: block; color: #49745a; font-size: 12px; font-weight: 800; }
 .capacity { margin: 25px 0 17px; }
 .capacity span { color: var(--muted); font-size: 11px; }
 .capacity div { height: 5px; margin-top: 7px; overflow: hidden; background: #edf0ec; border-radius: 99px; }

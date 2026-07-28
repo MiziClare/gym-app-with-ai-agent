@@ -60,10 +60,15 @@ public class LegacyFeatureController {
     @GetMapping("/equipment")
     List<Map<String, Object>> equipment() {
         return jdbc.queryForList("""
-                SELECT id, name, category, description, status, cover_key AS coverKey
+                SELECT equipment.id, equipment.name, equipment.category,
+                       equipment.description, equipment.status, equipment.cover_key AS coverKey,
+                       equipment.space_id AS spaceId, space.name AS spaceName,
+                       floor.name AS floorName
                 FROM equipment
-                WHERE status <> 'RETIRED' AND resource_type = 'EQUIPMENT'
-                ORDER BY name
+                LEFT JOIN gym_spaces space ON space.id = equipment.space_id
+                LEFT JOIN gym_floors floor ON floor.id = space.floor_id
+                WHERE equipment.status <> 'RETIRED' AND equipment.resource_type = 'EQUIPMENT'
+                ORDER BY equipment.name
                 """);
     }
 

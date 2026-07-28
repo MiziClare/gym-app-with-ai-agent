@@ -90,6 +90,7 @@ public class DemoDataInitializer implements ApplicationRunner {
         seedDemoMembership();
         seedDemoCoachAssignment();
         seedLegacyFeatures();
+        seedGymLayout();
     }
 
     private void seedDemoCoachAssignment() {
@@ -161,14 +162,6 @@ public class DemoDataInitializer implements ApplicationRunner {
                         """, item.name(), item.category(), item.description(), item.coverKey());
             }
         }
-        jdbc.update("""
-                INSERT INTO equipment
-                    (name, category, description, cover_key, resource_type)
-                SELECT 'Studio A', 'Facility', 'Multi-purpose group training studio.', 'course', 'ROOM'
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM equipment WHERE resource_type = 'ROOM'
-                )
-                """);
         if (jdbc.queryForObject("SELECT COUNT(*) FROM posts", Integer.class) == 0) {
             var memberId = jdbc.queryForObject("SELECT id FROM users WHERE username = 'member'", Long.class);
             var coachId = jdbc.queryForObject("SELECT id FROM users WHERE username = 'coach'", Long.class);
@@ -177,6 +170,62 @@ public class DemoDataInitializer implements ApplicationRunner {
             jdbc.update("INSERT INTO posts (author_id, title, content) VALUES (?, ?, ?)",
                     memberId, "My first week", "Mobility Flow was a great way to get started.");
         }
+    }
+
+    private void seedGymLayout() {
+        if (jdbc.queryForObject("SELECT COUNT(*) FROM gym_spaces", Integer.class) > 0) {
+            return;
+        }
+        var floorId = jdbc.queryForObject(
+                "SELECT id FROM gym_floors ORDER BY sort_order LIMIT 1", Long.class);
+        jdbc.update("UPDATE gym_floors SET name = 'Main Floor' WHERE id = ?", floorId);
+        for (var space : List.of(
+                new DemoSpace("Reception", "AREA", 2, 3, 18, 14),
+                new DemoSpace("Cardio Zone", "AREA", 22, 3, 36, 36),
+                new DemoSpace("Strength Zone", "AREA", 60, 3, 38, 36),
+                new DemoSpace("Studio A", "ROOM", 2, 43, 47, 54),
+                new DemoSpace("Pool & Recovery", "ROOM", 51, 43, 23, 54),
+                new DemoSpace("Locker Rooms", "ROOM", 76, 43, 22, 54)
+        )) {
+            jdbc.update("""
+                    INSERT INTO gym_spaces
+                        (floor_id, name, type, x_percent, y_percent, width_percent, height_percent)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, floorId, space.name(), space.type(), space.x(), space.y(),
+                    space.width(), space.height());
+        }
+        assignEquipment(floorId, "Cardio Zone", "Treadmill", "Spin Bike", "Rowing Machine");
+        assignEquipment(floorId, "Strength Zone", "Cable Machine");
+        assignEquipment(floorId, "Pool & Recovery", "Swimming Pool");
+        assignCourse(floorId, "Strength Foundations", "Strength Zone");
+        assignCourse(floorId, "Mobility Flow", "Pool & Recovery");
+        assignCourse(floorId, "Cardio Circuit", "Studio A");
+    }
+
+    private void assignEquipment(Long floorId, String spaceName, String... equipmentNames) {
+        var placeholders = String.join(", ", java.util.Collections.nCopies(equipmentNames.length, "?"));
+        var arguments = new Object[equipmentNames.length + 2];
+        arguments[0] = floorId;
+        arguments[1] = spaceName;
+        System.arraycopy(equipmentNames, 0, arguments, 2, equipmentNames.length);
+        jdbc.update("""
+                UPDATE equipment
+                SET space_id = (
+                    SELECT id FROM gym_spaces WHERE floor_id = ? AND name = ?
+                )
+                WHERE name IN (%s)
+                """.formatted(placeholders), arguments);
+    }
+
+    private void assignCourse(Long floorId, String courseName, String spaceName) {
+        jdbc.update("""
+                UPDATE course_sessions session
+                JOIN courses course ON course.id = session.course_id
+                SET session.space_id = (
+                    SELECT id FROM gym_spaces WHERE floor_id = ? AND name = ?
+                )
+                WHERE course.name = ?
+                """, floorId, spaceName, courseName);
     }
 
     private void insertUser(String username, String displayName, String email, String role) {
@@ -203,4 +252,6 @@ public class DemoDataInitializer implements ApplicationRunner {
     }
 
     private record DemoEquipment(String name, String category, String description, String coverKey) {}
+
+    private record DemoSpace(String name, String type, int x, int y, int width, int height) {}
 }
