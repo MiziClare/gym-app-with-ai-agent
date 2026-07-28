@@ -5,6 +5,7 @@ node_modules
 .env
 *.local
 .playwright-cli/
+output/playwright/equipment-*.png
 
 .idea/
 *.iml
