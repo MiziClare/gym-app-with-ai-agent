@@ -13,14 +13,23 @@ const overview = ref<Row>({})
 const dashboardClosedDays = ref<Row[]>([])
 const loading = ref(false)
 const adminCalendarMonthDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
-const form = reactive({ title: '', content: '', name: '', category: '', description: '', coverKey: 'course', durationMinutes: 45, defaultCapacity: 12 })
+const form = reactive({ title: '', content: '', name: '', category: '', description: '', coverKey: 'course', resourceType: 'EQUIPMENT', durationMinutes: 45, defaultCapacity: 12 })
 const assignment = reactive({ coachId: '' as number | '', memberId: '' as number | '', startsOn: new Date().toLocaleDateString('en-CA'), endsOn: '' })
 const closedDay = reactive({ closedOn: new Date().toLocaleDateString('en-CA'), reason: '' })
 const assignmentOptions = reactive<{ coaches: Row[]; members: Row[] }>({ coaches: [], members: [] })
+const sessionForm = reactive({
+  courseId: '' as number | '',
+  coachId: '' as number | '',
+  startsAt: localDateTime(new Date(Date.now() + 60 * 60_000)),
+  endsAt: localDateTime(new Date(Date.now() + 2 * 60 * 60_000)),
+  capacity: 12,
+  resourceIds: [] as number[],
+})
+const sessionOptions = reactive<{ courses: Row[]; coaches: Row[]; resources: Row[] }>({ courses: [], coaches: [], resources: [] })
 const names: Record<string, string> = {
   overview: 'Dashboard', admins: 'Administrators', members: 'Members', coaches: 'Coaches',
   notices: 'Notices', courses: 'Courses', bookings: 'Course Bookings', appointments: 'Coach Bookings',
-  coachAssignments: 'Coach Assignments', visits: 'Gym Visits', equipment: 'Equipment',
+  coachAssignments: 'Coach Assignments', sessions: 'Class Schedule', visits: 'Gym Visits', equipment: 'Resources',
   equipmentReservations: 'Equipment Bookings', closedDays: 'Operations Calendar', posts: 'Community Posts', profile: 'My Account',
 }
 const columns = computed(() => Object.keys(rows.value[0] || {}).filter(key =>
@@ -64,7 +73,18 @@ async function load() {
       overview.value = stats.data
       dashboardClosedDays.value = closed.data
     }
-    else if (module.value === 'coachAssignments') {
+    else if (module.value === 'sessions') {
+      const [sessions, courses, coaches, resources] = await Promise.all([
+        api.get('/admin/course-sessions'),
+        api.get('/courses'),
+        api.get('/admin/users', { params: { role: 'COACH' } }),
+        api.get('/admin/resources'),
+      ])
+      rows.value = sessions.data
+      sessionOptions.courses = courses.data
+      sessionOptions.coaches = coaches.data.filter((item: Row) => item.active)
+      sessionOptions.resources = resources.data.filter((item: Row) => item.status === 'AVAILABLE')
+    } else if (module.value === 'coachAssignments') {
       const [assignments, coaches, members] = await Promise.all([
         api.get('/admin/coach-assignments'),
         api.get('/admin/users', { params: { role: 'COACH' } }),
@@ -80,7 +100,7 @@ async function load() {
     } else {
       const paths: Record<string, string> = {
         notices: '/admin/notices', courses: '/courses', bookings: '/admin/bookings',
-        appointments: '/admin/coach-appointments', equipment: '/equipment',
+        appointments: '/admin/coach-appointments', equipment: '/admin/resources',
         equipmentReservations: '/admin/equipment-reservations',
         closedDays: '/admin/closed-days',
         visits: '/admin/member-visits', posts: '/admin/posts',
@@ -96,12 +116,21 @@ async function create() {
     if (module.value === 'notices') await api.post('/admin/notices', { title: form.title, content: form.content })
     if (module.value === 'equipment') await api.post('/admin/equipment', form)
     if (module.value === 'courses') await api.post('/admin/courses', form)
+    if (module.value === 'sessions') {
+      await api.post('/admin/course-sessions', {
+        ...sessionForm,
+        coachId: sessionForm.coachId || null,
+        startsAt: new Date(sessionForm.startsAt).toISOString(),
+        endsAt: new Date(sessionForm.endsAt).toISOString(),
+      })
+      sessionForm.resourceIds = []
+    }
     if (module.value === 'closedDays') await saveClosedDay()
     if (module.value === 'coachAssignments') {
       await api.post('/admin/coach-assignments', { ...assignment, endsOn: assignment.endsOn || null })
       assignment.endsOn = ''
     }
-    Object.assign(form, { title: '', content: '', name: '', category: '', description: '', coverKey: 'course', durationMinutes: 45, defaultCapacity: 12 })
+    Object.assign(form, { title: '', content: '', name: '', category: '', description: '', coverKey: 'course', resourceType: 'EQUIPMENT', durationMinutes: 45, defaultCapacity: 12 })
     ElMessage.success('Saved')
     await load()
   } catch (error) { ElMessage.error(messageOf(error)) }
@@ -158,10 +187,14 @@ async function remove(item: Row) {
   try {
     const endingAssignment = module.value === 'coachAssignments'
     const closedDate = module.value === 'closedDays'
-    await ElMessageBox.confirm(endingAssignment ? 'End this coach assignment?' : 'Delete this record?', 'Please confirm')
+    const cancellingSession = module.value === 'sessions'
+    await ElMessageBox.confirm(
+      endingAssignment ? 'End this coach assignment?' : cancellingSession ? 'Cancel this class session?' : 'Delete this record?',
+      'Please confirm'
+    )
     if (closedDate) await deleteClosedDay(item)
-    else await api.delete(`/admin/${endingAssignment ? 'coach-assignments' : module.value}/${item.id}`)
-    ElMessage.success(endingAssignment ? 'Assignment ended' : 'Deleted')
+    else await api.delete(`/admin/${endingAssignment ? 'coach-assignments' : cancellingSession ? 'course-sessions' : module.value}/${item.id}`)
+    ElMessage.success(endingAssignment ? 'Assignment ended' : cancellingSession ? 'Session cancelled' : 'Deleted')
     await load()
   } catch (error) {
     if (error !== 'cancel' && error !== 'close') ElMessage.error(messageOf(error))
@@ -196,6 +229,11 @@ function show(value: unknown) {
 function localDate(value: Date) {
   const local = new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
   return local.toISOString().slice(0, 10)
+}
+
+function localDateTime(value: Date) {
+  const local = new Date(value.getTime() - value.getTimezoneOffset() * 60_000)
+  return local.toISOString().slice(0, 16)
 }
 
 function dateOnly(value: unknown) {
@@ -266,7 +304,7 @@ function closedReason(item: Row) {
       <input v-model.trim="form.title" maxlength="120" placeholder="Notice title" required><input v-model.trim="form.content" maxlength="1000" placeholder="Notice content" required><button type="submit">Publish</button>
     </form>
     <form v-else-if="module === 'equipment'" class="admin-panel admin-form equipment-form" @submit.prevent="create">
-      <input v-model.trim="form.name" maxlength="120" placeholder="Equipment name" required><input v-model.trim="form.category" maxlength="80" placeholder="Category" required><input v-model.trim="form.description" maxlength="1000" placeholder="Description" required><button type="submit">Add equipment</button>
+      <select v-model="form.resourceType" aria-label="Resource type"><option value="EQUIPMENT">Equipment</option><option value="ROOM">Room</option></select><input v-model.trim="form.name" maxlength="120" placeholder="Resource name" required><input v-model.trim="form.category" maxlength="80" placeholder="Category" required><input v-model.trim="form.description" maxlength="1000" placeholder="Description" required><button type="submit">Add resource</button>
     </form>
     <form v-else-if="module === 'courses'" class="admin-panel admin-form course-form" @submit.prevent="create">
       <input v-model.trim="form.name" maxlength="120" placeholder="Course name" required><input v-model.trim="form.description" maxlength="1000" placeholder="Description" required><input v-model.number="form.durationMinutes" type="number" min="10" max="240" aria-label="Duration in minutes" required><input v-model.number="form.defaultCapacity" type="number" min="1" max="200" aria-label="Capacity" required><button type="submit">Add course</button>
@@ -283,11 +321,20 @@ function closedReason(item: Row) {
       <input v-model="assignment.endsOn" type="date" :min="assignment.startsOn" aria-label="Optional end date">
       <button type="submit">Assign coach</button>
     </form>
+    <form v-else-if="module === 'sessions'" class="admin-panel admin-form session-form" @submit.prevent="create">
+      <select v-model.number="sessionForm.courseId" aria-label="Course" required><option value="" disabled>Select course</option><option v-for="course in sessionOptions.courses" :key="course.id" :value="course.id">{{ course.name }}</option></select>
+      <select v-model.number="sessionForm.coachId" aria-label="Optional coach"><option value="">No coach assigned</option><option v-for="coach in sessionOptions.coaches" :key="coach.id" :value="coach.id">{{ coach.displayName }}</option></select>
+      <input v-model="sessionForm.startsAt" type="datetime-local" aria-label="Starts at" required>
+      <input v-model="sessionForm.endsAt" type="datetime-local" :min="sessionForm.startsAt" aria-label="Ends at" required>
+      <input v-model.number="sessionForm.capacity" type="number" min="1" max="200" aria-label="Capacity" required>
+      <select v-model="sessionForm.resourceIds" multiple aria-label="Required resources"><option v-for="resource in sessionOptions.resources" :key="resource.id" :value="resource.id">{{ resource.name }} · {{ resource.resourceType }}</option></select>
+      <button type="submit">Schedule class</button>
+    </form>
 
     <section v-if="module !== 'overview' && !loading" class="admin-panel table-wrap">
       <table v-if="rows.length">
-        <thead><tr><th v-for="key in columns" :key="key">{{ label(key) }}</th><th v-if="['notices','equipment','posts','courses','members','coaches','coachAssignments','closedDays'].includes(module)">Actions</th></tr></thead>
-        <tbody><tr v-for="item in rows" :key="item.id || item.username"><td v-for="key in columns" :key="key">{{ show(item[key]) }}</td><td v-if="['notices','equipment','posts','courses','members','coaches','coachAssignments','closedDays'].includes(module)" class="table-actions"><template v-if="module === 'equipment'"><button type="button" @click="equipmentStatus(item, 'AVAILABLE')">Available</button><button type="button" @click="equipmentStatus(item, 'MAINTENANCE')">Maintenance</button></template><button v-else-if="module === 'courses'" type="button" @click="setActive('courses', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="['members','coaches'].includes(module)" type="button" @click="setActive('users', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="module !== 'coachAssignments' || item.status === 'ACTIVE'" type="button" @click="remove(item)">{{ module === 'coachAssignments' ? 'End' : 'Delete' }}</button></td></tr></tbody>
+        <thead><tr><th v-for="key in columns" :key="key">{{ label(key) }}</th><th v-if="['notices','equipment','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)">Actions</th></tr></thead>
+        <tbody><tr v-for="item in rows" :key="item.id || item.username"><td v-for="key in columns" :key="key">{{ show(item[key]) }}</td><td v-if="['notices','equipment','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)" class="table-actions"><template v-if="module === 'equipment'"><button type="button" @click="equipmentStatus(item, 'AVAILABLE')">Available</button><button type="button" @click="equipmentStatus(item, 'MAINTENANCE')">Maintenance</button></template><button v-else-if="module === 'courses'" type="button" @click="setActive('courses', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="['members','coaches'].includes(module)" type="button" @click="setActive('users', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><template v-else-if="module === 'sessions'"><button v-if="item.status === 'OPEN'" type="button" @click="remove(item)">Cancel</button></template><button v-else-if="module !== 'coachAssignments' || item.status === 'ACTIVE'" type="button" @click="remove(item)">{{ module === 'coachAssignments' ? 'End' : 'Delete' }}</button></td></tr></tbody>
       </table>
       <p v-else class="empty">No records found.</p>
     </section>

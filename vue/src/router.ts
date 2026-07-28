@@ -74,6 +74,7 @@ const router = createRouter({
         admin('reserve', 'appointments', 'Coach bookings'),
         admin('calendar', 'closedDays', 'Operations calendar'),
         admin('course', 'courses', 'Classes'),
+        admin('sessions', 'sessions', 'Class schedule'),
         admin('orders', 'bookings', 'Class bookings'),
         admin('visits', 'visits', 'Gym visits'),
         admin('equipment', 'equipment', 'Equipment'),

@@ -307,8 +307,10 @@ h1, h2, h3, p { overflow-wrap: break-word; }
 .admin-form { margin-bottom: 18px; display: grid; grid-template-columns: 220px 1fr auto; gap: 10px; }
 .admin-form input, .admin-form select { min-width: 0; padding: 9px 11px; border: 1px solid #dce2e8; border-radius: 6px; }
 .assignment-form { grid-template-columns: repeat(4, minmax(130px, 1fr)) auto; }
-.equipment-form { grid-template-columns: 180px 160px 1fr auto; }
+.equipment-form { grid-template-columns: 130px 180px 150px 1fr auto; }
 .course-form { grid-template-columns: 180px 1fr 110px 100px auto; }
+.session-form { grid-template-columns: repeat(2, minmax(150px, 1fr)) repeat(2, minmax(185px, 1fr)) 90px minmax(180px, 1fr) auto; }
+.session-form select[multiple] { min-height: 70px; }
 .coach-note { display: block; padding: 10px; color: #7b8794; background: #f3f5f7; border-radius: 7px; text-align: center; font-size: 11px; }
 .table-wrap { padding: 0; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }

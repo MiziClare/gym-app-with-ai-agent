@@ -21,13 +21,14 @@ const groups = [
     ['Coach assignments', '/coachAssignments', 'icon-reservations.png'],
   ] },
   { label: 'Bookings', links: [
+    ['Class schedule', '/sessions', 'icon-courses.png'],
     ['Class bookings', '/orders', 'icon-orders.png'],
     ['Coach bookings', '/reserve', 'icon-reservations.png'],
     ['Equipment bookings', '/eqReserve', 'icon-barbell.png'],
   ] },
   { label: 'Inventory', links: [
     ['Classes', '/course', 'icon-courses.png'],
-    ['Equipment', '/equipment', 'icon-treadmill.png'],
+    ['Resources', '/equipment', 'icon-treadmill.png'],
     ['Gym visits', '/visits', 'icon-card.png'],
   ] },
   { label: 'Content', links: [
