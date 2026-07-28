@@ -4,14 +4,20 @@ import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import QRCode from 'qrcode'
 import { api, messageOf } from '../api'
-import { session } from '../state'
+import { loadUnread, session, unread } from '../state'
 
 type Row = Record<string, any>
 const route = useRoute()
 const feature = computed(() => String(route.meta.feature || 'profile'))
+const postDetail = computed(() => route.path.endsWith('/experienceDetail'))
 const rows = ref<Row[]>([])
 const secondary = ref<Row[]>([])
 const selected = ref<Row | null>(null)
+const forumText = ref('')
+const forumSort = ref<'default' | 'latestReply' | 'latest'>('default')
+const forumNotifications = ref<Row[]>([])
+const forumFeedbackRows = ref<Row[]>([])
+const replyTo = ref<Row | null>(null)
 const loading = ref(false)
 const form = reactive({ coachId: 0, startsAt: '', note: '', title: '', content: '' })
 const availabilityForm = reactive({ dayOfWeek: 1, startsAt: '09:00', endsAt: '17:00' })
@@ -121,16 +127,19 @@ const appointmentSlots = computed(() => {
 const titles: Record<string, [string, string]> = {
   profile: ['My Profile', 'Your account information'],
   coaches: ['Our Coaches', 'Find the right support for your goals'],
+  connections: ['Coach Connections', session.user?.role === 'COACH' ? 'Review member requests to work with you' : 'Track your coach contact requests'],
   appointments: ['Coach Booking', session.user?.role === 'COACH' ? 'Review member appointment requests' : 'Book time with a coach'],
   operationCalendar: ['Operations Calendar', 'View regular hours and scheduled closures'],
   community: ['Fitness Community', 'Share experience and learn from other members'],
   myPosts: ['My Posts', 'Manage the experience you have shared'],
+  savedPosts: ['Saved Posts', 'Posts you want to revisit'],
+  forumMessages: ['Forum Messages', 'Review community activity and staff feedback'],
   card: ['Membership E-card', 'Your digital gym identity'],
   chat: [session.user?.role === 'COACH' ? 'Member Chat' : 'Coach Chat', 'Keep training conversations in one place'],
   vr: ['VR Gym Tour', 'Explore the training space before your visit'],
 }
 
-watch(feature, load, { immediate: true })
+watch(() => route.fullPath, load, { immediate: true })
 onUnmounted(stopPassRefresh)
 
 async function load() {
@@ -140,8 +149,23 @@ async function load() {
   rows.value = []
   secondary.value = []
   selected.value = null
+  replyTo.value = null
   try {
-    if (feature.value === 'coaches') rows.value = (await api.get('/coaches')).data
+    if (feature.value === 'coaches') {
+      const [coaches, connections] = await Promise.all([
+        api.get('/coaches'),
+        api.get('/coach-connections'),
+      ])
+      rows.value = coaches.data
+      secondary.value = connections.data
+    }
+    if (feature.value === 'connections') {
+      rows.value = (await api.get('/coach-connections')).data
+      if (session.user?.role === 'MEMBER') {
+        await api.patch('/coach-connections/read')
+        unread.connections = 0
+      }
+    }
     if (feature.value === 'appointments') {
       await loadOperationsCalendar()
       if (session.user?.role === 'COACH') {
@@ -160,8 +184,28 @@ async function load() {
         await loadCoachAvailability()
       }
     }
-    if (['community', 'myPosts'].includes(feature.value)) {
-      rows.value = (await api.get(feature.value === 'myPosts' ? '/posts/me' : '/posts')).data
+    if (['community', 'myPosts', 'savedPosts'].includes(feature.value)) {
+      if (postDetail.value) {
+        const postId = Number(route.query.id)
+        rows.value = [(await api.get(`/posts/${postId}`)).data]
+        secondary.value = (await api.get(`/posts/${postId}/comments`)).data
+      } else {
+        const path = feature.value === 'myPosts' ? '/posts/me'
+          : feature.value === 'savedPosts' ? '/posts/favorites' : '/posts'
+        rows.value = (await api.get(path, {
+          params: path === '/posts' ? { sort: forumSort.value } : undefined,
+        })).data
+      }
+    }
+    if (feature.value === 'forumMessages') {
+      const [notifications, feedback] = await Promise.all([
+        api.get('/forum-notifications'),
+        api.get('/forum-feedback/me'),
+      ])
+      forumNotifications.value = notifications.data
+      forumFeedbackRows.value = feedback.data
+      await api.patch('/forum-notifications/read')
+      unread.forum = 0
     }
     if (feature.value === 'card') {
       rows.value = [(await api.get('/membership/me')).data]
@@ -266,6 +310,48 @@ async function remove(path: string, label: string) {
 async function choosePeer(peer: Row) {
   selected.value = peer
   secondary.value = (await api.get(`/messages/${peer.id}`)).data
+  peer.unreadCount = 0
+  await loadUnread()
+}
+
+function connectionFor(coachId: number) {
+  return secondary.value.find(item =>
+    item.coachId === coachId && (item.status === 'PENDING' || item.connected))
+}
+
+async function requestConnection(coach: Row) {
+  try {
+    const { value } = await ElMessageBox.prompt(
+      'Briefly describe your goal and what support you are looking for.',
+      `Contact ${coach.displayName}`,
+      {
+        inputType: 'textarea',
+        inputPlaceholder: 'For example: I want help building a safe strength routine.',
+        inputValidator: value => value.trim() ? true : 'Please describe your goal',
+      }
+    )
+    await api.post('/coach-connections', { coachId: coach.id, message: value })
+    ElMessage.success('Request sent to coach')
+    await load()
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') ElMessage.error(messageOf(error))
+  }
+}
+
+async function respondToConnection(id: number, status: 'ACCEPTED' | 'DECLINED') {
+  try {
+    await api.patch(`/coach-connections/${id}`, { status })
+    ElMessage.success(status === 'ACCEPTED' ? 'Member connected' : 'Request declined')
+    await Promise.all([load(), loadUnread()])
+  } catch (error) { ElMessage.error(messageOf(error)) }
+}
+
+async function cancelConnection(id: number) {
+  try {
+    await api.delete(`/coach-connections/${id}`)
+    ElMessage.success('Request cancelled')
+    await load()
+  } catch (error) { ElMessage.error(messageOf(error)) }
 }
 
 async function sendMessage() {
@@ -304,6 +390,76 @@ function closedOn(item: Row) {
 
 function closedReason(item: Row) {
   return item.reason || 'Closed'
+}
+
+async function togglePost(item: Row, kind: 'like' | 'favorite') {
+  try {
+    const active = kind === 'like' ? item.liked : item.favorited
+    await api[active ? 'delete' : 'put'](`/posts/${item.id}/${kind}`)
+    if (kind === 'like') {
+      item.liked = !active
+      item.likeCount += active ? -1 : 1
+    } else {
+      item.favorited = !active
+      if (feature.value === 'savedPosts' && active) rows.value = rows.value.filter(post => post.id !== item.id)
+    }
+  } catch (error) { ElMessage.error(messageOf(error)) }
+}
+
+async function addComment(post: Row) {
+  if (!forumText.value.trim()) return
+  try {
+    await api.post(`/posts/${post.id}/comments`, {
+      parentId: replyTo.value?.id || null,
+      content: forumText.value,
+    })
+    forumText.value = ''
+    replyTo.value = null
+    secondary.value = (await api.get(`/posts/${post.id}/comments`)).data
+    post.commentCount = secondary.value.length
+  } catch (error) { ElMessage.error(messageOf(error)) }
+}
+
+async function toggleCommentLike(post: Row, comment: Row) {
+  try {
+    await api[comment.liked ? 'delete' : 'put'](
+      `/posts/${post.id}/comments/${comment.id}/like`
+    )
+    comment.liked = !comment.liked
+    comment.likeCount += comment.liked ? 1 : -1
+  } catch (error) { ElMessage.error(messageOf(error)) }
+}
+
+async function sendFeedback(post: Row | null = null) {
+  try {
+    const { value } = await ElMessageBox.prompt(
+      post ? `Tell staff what is wrong with “${post.title}”.` : 'Share forum feedback with gym staff.',
+      post ? 'Report post' : 'Forum feedback',
+      { inputType: 'textarea', inputValidator: value => value.trim() ? true : 'Please enter a message' }
+    )
+    await api.post('/forum-feedback', { postId: post?.id || null, content: value })
+    ElMessage.success('Sent to gym staff')
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') ElMessage.error(messageOf(error))
+  }
+}
+
+function notificationText(item: Row) {
+  const messages: Record<string, string> = {
+    COMMENT: `${item.actorName} commented on “${item.postTitle}”`,
+    REPLY: `${item.actorName} replied to your comment`,
+    LIKE: `${item.actorName} liked “${item.postTitle}”`,
+    COMMENT_LIKE: `${item.actorName} liked your comment`,
+    FEEDBACK_REPLY: 'Gym staff replied to your feedback',
+  }
+  return messages[item.type] || 'Forum update'
+}
+
+async function sortPosts(sort: 'default' | 'latestReply' | 'latest') {
+  forumSort.value = sort
+  try {
+    rows.value = (await api.get('/posts', { params: { sort } })).data
+  } catch (error) { ElMessage.error(messageOf(error)) }
 }
 
 function isHistory(item: Row) {
@@ -391,9 +547,35 @@ watch(() => form.coachId, () => {
   <div class="legacy-page">
     <div class="legacy-heading">
       <div><p class="section-kicker">GYM PANEL</p><h1>{{ titles[feature]?.[0] }}</h1><p>{{ titles[feature]?.[1] }}</p></div>
+      <nav v-if="['community', 'myPosts', 'savedPosts', 'forumMessages'].includes(feature)" class="forum-nav" aria-label="Forum views">
+        <RouterLink to="/front/experience">All posts</RouterLink>
+        <RouterLink to="/front/myExperience">My posts</RouterLink>
+        <RouterLink to="/front/savedPosts">Saved</RouterLink>
+        <RouterLink to="/front/forumMessages">Messages <em v-if="unread.forum" class="inline-badge">{{ Math.min(unread.forum, 99) }}{{ unread.forum > 99 ? '+' : '' }}</em></RouterLink>
+        <button type="button" @click="sendFeedback()">Feedback</button>
+      </nav>
     </div>
 
     <div v-if="loading" class="legacy-card empty">Loading…</div>
+
+    <section v-else-if="feature === 'forumMessages'" class="forum-messages">
+      <div class="legacy-card">
+        <h2>Activity</h2>
+        <article v-for="item in forumNotifications" :key="item.id" :class="{ unread: !item.isRead }">
+          <strong>{{ notificationText(item) }}</strong><p v-if="item.content">{{ item.content }}</p><small>{{ date(item.createdAt) }}</small>
+        </article>
+        <p v-if="!forumNotifications.length" class="empty">No forum activity yet.</p>
+      </div>
+      <div class="legacy-card">
+        <h2>Reports and feedback</h2>
+        <article v-for="item in forumFeedbackRows" :key="item.id">
+          <strong>{{ item.postTitle ? `Report: ${item.postTitle}` : 'General feedback' }}</strong>
+          <p>{{ item.content }}</p><blockquote v-if="item.adminReply">{{ item.adminReply }}</blockquote>
+          <small>{{ item.status }} · {{ date(item.createdAt) }}</small>
+        </article>
+        <p v-if="!forumFeedbackRows.length" class="empty">No feedback sent.</p>
+      </div>
+    </section>
 
     <section v-else-if="feature === 'profile'" class="profile-card legacy-card">
       <img src="../assets/imgs/avatar-default.jpg" alt="">
@@ -405,8 +587,31 @@ watch(() => form.coachId, () => {
       <article v-for="coach in rows" :key="coach.id" class="legacy-card coach-card">
         <img src="../assets/imgs/avatar-coach.png" alt="">
         <h3>{{ coach.displayName }}</h3><strong>{{ coach.specialties }}</strong><p>{{ coach.bio }}</p>
-        <RouterLink class="legacy-button" to="/front/reserve">Book coach</RouterLink>
+        <div class="coach-actions">
+          <RouterLink class="legacy-button" to="/front/reserve">Book coach</RouterLink>
+          <button v-if="connectionFor(coach.id)?.status === 'PENDING'" class="legacy-button secondary" type="button" disabled>Request pending</button>
+          <RouterLink v-else-if="connectionFor(coach.id)?.connected" class="legacy-button secondary" to="/front/chat">Chat</RouterLink>
+          <button v-else class="legacy-button secondary" type="button" @click="requestConnection(coach)">Contact coach</button>
+        </div>
       </article>
+    </section>
+
+    <section v-else-if="feature === 'connections'" class="data-list legacy-card">
+      <article v-for="item in rows" :key="item.id">
+        <div>
+          <h3>{{ item.coachName || item.memberName }}</h3>
+          <p>{{ item.message }}</p>
+          <small>{{ date(item.createdAt) }}</small>
+        </div>
+        <span class="pill" :class="`status-${String(item.status).toLowerCase()}`">{{ item.status }}</span>
+        <template v-if="session.user?.role === 'COACH' && item.status === 'PENDING'">
+          <button type="button" @click="respondToConnection(item.id, 'ACCEPTED')">Accept</button>
+          <button type="button" @click="respondToConnection(item.id, 'DECLINED')">Decline</button>
+        </template>
+        <button v-else-if="session.user?.role === 'MEMBER' && item.status === 'PENDING'" type="button" @click="cancelConnection(item.id)">Cancel</button>
+        <RouterLink v-else-if="item.status === 'ACCEPTED' && item.connected" class="legacy-button" :to="session.user?.role === 'COACH' ? '/front/coachChat' : '/front/chat'">Chat</RouterLink>
+      </article>
+      <p v-if="!rows.length" class="empty">No connection requests yet.</p>
     </section>
 
     <section v-else-if="feature === 'operationCalendar'" class="legacy-card dashboard-calendar front-calendar">
@@ -555,9 +760,46 @@ watch(() => form.coachId, () => {
       <p v-else class="empty legacy-card">No appointments yet.</p>
     </template>
 
-    <template v-else-if="['community', 'myPosts'].includes(feature)">
-      <form class="post-form legacy-card" @submit.prevent="createPost"><input v-model.trim="form.title" maxlength="160" placeholder="Post title" required><textarea v-model.trim="form.content" maxlength="5000" rows="3" placeholder="Share your fitness experience…" required></textarea><button class="legacy-button" type="submit">Publish post</button></form>
-      <div class="post-grid"><article v-for="item in rows" :key="item.id" class="legacy-card post-card"><small>{{ item.authorName || session.user?.displayName }} · {{ date(item.createdAt) }}</small><h3>{{ item.title }}</h3><p>{{ item.content }}</p><button v-if="feature === 'myPosts'" type="button" @click="remove(`/posts/${item.id}`, 'post')">Delete</button></article></div>
+    <template v-else-if="['community', 'myPosts', 'savedPosts'].includes(feature)">
+      <RouterLink v-if="postDetail" class="forum-back" to="/front/experience">← Back to all posts</RouterLink>
+      <form v-if="feature === 'community' && !postDetail" class="post-form legacy-card" @submit.prevent="createPost"><input v-model.trim="form.title" maxlength="160" placeholder="Post title" required><textarea v-model.trim="form.content" maxlength="5000" rows="3" placeholder="Share your fitness experience…" required></textarea><button class="legacy-button" type="submit">Publish post</button></form>
+      <nav v-if="feature === 'community' && !postDetail" class="forum-sort" aria-label="Sort posts">
+        <button type="button" :class="{ active: forumSort === 'default' }" @click="sortPosts('default')">Default</button>
+        <button type="button" :class="{ active: forumSort === 'latestReply' }" @click="sortPosts('latestReply')">Latest replies</button>
+        <button type="button" :class="{ active: forumSort === 'latest' }" @click="sortPosts('latest')">Newest posts</button>
+      </nav>
+      <div class="post-grid">
+        <article v-for="item in rows" :key="item.id" class="legacy-card post-card">
+          <small>{{ item.authorName }} · {{ date(item.createdAt) }}</small>
+          <RouterLink v-if="!postDetail" class="post-title-link" :to="{ path: '/front/experienceDetail', query: { id: item.id } }"><h3>{{ item.title }}</h3></RouterLink>
+          <h3 v-else>{{ item.title }}</h3>
+          <p>{{ item.content }}</p>
+          <div class="post-actions">
+            <button type="button" :class="{ active: item.liked }" :aria-pressed="Boolean(item.liked)" @click="togglePost(item, 'like')">♥ {{ item.likeCount }}</button>
+            <RouterLink v-if="!postDetail" :to="{ path: '/front/experienceDetail', query: { id: item.id } }">Comments {{ item.commentCount }}</RouterLink>
+            <span v-else>Comments {{ item.commentCount }}</span>
+            <button type="button" :class="{ active: item.favorited }" :aria-pressed="Boolean(item.favorited)" @click="togglePost(item, 'favorite')">{{ item.favorited ? 'Saved' : 'Save' }}</button>
+            <button type="button" @click="sendFeedback(item)">Report</button>
+            <button v-if="feature === 'myPosts'" type="button" @click="remove(`/posts/${item.id}`, 'post')">Delete</button>
+          </div>
+          <p v-if="!postDetail && item.topComment" class="top-comment"><strong>Top comment</strong> {{ item.topComment }}</p>
+          <section v-if="postDetail" class="post-comments">
+            <article v-for="comment in secondary" :key="comment.id" :class="{ reply: comment.parentId }">
+              <small>{{ comment.authorName }}<template v-if="comment.parentAuthorName"> replied to {{ comment.parentAuthorName }}</template> · {{ date(comment.createdAt) }}</small>
+              <p>{{ comment.content }}</p>
+              <button type="button" :class="{ active: comment.liked }" :aria-pressed="Boolean(comment.liked)" @click="toggleCommentLike(item, comment)">♥ {{ comment.likeCount }}</button>
+              <button type="button" @click="replyTo = comment">Reply</button>
+            </article>
+            <p v-if="!secondary.length" class="empty">No comments yet.</p>
+            <form @submit.prevent="addComment(item)">
+              <span v-if="replyTo">Replying to {{ replyTo.authorName }} <button type="button" @click="replyTo = null">×</button></span>
+              <textarea v-model.trim="forumText" maxlength="2000" rows="2" :placeholder="replyTo ? 'Write a reply…' : 'Write a comment…'" required></textarea>
+              <button class="legacy-button" type="submit">Post</button>
+            </form>
+          </section>
+        </article>
+      </div>
+      <p v-if="!rows.length" class="empty legacy-card">No posts found.</p>
     </template>
 
     <section v-else-if="feature === 'card'" class="member-card">
@@ -574,7 +816,7 @@ watch(() => form.coachId, () => {
     </section>
 
     <section v-else-if="feature === 'chat'" class="chat-panel legacy-card">
-      <aside><button v-for="peer in rows" :key="peer.id" :class="{ active: selected?.id === peer.id }" type="button" @click="choosePeer(peer)"><img src="../assets/imgs/avatar-default.jpg" alt=""><span>{{ peer.displayName }}<small>{{ peer.role }}</small></span></button></aside>
+      <aside><button v-for="peer in rows" :key="peer.id" :class="{ active: selected?.id === peer.id }" type="button" @click="choosePeer(peer)"><img src="../assets/imgs/avatar-default.jpg" alt=""><span>{{ peer.displayName }}<small>{{ peer.role }}</small></span><em v-if="peer.unreadCount" class="inline-badge">{{ Math.min(peer.unreadCount, 99) }}{{ peer.unreadCount > 99 ? '+' : '' }}</em></button></aside>
       <div class="conversation"><header>{{ selected?.displayName || 'Choose a conversation' }}</header><div class="messages"><p v-for="message in secondary" :key="message.id" :class="{ mine: message.senderId === session.user?.id }">{{ message.content }}<small>{{ date(message.createdAt) }}</small></p></div><form @submit.prevent="sendMessage"><input v-model.trim="form.content" maxlength="1000" placeholder="Type a message…" :disabled="!selected"><button class="legacy-button" type="submit">Send</button></form></div>
     </section>
 

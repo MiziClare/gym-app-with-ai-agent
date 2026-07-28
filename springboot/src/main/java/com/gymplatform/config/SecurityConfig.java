@@ -68,7 +68,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/coach/**").hasRole("COACH")
                         .requestMatchers("/api/coach-appointments/**").hasRole("MEMBER")
                         .requestMatchers("/api/membership/**").hasRole("MEMBER")
-                        .requestMatchers("/api/messages/**", "/api/posts/**").hasAnyRole("MEMBER", "COACH")
+                        .requestMatchers("/api/messages/**", "/api/posts/**",
+                                "/api/forum-notifications/**", "/api/forum-feedback/**",
+                                "/api/coach-connections/**")
+                        .hasAnyRole("MEMBER", "COACH")
                         .requestMatchers("/api/bookings/**", "/api/assistant/**").hasRole("MEMBER")
                         .anyRequest().authenticated());
 

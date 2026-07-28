@@ -77,4 +77,34 @@ class AdminControllerTest {
         assertEquals(409, error.getStatusCode().value());
         verify(jdbc, never()).update(contains("INSERT INTO equipment_maintenance"), any(), any(), any(), any(), any());
     }
+
+    @Test
+    void coachAssignmentAlsoEstablishesVisibleConnection() {
+        var jdbc = mock(JdbcTemplate.class);
+        when(jdbc.queryForObject(contains("FROM users"), eq(Integer.class), anyLong(), anyString()))
+                .thenReturn(1);
+        when(jdbc.queryForObject(contains("FROM coach_member_assignments"), eq(Integer.class),
+                anyLong(), anyLong(), isNull(), any(LocalDate.class))).thenReturn(0);
+        var controller = new AdminController(jdbc, mock(SessionSchedulingService.class));
+
+        controller.createCoachAssignment(new AdminController.CoachAssignmentRequest(
+                8L, 12L, LocalDate.now(), null));
+
+        verify(jdbc).update(contains("UPDATE coach_connection_requests"), eq(8L), eq(12L));
+        verify(jdbc).update(contains("INSERT INTO coach_connection_requests"),
+                eq(12L), eq(8L), eq(12L), eq(8L));
+    }
+
+    @Test
+    void rejectsOpeningMissingPost() {
+        var jdbc = mock(JdbcTemplate.class);
+        when(jdbc.queryForList(contains("COUNT(DISTINCT likes.user_id)"), eq(91L)))
+                .thenReturn(List.of());
+
+        var error = assertThrows(ResponseStatusException.class,
+                () -> new AdminController(jdbc, mock(SessionSchedulingService.class))
+                        .postDetails(91L));
+
+        assertEquals(404, error.getStatusCode().value());
+    }
 }

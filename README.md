@@ -53,7 +53,9 @@ Demo users share the password `GymDemo123!`:
 | Role | Username |
 | --- | --- |
 | Member | `member` |
+| Member | `member2`, `member3` |
 | Coach | `coach` |
+| Coach | `coach2`, `coach3` |
 | Administrator | `admin` |
 
 ## Verify

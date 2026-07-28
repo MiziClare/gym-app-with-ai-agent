@@ -34,6 +34,7 @@ const groups = [
   { label: 'Content', links: [
     ['Notices', '/notice', 'icon-info.png'],
     ['Community posts', '/experience', 'icon-post.png'],
+    ['Forum feedback', '/forum-feedback', 'icon-chat.png'],
   ] },
 ] as const
 

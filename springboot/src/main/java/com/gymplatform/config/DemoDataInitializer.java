@@ -88,6 +88,7 @@ public class DemoDataInitializer implements ApplicationRunner {
             }
         }
 
+        seedForumTestUsers();
         seedDemoMembership();
         seedDemoCoachAssignment();
         seedLegacyFeatures();
@@ -176,6 +177,27 @@ public class DemoDataInitializer implements ApplicationRunner {
             jdbc.update("INSERT INTO posts (author_id, title, content) VALUES (?, ?, ?)",
                     memberId, "My first week", "Mobility Flow was a great way to get started.");
         }
+    }
+
+    private void seedForumTestUsers() {
+        var users = List.of(
+                new DemoUser("member2", "Jordan Lee", "member2@gym.demo", "MEMBER"),
+                new DemoUser("member3", "Sam Rivera", "member3@gym.demo", "MEMBER"),
+                new DemoUser("coach2", "Noah Williams", "coach2@gym.demo", "COACH"),
+                new DemoUser("coach3", "Priya Patel", "coach3@gym.demo", "COACH")
+        );
+        for (var user : users) {
+            if (jdbc.queryForList(
+                    "SELECT id FROM users WHERE username = ?", Long.class, user.username()).isEmpty()) {
+                insertUser(user.username(), user.displayName(), user.email(), user.role());
+            }
+        }
+        jdbc.update("""
+                INSERT IGNORE INTO coach_profiles (user_id, bio, specialties)
+                SELECT id, 'Demo coach account for forum and member workflow testing.',
+                       'General fitness, community support'
+                FROM users WHERE username IN ('coach2', 'coach3')
+                """);
     }
 
     private void seedEquipmentUnits() {
@@ -428,6 +450,8 @@ public class DemoDataInitializer implements ApplicationRunner {
             String coverKey
     ) {
     }
+
+    private record DemoUser(String username, String displayName, String email, String role) {}
 
     private record DemoEquipment(
             String name,

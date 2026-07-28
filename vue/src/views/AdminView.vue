@@ -9,6 +9,7 @@ type Row = Record<string, any>
 const route = useRoute()
 const module = computed(() => String(route.meta.module || 'overview'))
 const rows = ref<Row[]>([])
+const postComments = ref<Row[]>([])
 const overview = ref<Row>({})
 const dashboardClosedDays = ref<Row[]>([])
 const operationHours = reactive({ opensAt: '06:00', closesAt: '22:00' })
@@ -41,6 +42,7 @@ const names: Record<string, string> = {
   notices: 'Notices', courses: 'Courses', bookings: 'Course Bookings', appointments: 'Coach Bookings',
   coachAssignments: 'Coach Assignments', sessions: 'Class Schedule', visits: 'Gym Visits',
   closedDays: 'Operations Calendar', posts: 'Community Posts', profile: 'My Account',
+  postDetail: 'Post Details', forumFeedback: 'Forum Feedback',
 }
 const columns = computed(() => Object.keys(rows.value[0] || {}).filter(key =>
   (module.value !== 'coachAssignments' || !['coachId', 'memberId'].includes(key))
@@ -79,6 +81,7 @@ watch(module, load, { immediate: true })
 async function load() {
   loading.value = true
   rows.value = []
+  postComments.value = []
   try {
     if (module.value === 'overview') {
       const [stats, closed, hours] = await Promise.all([
@@ -121,6 +124,10 @@ async function load() {
       rows.value = assignments.data
       assignmentOptions.coaches = coaches.data.filter((item: Row) => item.active)
       assignmentOptions.members = members.data.filter((item: Row) => item.active)
+    } else if (module.value === 'postDetail') {
+      const response = await api.get(`/admin/posts/${route.params.id}`)
+      rows.value = [response.data.post]
+      postComments.value = response.data.comments
     } else if (module.value === 'profile' && session.user) rows.value = [session.user]
     else if (['admins', 'members', 'coaches'].includes(module.value)) {
       const role = { admins: 'ADMIN', members: 'MEMBER', coaches: 'COACH' }[module.value]
@@ -130,6 +137,7 @@ async function load() {
         notices: '/admin/notices', courses: '/courses', bookings: '/admin/bookings',
         appointments: '/admin/coach-appointments',
         visits: '/admin/member-visits', posts: '/admin/posts',
+        forumFeedback: '/admin/forum-feedback',
       }
       rows.value = (await api.get(paths[module.value])).data
     }
@@ -307,6 +315,25 @@ function closedReason(item: Row) {
   return item.reason || 'Closed'
 }
 
+async function replyFeedback(item: Row) {
+  try {
+    const { value } = await ElMessageBox.prompt(
+      'Your reply will appear in the user’s forum messages.',
+      'Reply to feedback',
+      {
+        inputType: 'textarea',
+        inputValue: item.adminReply || '',
+        inputValidator: value => value.trim() ? true : 'Please enter a reply',
+      }
+    )
+    await api.patch(`/admin/forum-feedback/${item.id}/reply`, { content: value })
+    ElMessage.success('Reply sent')
+    await load()
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') ElMessage.error(messageOf(error))
+  }
+}
+
 function closureLabel(item: Row) {
   return item.startsAt
     ? `Closed ${timeText(item.startsAt)}–${timeText(item.endsAt)} · ${closedReason(item)}`
@@ -327,6 +354,24 @@ function timeText(value: unknown) {
   <div class="admin-page">
     <div class="admin-title"><div><p>MANAGEMENT</p><h1>{{ names[module] }}</h1></div><button type="button" @click="load">Refresh</button></div>
     <div v-if="loading" class="admin-panel empty">Loading…</div>
+
+    <section v-else-if="module === 'postDetail' && rows[0]" class="admin-panel admin-post-detail">
+      <RouterLink to="/experience">← Back to posts</RouterLink>
+      <header>
+        <p>{{ rows[0].authorName }} · {{ show(rows[0].createdAt) }}</p>
+        <h2>{{ rows[0].title }}</h2>
+        <span>{{ rows[0].likeCount }} likes · {{ rows[0].commentCount }} comments</span>
+      </header>
+      <p class="post-body">{{ rows[0].content }}</p>
+      <h3>Comments</h3>
+      <article v-for="comment in postComments" :key="comment.id">
+        <strong>{{ comment.authorName }}</strong>
+        <small v-if="comment.parentAuthorName"> replied to {{ comment.parentAuthorName }}</small>
+        <p>{{ comment.content }}</p>
+        <small>{{ comment.likeCount }} likes · {{ show(comment.createdAt) }}</small>
+      </article>
+      <p v-if="!postComments.length" class="empty">No comments yet.</p>
+    </section>
 
     <template v-else-if="['overview', 'closedDays'].includes(module)">
       <div v-if="module === 'overview'" class="metric-grid dashboard-metrics">
@@ -409,10 +454,10 @@ function timeText(value: unknown) {
       <button type="submit">Schedule class</button>
     </form>
 
-    <section v-if="!['overview', 'closedDays'].includes(module) && !loading" class="admin-panel table-wrap">
+    <section v-if="!['overview', 'closedDays', 'postDetail'].includes(module) && !loading" class="admin-panel table-wrap">
       <table v-if="rows.length">
-        <thead><tr><th v-for="key in columns" :key="key">{{ label(key) }}</th><th v-if="['notices','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)">Actions</th></tr></thead>
-        <tbody><tr v-for="item in rows" :key="item.id || item.username"><td v-for="key in columns" :key="key">{{ show(item[key]) }}</td><td v-if="['notices','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)" class="table-actions"><button v-if="module === 'courses'" type="button" @click="setActive('courses', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="['members','coaches'].includes(module)" type="button" @click="setActive('users', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><template v-else-if="module === 'sessions'"><button v-if="item.status === 'OPEN'" type="button" @click="remove(item)">Cancel</button></template><button v-else-if="module !== 'coachAssignments' || item.status === 'ACTIVE'" type="button" @click="remove(item)">{{ module === 'coachAssignments' ? 'End' : 'Delete' }}</button></td></tr></tbody>
+        <thead><tr><th v-for="key in columns" :key="key">{{ label(key) }}</th><th v-if="['notices','posts','courses','members','coaches','coachAssignments','closedDays','sessions','forumFeedback'].includes(module)">Actions</th></tr></thead>
+        <tbody><tr v-for="item in rows" :key="item.id || item.username"><td v-for="key in columns" :key="key">{{ show(item[key]) }}</td><td v-if="['notices','posts','courses','members','coaches','coachAssignments','closedDays','sessions','forumFeedback'].includes(module)" class="table-actions"><button v-if="module === 'courses'" type="button" @click="setActive('courses', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="['members','coaches'].includes(module)" type="button" @click="setActive('users', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="module === 'forumFeedback'" type="button" @click="replyFeedback(item)">{{ item.status === 'REPLIED' ? 'Edit reply' : 'Reply' }}</button><template v-else-if="module === 'posts'"><RouterLink :to="`/experience/${item.id}`">View</RouterLink><button type="button" @click="remove(item)">Delete</button></template><template v-else-if="module === 'sessions'"><button v-if="item.status === 'OPEN'" type="button" @click="remove(item)">Cancel</button></template><button v-else-if="module !== 'coachAssignments' || item.status === 'ACTIVE'" type="button" @click="remove(item)">{{ module === 'coachAssignments' ? 'End' : 'Delete' }}</button></td></tr></tbody>
       </table>
       <p v-else class="empty">No records found.</p>
     </section>

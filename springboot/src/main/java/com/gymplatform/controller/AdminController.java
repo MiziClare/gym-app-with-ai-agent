@@ -539,6 +539,20 @@ public class AdminController {
                     (coach_id, member_id, starts_on, ends_on)
                 VALUES (?, ?, ?, ?)
                 """, body.coachId(), body.memberId(), body.startsOn(), body.endsOn());
+        jdbc.update("""
+                UPDATE coach_connection_requests
+                SET status = 'ACCEPTED', responded_at = CURRENT_TIMESTAMP, member_read_at = NULL
+                WHERE coach_id = ? AND member_id = ? AND status = 'PENDING'
+                """, body.coachId(), body.memberId());
+        jdbc.update("""
+                INSERT INTO coach_connection_requests
+                    (member_id, coach_id, message, status, responded_at)
+                SELECT ?, ?, 'Assigned by gym administration', 'ACCEPTED', CURRENT_TIMESTAMP
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM coach_connection_requests
+                    WHERE member_id = ? AND coach_id = ? AND status = 'ACCEPTED'
+                )
+                """, body.memberId(), body.coachId(), body.memberId(), body.coachId());
     }
 
     @DeleteMapping("/coach-assignments/{id}")
@@ -599,6 +613,42 @@ public class AdminController {
                 """);
     }
 
+    @GetMapping("/posts/{id}")
+    Map<String, Object> postDetails(@PathVariable Long id) {
+        var posts = jdbc.queryForList("""
+                SELECT p.id, u.display_name AS authorName, p.title, p.content,
+                       p.created_at AS createdAt,
+                       COUNT(DISTINCT likes.user_id) AS likeCount,
+                       COUNT(DISTINCT comments.id) AS commentCount
+                FROM posts p
+                JOIN users u ON u.id = p.author_id
+                LEFT JOIN post_likes likes ON likes.post_id = p.id
+                LEFT JOIN post_comments comments ON comments.post_id = p.id
+                WHERE p.id = ?
+                GROUP BY p.id, u.display_name, p.title, p.content, p.created_at
+                """, id);
+        if (posts.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        }
+        var comments = jdbc.queryForList("""
+                SELECT comment.id, comment.parent_id AS parentId,
+                       author.display_name AS authorName,
+                       parent_author.display_name AS parentAuthorName,
+                       comment.content, comment.created_at AS createdAt,
+                       COUNT(likes.user_id) AS likeCount
+                FROM post_comments comment
+                JOIN users author ON author.id = comment.author_id
+                LEFT JOIN post_comments parent ON parent.id = comment.parent_id
+                LEFT JOIN users parent_author ON parent_author.id = parent.author_id
+                LEFT JOIN post_comment_likes likes ON likes.comment_id = comment.id
+                WHERE comment.post_id = ?
+                GROUP BY comment.id, comment.parent_id, author.display_name,
+                         parent_author.display_name, comment.content, comment.created_at
+                ORDER BY comment.created_at
+                """, id);
+        return Map.of("post", posts.getFirst(), "comments", comments);
+    }
+
     @DeleteMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deletePost(@PathVariable Long id) {
@@ -627,6 +677,50 @@ public class AdminController {
                 "SELECT id FROM gym_spaces WHERE id = ?", Long.class, spaceId).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Space not found");
         }
+    }
+
+    @GetMapping("/forum-feedback")
+    List<Map<String, Object>> forumFeedback() {
+        return jdbc.queryForList("""
+                SELECT feedback.id,
+                       CASE WHEN feedback.post_id IS NULL THEN 'FEEDBACK' ELSE 'COMPLAINT' END AS type,
+                       author.display_name AS authorName, post.title AS postTitle,
+                       feedback.content, feedback.status,
+                       feedback.admin_reply AS adminReply,
+                       feedback.created_at AS createdAt, feedback.replied_at AS repliedAt
+                FROM forum_feedback feedback
+                JOIN users author ON author.id = feedback.author_id
+                LEFT JOIN posts post ON post.id = feedback.post_id
+                ORDER BY CASE feedback.status WHEN 'OPEN' THEN 0 ELSE 1 END,
+                         feedback.created_at DESC
+                """);
+    }
+
+    @PatchMapping("/forum-feedback/{id}/reply")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    void replyForumFeedback(
+            @PathVariable Long id,
+            @Valid @RequestBody ForumReplyRequest body
+    ) {
+        var feedback = jdbc.queryForList("""
+                SELECT author_id AS authorId, post_id AS postId
+                FROM forum_feedback WHERE id = ?
+                """, id);
+        if (feedback.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Feedback not found");
+        }
+        jdbc.update("""
+                UPDATE forum_feedback
+                SET admin_reply = ?, status = 'REPLIED', replied_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """, body.content().trim(), id);
+        jdbc.update("""
+                INSERT INTO forum_notifications
+                    (recipient_id, type, post_id, content)
+                VALUES (?, 'FEEDBACK_REPLY', ?, ?)
+                """, feedback.getFirst().get("authorId"), feedback.getFirst().get("postId"),
+                body.content().trim());
     }
 
     private void requireEquipment(Long id) {
@@ -782,5 +876,9 @@ public class AdminController {
     public record OperationHoursRequest(
             @NotNull LocalTime opensAt,
             @NotNull LocalTime closesAt
+    ) {}
+
+    public record ForumReplyRequest(
+            @NotBlank @Size(max = 2000) String content
     ) {}
 }

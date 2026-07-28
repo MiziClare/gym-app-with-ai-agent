@@ -61,7 +61,11 @@ function switchMode() {
         <div v-if="mode === 'login'" class="demo-logins">
           <span>Demo accounts</span>
           <button type="button" @click="useDemo('member')">Member</button>
+          <button type="button" @click="useDemo('member2')">Member 2</button>
+          <button type="button" @click="useDemo('member3')">Member 3</button>
           <button type="button" @click="useDemo('coach')">Coach</button>
+          <button type="button" @click="useDemo('coach2')">Coach 2</button>
+          <button type="button" @click="useDemo('coach3')">Coach 3</button>
           <button type="button" @click="useDemo('admin')">Admin</button>
         </div>
         <button class="login-switch" type="button" @click="switchMode">{{ mode === 'login' ? 'No account? Register' : 'Already registered? Login' }}</button>
