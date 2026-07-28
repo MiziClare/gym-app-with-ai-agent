@@ -29,6 +29,7 @@ const memberGroups = [
     ['Coach chat', '/front/chat', 'icon-chat.png'],
   ] },
   { label: 'Gym', links: [
+    ['Operations calendar', '/front/calendar', 'icon-info.png'],
     ['Equipment', '/front/equipment', 'icon-treadmill.png'],
     ['Virtual gym', '/front/vr', 'icon-vr.png'],
   ] },
@@ -41,6 +42,7 @@ const coachGroups = [
     ['Dashboard', '/front/home', 'icon-home.png'],
     ['Scan member', '/scan', 'icon-card.png'],
     ['Appointments', '/front/reserve', 'icon-reservations.png'],
+    ['Operations calendar', '/front/calendar', 'icon-info.png'],
     ['Classes', '/front/course', 'icon-courses.png'],
     ['Member chat', '/front/coachChat', 'icon-chat.png'],
   ] },

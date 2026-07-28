@@ -172,6 +172,42 @@ public class AdminController {
                 """);
     }
 
+    @GetMapping("/closed-days")
+    List<Map<String, Object>> closedDays() {
+        return jdbc.queryForList("""
+                SELECT id, closed_on AS closedOn, reason, created_at AS createdAt
+                FROM gym_closed_days
+                ORDER BY closed_on DESC
+                """);
+    }
+
+    @PostMapping("/closed-days")
+    @ResponseStatus(HttpStatus.CREATED)
+    void createClosedDay(@Valid @RequestBody ClosedDayRequest body) {
+        if (body.closedOn().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past dates cannot be closed");
+        }
+        jdbc.update("""
+                INSERT INTO gym_closed_days (closed_on, reason)
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE reason = VALUES(reason)
+                """, body.closedOn(), body.reason().trim());
+    }
+
+    @DeleteMapping("/closed-days/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteClosedDay(@PathVariable Long id) {
+        var closedDates = jdbc.queryForList("SELECT closed_on FROM gym_closed_days WHERE id = ?", LocalDate.class, id);
+        if (closedDates.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Closed day not found");
+        }
+        var closedOn = closedDates.get(0);
+        if (closedOn.isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past closed days cannot be reopened");
+        }
+        jdbc.update("DELETE FROM gym_closed_days WHERE id = ?", id);
+    }
+
     @GetMapping("/coach-assignments")
     List<Map<String, Object>> coachAssignments() {
         return jdbc.queryForList("""
@@ -327,5 +363,10 @@ public class AdminController {
             @NotNull Long memberId,
             @NotNull LocalDate startsOn,
             LocalDate endsOn
+    ) {}
+
+    public record ClosedDayRequest(
+            @NotNull LocalDate closedOn,
+            @NotBlank @Size(max = 160) String reason
     ) {}
 }

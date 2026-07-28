@@ -70,4 +70,32 @@ class LegacyFeatureControllerTest {
                 eq(Long.class), eq(1L)
         );
     }
+
+    @Test
+    void rejectsCoachAppointmentOutsideCoachAvailability() {
+        var jdbc = mock(JdbcTemplate.class);
+        var currentUser = mock(CurrentUserService.class);
+        var authentication = mock(Authentication.class);
+        when(currentUser.require(authentication)).thenReturn(
+                new User(1L, "member", "", "Member", "member@example.test",
+                        Role.MEMBER, true, Instant.now())
+        );
+        when(jdbc.queryForList(
+                contains("SELECT id FROM users"),
+                eq(Long.class), eq(2L)
+        )).thenReturn(List.of(2L));
+        when(jdbc.queryForObject(
+                contains("FROM coach_availability"),
+                eq(Integer.class), eq(2L), anyInt(), any(), any()
+        )).thenReturn(0);
+        var startsAt = Instant.now().plusSeconds(7200);
+
+        var error = assertThrows(ResponseStatusException.class,
+                () -> new LegacyFeatureController(jdbc, currentUser)
+                        .requestCoachAppointment(new LegacyFeatureController.CoachAppointmentRequest(
+                                2L, startsAt, "Strength"), authentication));
+
+        assertEquals(409, error.getStatusCode().value());
+        verify(jdbc, never()).update(contains("INSERT INTO coach_appointments"), any(), any(), any(), any());
+    }
 }

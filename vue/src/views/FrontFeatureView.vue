@@ -14,15 +14,23 @@ const secondary = ref<Row[]>([])
 const selected = ref<Row | null>(null)
 const loading = ref(false)
 const form = reactive({ coachId: 0, equipmentId: 0, startsAt: '', note: '', title: '', content: '' })
+const availabilityForm = reactive({ dayOfWeek: 1, startsAt: '09:00', endsAt: '17:00' })
+const appointmentDate = ref(localDate(new Date()))
+const appointmentStart = ref('')
 const reservationDate = ref(localDate(new Date()))
 const reservationDuration = ref(30)
 const selectedStart = ref('')
 const busyPeriods = ref<Row[]>([])
+const closedDays = ref<Row[]>([])
+const coachAvailability = ref<Row[]>([])
 const availabilityLoading = ref(false)
 const reserving = ref(false)
 const qrCodeUrl = ref('')
 let availabilityRequest = 0
 let passRefreshTimer: ReturnType<typeof setTimeout> | undefined
+const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+const closedDateSet = computed(() => new Set(closedDays.value.map(closedOn).filter(Boolean)))
 
 const reservationDays = computed(() => Array.from({ length: 7 }, (_, offset) => {
   const value = new Date()
@@ -34,6 +42,19 @@ const reservationDays = computed(() => Array.from({ length: 7 }, (_, offset) => 
   }
 }))
 
+const calendarDays = computed(() => Array.from({ length: 35 }, (_, offset) => {
+  const value = new Date()
+  value.setDate(value.getDate() + offset)
+  const key = localDate(value)
+  const closed = closedDays.value.find(item => closedOn(item) === key)
+  return {
+    value: key,
+    day: new Intl.DateTimeFormat('en-CA', { weekday: 'short' }).format(value),
+    date: new Intl.DateTimeFormat('en-CA', { month: 'short', day: 'numeric' }).format(value),
+    closed,
+  }
+}))
+
 const timeSlots = computed(() => {
   const slots = []
   const day = new Date(`${reservationDate.value}T00:00:00`)
@@ -42,6 +63,7 @@ const timeSlots = computed(() => {
     startsAt.setMinutes(minutes)
     const endsAt = new Date(startsAt.getTime() + reservationDuration.value * 60_000)
     const available = startsAt.getTime() > Date.now()
+      && !closedDateSet.value.has(reservationDate.value)
       && !busyPeriods.value.some(item =>
         startsAt < new Date(item.endsAt) && endsAt > new Date(item.startsAt))
     slots.push({
@@ -53,12 +75,36 @@ const timeSlots = computed(() => {
   return slots
 })
 
+const appointmentSlots = computed(() => {
+  const slots = []
+  const day = new Date(`${appointmentDate.value}T00:00:00`)
+  for (let hour = 7; hour <= 20; hour += 1) {
+    const startsAt = new Date(day)
+    startsAt.setHours(hour, 0, 0, 0)
+    const dayOfWeek = ((startsAt.getDay() + 6) % 7) + 1
+    const startTime = startsAt.toTimeString().slice(0, 5)
+    const endTime = new Date(startsAt.getTime() + 60 * 60_000).toTimeString().slice(0, 5)
+    const open = coachAvailability.value.some(item =>
+      Number(item.dayOfWeek) === dayOfWeek
+      && timeText(item.startsAt) <= startTime
+      && timeText(item.endsAt) >= endTime
+    )
+    slots.push({
+      value: startsAt.toISOString(),
+      label: new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit' }).format(startsAt),
+      available: startsAt.getTime() > Date.now() && !closedDateSet.value.has(appointmentDate.value) && open,
+    })
+  }
+  return slots
+})
+
 const titles: Record<string, [string, string]> = {
   profile: ['My Profile', 'Your account information'],
   coaches: ['Our Coaches', 'Find the right support for your goals'],
   appointments: ['Coach Booking', session.user?.role === 'COACH' ? 'Review member appointment requests' : 'Book time with a coach'],
   equipment: ['Gym Equipment', 'Browse available training equipment'],
   equipmentReservations: ['Equipment Booking', 'Reserve a time slot and review your bookings'],
+  operationCalendar: ['Operations Calendar', 'See gym closed days and coach availability'],
   community: ['Fitness Community', 'Share experience and learn from other members'],
   myPosts: ['My Posts', 'Manage the experience you have shared'],
   card: ['Membership E-card', 'Your digital gym identity'],
@@ -79,16 +125,26 @@ async function load() {
   try {
     if (feature.value === 'coaches') rows.value = (await api.get('/coaches')).data
     if (feature.value === 'appointments') {
-      if (session.user?.role === 'COACH') rows.value = (await api.get('/coach/appointments')).data
+      await loadOperationsCalendar()
+      if (session.user?.role === 'COACH') {
+        const [appointments, availability] = await Promise.all([
+          api.get('/coach/appointments'),
+          api.get('/coach/availability'),
+        ])
+        rows.value = appointments.data
+        coachAvailability.value = availability.data
+      }
       else {
         const [mine, coaches] = await Promise.all([api.get('/coach-appointments/me'), api.get('/coaches')])
         rows.value = mine.data
         secondary.value = coaches.data
         form.coachId ||= secondary.value[0]?.id || 0
+        await loadCoachAvailability()
       }
     }
     if (feature.value === 'equipment') rows.value = (await api.get('/equipment')).data
     if (feature.value === 'equipmentReservations') {
+      await loadOperationsCalendar()
       const [mine, equipment] = await Promise.all([api.get('/equipment-reservations/me'), api.get('/equipment')])
       rows.value = mine.data
       secondary.value = equipment.data
@@ -107,6 +163,7 @@ async function load() {
       rows.value = (await api.get('/messages/peers')).data
       if (rows.value[0]) await choosePeer(rows.value[0])
     }
+    if (feature.value === 'operationCalendar') await loadOperationsCalendar()
   } catch (error) {
     ElMessage.error(messageOf(error))
   } finally {
@@ -136,16 +193,23 @@ function stopPassRefresh() {
 }
 
 async function createAppointment() {
+  if (!appointmentStart.value) return
+  reserving.value = true
   try {
     await api.post('/coach-appointments', {
       coachId: form.coachId,
-      startsAt: new Date(form.startsAt).toISOString(),
+      startsAt: new Date(appointmentStart.value).toISOString(),
       note: form.note,
     })
     Object.assign(form, { startsAt: '', note: '' })
+    appointmentStart.value = ''
     ElMessage.success('Appointment requested')
     await load()
-  } catch (error) { ElMessage.error(messageOf(error)) }
+  } catch (error) {
+    ElMessage.error(messageOf(error))
+  } finally {
+    reserving.value = false
+  }
 }
 
 async function updateAppointment(id: number, status: string) {
@@ -153,6 +217,21 @@ async function updateAppointment(id: number, status: string) {
     await api.patch(`/coach/appointments/${id}`, { status })
     ElMessage.success('Appointment updated')
     await load()
+  } catch (error) { ElMessage.error(messageOf(error)) }
+}
+
+async function createAvailability() {
+  try {
+    await api.post('/coach/availability', availabilityForm)
+    ElMessage.success('Availability saved')
+    coachAvailability.value = (await api.get('/coach/availability')).data
+  } catch (error) { ElMessage.error(messageOf(error)) }
+}
+
+async function removeAvailability(id: number) {
+  try {
+    await api.delete(`/coach/availability/${id}`)
+    coachAvailability.value = (await api.get('/coach/availability')).data
   } catch (error) { ElMessage.error(messageOf(error)) }
 }
 
@@ -220,6 +299,46 @@ function localDate(value: Date) {
   return local.toISOString().slice(0, 10)
 }
 
+function dateOnly(value: unknown) {
+  if (Array.isArray(value)) {
+    const [year, month, day] = value
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  }
+  const text = String(value ?? '')
+  const match = text.match(/\d{4}-\d{2}-\d{2}/)
+  if (match) return match[0]
+  const date = new Date(text)
+  return Number.isNaN(date.getTime()) ? text : localDate(date)
+}
+
+function closedOn(item: Row) {
+  return dateOnly(item.closedOn ?? item.closed_on ?? item.closedon)
+}
+
+function closedReason(item: Row) {
+  return item.reason || 'Closed'
+}
+
+function timeText(value: string) {
+  return String(value).slice(0, 5)
+}
+
+async function loadOperationsCalendar() {
+  const from = localDate(new Date())
+  const toDate = new Date()
+  toDate.setDate(toDate.getDate() + 34)
+  closedDays.value = (await api.get('/operations/calendar', {
+    params: { from, to: localDate(toDate) },
+  })).data
+}
+
+async function loadCoachAvailability() {
+  coachAvailability.value = form.coachId
+    ? (await api.get('/coach-availability', { params: { coachId: form.coachId } })).data
+    : []
+  appointmentStart.value = ''
+}
+
 async function loadEquipmentAvailability() {
   const request = ++availabilityRequest
   selectedStart.value = ''
@@ -251,6 +370,9 @@ watch(
 )
 
 watch(reservationDuration, () => { selectedStart.value = '' })
+watch(() => form.coachId, () => {
+  if (feature.value === 'appointments' && session.user?.role === 'MEMBER') void loadCoachAvailability()
+})
 </script>
 
 <template>
@@ -275,12 +397,108 @@ watch(reservationDuration, () => { selectedStart.value = '' })
       </article>
     </section>
 
+    <section v-else-if="feature === 'operationCalendar'" class="calendar-panel legacy-card">
+      <article v-for="day in calendarDays" :key="day.value" :class="{ closed: day.closed }">
+        <small>{{ day.day }}</small>
+        <strong>{{ day.date }}</strong>
+        <span>{{ day.closed ? closedReason(day.closed) : 'Open' }}</span>
+      </article>
+    </section>
+
     <template v-else-if="feature === 'appointments'">
-      <form v-if="session.user?.role === 'MEMBER'" class="inline-form legacy-card" @submit.prevent="createAppointment">
-        <label>Coach<select v-model.number="form.coachId" required><option v-for="coach in secondary" :key="coach.id" :value="coach.id">{{ coach.displayName }}</option></select></label>
-        <label>Date and time<input v-model="form.startsAt" type="datetime-local" required></label>
-        <label class="wide">Training goal<input v-model.trim="form.note" maxlength="500" required></label>
-        <button class="legacy-button" type="submit">Request booking</button>
+      <form v-if="session.user?.role === 'MEMBER'" class="reservation-card legacy-card" @submit.prevent="createAppointment">
+        <section>
+          <header class="reservation-step"><span>1</span><div><h2>Choose coach</h2><p>Pick the coach that matches today's training goal.</p></div></header>
+          <div class="equipment-options coach-options" role="radiogroup" aria-label="Coach">
+            <button
+              v-for="coach in secondary"
+              :key="coach.id"
+              type="button"
+              :class="{ selected: form.coachId === coach.id }"
+              :aria-pressed="form.coachId === coach.id"
+              @click="form.coachId = coach.id; appointmentStart = ''"
+            >
+              <img src="../assets/imgs/avatar-coach.png" alt="">
+              <span>{{ coach.specialties || 'Coach' }}</span>
+              <strong>{{ coach.displayName }}</strong>
+            </button>
+          </div>
+        </section>
+
+        <section>
+          <header class="reservation-step"><span>2</span><div><h2>Pick a day</h2><p>Book a one-hour session in the next 7 days.</p></div></header>
+          <div class="date-options" role="radiogroup" aria-label="Appointment date">
+            <button
+              v-for="day in reservationDays"
+              :key="day.value"
+              type="button"
+              :class="{ selected: appointmentDate === day.value }"
+              :disabled="closedDateSet.has(day.value)"
+              :aria-pressed="appointmentDate === day.value"
+              @click="appointmentDate = day.value; appointmentStart = ''"
+            ><small>{{ day.day }}</small><strong>{{ day.date }}</strong><span v-if="closedDateSet.has(day.value)">Closed</span></button>
+          </div>
+        </section>
+
+        <section class="reservation-time">
+          <header class="reservation-step"><span>3</span><div><h2>Choose a time</h2><p>One click reserves a fixed 60-minute appointment request.</p></div></header>
+          <div class="time-options" role="radiogroup" aria-label="Appointment start times">
+            <button
+              v-for="slot in appointmentSlots"
+              :key="slot.value"
+              type="button"
+              :class="{ selected: appointmentStart === slot.value }"
+              :disabled="!slot.available"
+              :aria-pressed="appointmentStart === slot.value"
+              @click="appointmentStart = slot.value"
+            >{{ slot.label }}</button>
+          </div>
+        </section>
+
+        <section>
+          <header class="reservation-step"><span>4</span><div><h2>Training goal</h2><p>Keep it short so the coach can prepare.</p></div></header>
+          <input v-model.trim="form.note" class="goal-input" maxlength="500" placeholder="Strength, mobility, form check..." required>
+        </section>
+
+        <footer class="reservation-summary">
+          <div>
+            <small>YOUR APPOINTMENT</small>
+            <strong v-if="appointmentStart">{{ date(appointmentStart) }} · 60 minutes</strong>
+            <strong v-else>Choose an available time</strong>
+          </div>
+          <button class="legacy-button" type="submit" :disabled="!form.coachId || !appointmentStart || !form.note || reserving">{{ reserving ? 'Requesting...' : 'Request booking' }}</button>
+        </footer>
+      </form>
+      <form v-else class="reservation-card legacy-card" @submit.prevent="createAvailability">
+        <section>
+          <header class="reservation-step"><span>1</span><div><h2>Set bookable time</h2><p>Members can request one-hour appointments inside these blocks.</p></div></header>
+          <div class="admin-form availability-form">
+            <select v-model.number="availabilityForm.dayOfWeek" aria-label="Day of week">
+              <option v-for="(day, index) in dayNames" :key="day" :value="index + 1">{{ day }}</option>
+            </select>
+            <input v-model="availabilityForm.startsAt" type="time" aria-label="Start time" required>
+            <input v-model="availabilityForm.endsAt" type="time" aria-label="End time" required>
+            <button type="submit">Add time</button>
+          </div>
+        </section>
+        <section>
+          <header class="reservation-step"><span>2</span><div><h2>Gym calendar</h2><p>Closed days cannot be booked.</p></div></header>
+          <div class="mini-calendar">
+            <article v-for="day in calendarDays.slice(0, 14)" :key="day.value" :class="{ closed: day.closed }">
+              <small>{{ day.day }}</small><strong>{{ day.date }}</strong><span>{{ day.closed ? closedReason(day.closed) : 'Open' }}</span>
+            </article>
+          </div>
+        </section>
+        <section>
+          <header class="reservation-step"><span>3</span><div><h2>Your availability</h2><p>Remove a block when you no longer take bookings then.</p></div></header>
+          <div class="data-list compact-list">
+            <article v-for="item in coachAvailability" :key="item.id">
+              <div><h3>{{ dayNames[Number(item.dayOfWeek) - 1] }}</h3><p>{{ timeText(item.startsAt) }} - {{ timeText(item.endsAt) }}</p></div>
+              <button type="button" @click="removeAvailability(item.id)">Remove</button>
+            </article>
+            <p v-if="!coachAvailability.length" class="empty">No bookable time yet.</p>
+          </div>
+        </section>
       </form>
       <div class="data-list legacy-card">
         <article v-for="item in rows" :key="item.id">
@@ -329,9 +547,10 @@ watch(reservationDuration, () => { selectedStart.value = '' })
               :key="day.value"
               type="button"
               :class="{ selected: reservationDate === day.value }"
+              :disabled="closedDateSet.has(day.value)"
               :aria-pressed="reservationDate === day.value"
               @click="reservationDate = day.value"
-            ><small>{{ day.day }}</small><strong>{{ day.date }}</strong></button>
+            ><small>{{ day.day }}</small><strong>{{ day.date }}</strong><span v-if="closedDateSet.has(day.value)">Closed</span></button>
           </div>
         </section>
 

@@ -3,6 +3,8 @@ package com.gymplatform.controller;
 import com.gymplatform.service.CurrentUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +67,58 @@ public class LegacyFeatureController {
                 """);
     }
 
+    @GetMapping("/operations/calendar")
+    List<Map<String, Object>> operationsCalendar(
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to
+    ) {
+        if (to.isBefore(from) || from.plusDays(62).isBefore(to)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid calendar range");
+        }
+        return jdbc.queryForList("""
+                SELECT id, closed_on AS closedOn, reason
+                FROM gym_closed_days
+                WHERE closed_on BETWEEN ? AND ?
+                ORDER BY closed_on
+                """, from, to);
+    }
+
+    @GetMapping("/coach-availability")
+    List<Map<String, Object>> coachAvailability(@RequestParam Long coachId) {
+        return listCoachAvailability(coachId);
+    }
+
+    @GetMapping("/coach/availability")
+    List<Map<String, Object>> myCoachAvailability(Authentication authentication) {
+        return listCoachAvailability(currentUserService.require(authentication).id());
+    }
+
+    @PostMapping("/coach/availability")
+    @ResponseStatus(HttpStatus.CREATED)
+    void createCoachAvailability(
+            @Valid @RequestBody CoachAvailabilityRequest body,
+            Authentication authentication
+    ) {
+        if (!body.endsAt().isAfter(body.startsAt())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End time must be after start time");
+        }
+        jdbc.update("""
+                INSERT INTO coach_availability (coach_id, day_of_week, starts_at, ends_at)
+                VALUES (?, ?, ?, ?)
+                """, currentUserService.require(authentication).id(), body.dayOfWeek(), body.startsAt(), body.endsAt());
+    }
+
+    @DeleteMapping("/coach/availability/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteCoachAvailability(@PathVariable Long id, Authentication authentication) {
+        if (jdbc.update(
+                "DELETE FROM coach_availability WHERE id = ? AND coach_id = ?",
+                id, currentUserService.require(authentication).id()
+        ) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Availability not found");
+        }
+    }
+
     @GetMapping("/equipment-reservations/me")
     List<Map<String, Object>> myEquipmentReservations(Authentication authentication) {
         return jdbc.queryForList("""
@@ -107,6 +164,9 @@ public class LegacyFeatureController {
             );
         }
         var memberId = currentUserService.require(authentication).id();
+        if (isClosed(localDate(body.startsAt()))) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gym is closed on that date");
+        }
         jdbc.queryForObject(
                 "SELECT id FROM users WHERE id = ? FOR UPDATE",
                 Long.class, memberId);
@@ -169,17 +229,39 @@ public class LegacyFeatureController {
 
     @PostMapping("/coach-appointments")
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     void requestCoachAppointment(
             @Valid @RequestBody CoachAppointmentRequest body,
             Authentication authentication
     ) {
-        var coachExists = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM users WHERE id = ? AND role = 'COACH' AND active = TRUE",
-                Integer.class,
-                body.coachId()
-        );
-        if (coachExists == null || coachExists == 0) {
+        var startsOn = localDate(body.startsAt());
+        var startsAt = localTime(body.startsAt());
+        var endsAt = startsAt.plusHours(1);
+        if (isClosed(startsOn)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Gym is closed on that date");
+        }
+        var availableCoaches = jdbc.queryForList(
+                "SELECT id FROM users WHERE id = ? AND role = 'COACH' AND active = TRUE FOR UPDATE",
+                Long.class, body.coachId());
+        if (availableCoaches.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coach not found");
+        }
+        var hasOpenSlot = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM coach_availability
+                WHERE coach_id = ? AND day_of_week = ?
+                  AND starts_at <= ? AND ends_at >= ?
+                """, Integer.class, body.coachId(), startsOn.getDayOfWeek().getValue(), startsAt, endsAt);
+        if (hasOpenSlot == null || hasOpenSlot == 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Coach is not available at that time");
+        }
+        var conflicts = jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM coach_appointments
+                WHERE coach_id = ? AND starts_at = ? AND status IN ('PENDING', 'CONFIRMED')
+                """, Integer.class, body.coachId(), body.startsAt());
+        if (conflicts != null && conflicts > 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Coach already has an appointment then");
         }
         jdbc.update("""
                 INSERT INTO coach_appointments
@@ -326,6 +408,31 @@ public class LegacyFeatureController {
                 """, sender.id(), body.recipientId(), body.content().trim());
     }
 
+    private List<Map<String, Object>> listCoachAvailability(Long coachId) {
+        return jdbc.queryForList("""
+                SELECT id, coach_id AS coachId, day_of_week AS dayOfWeek,
+                       starts_at AS startsAt, ends_at AS endsAt
+                FROM coach_availability
+                WHERE coach_id = ?
+                ORDER BY day_of_week, starts_at
+                """, coachId);
+    }
+
+    private boolean isClosed(LocalDate date) {
+        var closed = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM gym_closed_days WHERE closed_on = ?",
+                Integer.class, date);
+        return closed != null && closed > 0;
+    }
+
+    private LocalDate localDate(Instant value) {
+        return value.atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    private LocalTime localTime(Instant value) {
+        return value.atZone(ZoneId.systemDefault()).toLocalTime();
+    }
+
     public record EquipmentReservationRequest(
             @NotNull Long equipmentId,
             @NotNull @Future Instant startsAt,
@@ -336,6 +443,12 @@ public class LegacyFeatureController {
             @NotNull Long coachId,
             @NotNull @Future Instant startsAt,
             @NotBlank @Size(max = 500) String note
+    ) {}
+
+    public record CoachAvailabilityRequest(
+            @NotNull @Min(1) @Max(7) Integer dayOfWeek,
+            @NotNull LocalTime startsAt,
+            @NotNull LocalTime endsAt
     ) {}
 
     public record AppointmentStatusRequest(@NotBlank String status) {}
