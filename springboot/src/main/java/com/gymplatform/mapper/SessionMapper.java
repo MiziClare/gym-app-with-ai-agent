@@ -18,7 +18,7 @@ public interface SessionMapper {
                    s.status
             FROM course_sessions s
             JOIN courses c ON c.id = s.course_id
-            JOIN users u ON u.id = s.coach_id
+            LEFT JOIN users u ON u.id = s.coach_id
             LEFT JOIN bookings b ON b.session_id = s.id
             WHERE s.status = 'OPEN'
               AND s.starts_at &gt;= #{from}

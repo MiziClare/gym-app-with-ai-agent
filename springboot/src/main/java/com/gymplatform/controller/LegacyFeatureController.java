@@ -62,7 +62,7 @@ public class LegacyFeatureController {
         return jdbc.queryForList("""
                 SELECT id, name, category, description, status, cover_key AS coverKey
                 FROM equipment
-                WHERE status <> 'RETIRED'
+                WHERE status <> 'RETIRED' AND resource_type = 'EQUIPMENT'
                 ORDER BY name
                 """);
     }
@@ -145,8 +145,14 @@ public class LegacyFeatureController {
                 FROM equipment_reservations
                 WHERE equipment_id = ? AND status = 'CONFIRMED'
                   AND starts_at < ? AND ends_at > ?
-                ORDER BY starts_at
-                """, equipmentId, to, from);
+                UNION ALL
+                SELECT session.starts_at, session.ends_at
+                FROM course_session_resources requirement
+                JOIN course_sessions session ON session.id = requirement.session_id
+                WHERE requirement.equipment_id = ? AND session.status = 'OPEN'
+                  AND session.starts_at < ? AND session.ends_at > ?
+                ORDER BY startsAt
+                """, equipmentId, to, from, equipmentId, to, from);
     }
 
     @PostMapping("/equipment-reservations")
@@ -189,11 +195,20 @@ public class LegacyFeatureController {
             );
         }
         var conflicts = jdbc.queryForObject("""
-                SELECT COUNT(*)
-                FROM equipment_reservations
-                WHERE equipment_id = ? AND status = 'CONFIRMED'
-                  AND starts_at < ? AND ends_at > ?
-                """, Integer.class, body.equipmentId(), body.endsAt(), body.startsAt());
+                SELECT (
+                    SELECT COUNT(*) FROM equipment_reservations
+                    WHERE equipment_id = ? AND status = 'CONFIRMED'
+                      AND starts_at < ? AND ends_at > ?
+                ) + (
+                    SELECT COUNT(*)
+                    FROM course_session_resources requirement
+                    JOIN course_sessions session ON session.id = requirement.session_id
+                    WHERE requirement.equipment_id = ? AND session.status = 'OPEN'
+                      AND session.starts_at < ? AND session.ends_at > ?
+                )
+                """, Integer.class,
+                body.equipmentId(), body.endsAt(), body.startsAt(),
+                body.equipmentId(), body.endsAt(), body.startsAt());
         if (conflicts != null && conflicts > 0) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Equipment is already reserved for that time");
         }

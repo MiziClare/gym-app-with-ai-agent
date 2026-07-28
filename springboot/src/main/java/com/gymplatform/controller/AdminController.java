@@ -1,6 +1,8 @@
 package com.gymplatform.controller;
 
+import com.gymplatform.service.SessionSchedulingService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,9 +24,11 @@ import java.util.Set;
 @RequestMapping("/api/admin")
 public class AdminController {
     private final JdbcTemplate jdbc;
+    private final SessionSchedulingService sessionSchedulingService;
 
-    public AdminController(JdbcTemplate jdbc) {
+    public AdminController(JdbcTemplate jdbc, SessionSchedulingService sessionSchedulingService) {
         this.jdbc = jdbc;
+        this.sessionSchedulingService = sessionSchedulingService;
     }
 
     @GetMapping("/overview")
@@ -127,11 +132,15 @@ public class AdminController {
     @PostMapping("/equipment")
     @ResponseStatus(HttpStatus.CREATED)
     void createEquipment(@Valid @RequestBody EquipmentRequest body) {
+        var resourceType = body.resourceType() == null ? "EQUIPMENT" : body.resourceType();
+        if (!Set.of("EQUIPMENT", "ROOM").contains(resourceType)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported resource type");
+        }
         jdbc.update("""
-                INSERT INTO equipment (name, category, description, cover_key)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO equipment (name, category, description, cover_key, resource_type)
+                VALUES (?, ?, ?, ?, ?)
                 """, body.name().trim(), body.category().trim(),
-                body.description().trim(), body.coverKey().trim());
+                body.description().trim(), body.coverKey().trim(), resourceType);
     }
 
     @PatchMapping("/equipment/{id}/status")
@@ -145,6 +154,57 @@ public class AdminController {
         }
         if (jdbc.update("UPDATE equipment SET status = ? WHERE id = ?", body.status(), id) == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
+        }
+    }
+
+    @GetMapping("/resources")
+    List<Map<String, Object>> resources() {
+        return jdbc.queryForList("""
+                SELECT id, name, resource_type AS resourceType, category, status
+                FROM equipment
+                WHERE status <> 'RETIRED'
+                ORDER BY resource_type DESC, name
+                """);
+    }
+
+    @GetMapping("/course-sessions")
+    List<Map<String, Object>> courseSessions() {
+        return jdbc.queryForList("""
+                SELECT session.id, course.name AS courseName,
+                       coach.display_name AS coachName,
+                       session.starts_at AS startsAt, session.ends_at AS endsAt,
+                       session.capacity, session.status,
+                       GROUP_CONCAT(resource.name ORDER BY resource.name SEPARATOR ', ') AS resources
+                FROM course_sessions session
+                JOIN courses course ON course.id = session.course_id
+                LEFT JOIN users coach ON coach.id = session.coach_id
+                LEFT JOIN course_session_resources requirement ON requirement.session_id = session.id
+                LEFT JOIN equipment resource ON resource.id = requirement.equipment_id
+                GROUP BY session.id, course.name, coach.display_name,
+                         session.starts_at, session.ends_at, session.capacity, session.status
+                ORDER BY session.starts_at DESC
+                LIMIT 500
+                """);
+    }
+
+    @PostMapping("/course-sessions")
+    @ResponseStatus(HttpStatus.CREATED)
+    Map<String, Long> createCourseSession(@Valid @RequestBody CourseSessionRequest body) {
+        var id = sessionSchedulingService.schedule(new SessionSchedulingService.ScheduleRequest(
+                body.courseId(), body.coachId(), body.startsAt(), body.endsAt(),
+                body.capacity(), body.resourceIds()
+        ));
+        return Map.of("id", id);
+    }
+
+    @DeleteMapping("/course-sessions/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void cancelCourseSession(@PathVariable Long id) {
+        if (jdbc.update("""
+                UPDATE course_sessions SET status = 'CANCELLED'
+                WHERE id = ? AND status = 'OPEN' AND starts_at > CURRENT_TIMESTAMP
+                """, id) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Open future session not found");
         }
     }
 
@@ -278,7 +338,7 @@ public class AdminController {
                 JOIN course_sessions s ON s.id = b.session_id
                 JOIN courses c ON c.id = s.course_id
                 JOIN users member ON member.id = b.member_id
-                JOIN users coach ON coach.id = s.coach_id
+                LEFT JOIN users coach ON coach.id = s.coach_id
                 ORDER BY s.starts_at DESC
                 """);
     }
@@ -343,7 +403,8 @@ public class AdminController {
             @NotBlank @Size(max = 120) String name,
             @NotBlank @Size(max = 80) String category,
             @NotBlank @Size(max = 1000) String description,
-            @NotBlank @Size(max = 120) String coverKey
+            @NotBlank @Size(max = 120) String coverKey,
+            @Size(max = 16) String resourceType
     ) {}
 
     public record EquipmentStatusRequest(@NotBlank String status) {}
@@ -356,6 +417,15 @@ public class AdminController {
             @NotNull @Min(10) @Max(240) Integer durationMinutes,
             @NotNull @Min(1) @Max(200) Integer defaultCapacity,
             @NotBlank @Size(max = 120) String coverKey
+    ) {}
+
+    public record CourseSessionRequest(
+            @NotNull Long courseId,
+            Long coachId,
+            @NotNull @Future Instant startsAt,
+            @NotNull @Future Instant endsAt,
+            @NotNull @Min(1) @Max(200) Integer capacity,
+            @NotNull @Size(max = 20) List<@NotNull Long> resourceIds
     ) {}
 
     public record CoachAssignmentRequest(

@@ -161,6 +161,14 @@ public class DemoDataInitializer implements ApplicationRunner {
                         """, item.name(), item.category(), item.description(), item.coverKey());
             }
         }
+        jdbc.update("""
+                INSERT INTO equipment
+                    (name, category, description, cover_key, resource_type)
+                SELECT 'Studio A', 'Facility', 'Multi-purpose group training studio.', 'course', 'ROOM'
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM equipment WHERE resource_type = 'ROOM'
+                )
+                """);
         if (jdbc.queryForObject("SELECT COUNT(*) FROM posts", Integer.class) == 0) {
             var memberId = jdbc.queryForObject("SELECT id FROM users WHERE username = 'member'", Long.class);
             var coachId = jdbc.queryForObject("SELECT id FROM users WHERE username = 'coach'", Long.class);

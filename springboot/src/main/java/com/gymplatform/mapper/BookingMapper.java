@@ -48,7 +48,7 @@ public interface BookingMapper {
             FROM bookings b
             JOIN course_sessions s ON s.id = b.session_id
             JOIN courses c ON c.id = s.course_id
-            JOIN users coach ON coach.id = s.coach_id
+            LEFT JOIN users coach ON coach.id = s.coach_id
             WHERE b.member_id = #{memberId}
             ORDER BY s.starts_at
             """)
