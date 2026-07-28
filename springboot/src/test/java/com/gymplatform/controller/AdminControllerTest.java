@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,9 +48,33 @@ class AdminControllerTest {
 
         var error = assertThrows(ResponseStatusException.class, () -> controller.createEquipment(
                 new AdminController.EquipmentRequest(
-                        "Bike", "Cardio", "Indoor bike", "spin-bike", 99L)));
+                        "Bike", "Cardio", "Indoor bike", "bikes", 1, 99L)));
 
         assertEquals(400, error.getStatusCode().value());
         verify(jdbc, never()).update(contains("INSERT INTO equipment"), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void rejectsOverlappingUnitMaintenance() {
+        var jdbc = mock(JdbcTemplate.class);
+        when(jdbc.queryForList(
+                contains("FROM equipment_units"), eq(Long.class), eq(4L)
+        )).thenReturn(List.of(4L));
+        when(jdbc.queryForObject(
+                contains("FROM equipment_maintenance"), eq(Integer.class),
+                eq(4L), isNull(), any(Instant.class), any(Instant.class)
+        )).thenReturn(1);
+        var start = Instant.now().plusSeconds(3600);
+        var controller = new AdminController(jdbc, mock(SessionSchedulingService.class));
+
+        var error = assertThrows(ResponseStatusException.class,
+                () -> controller.createEquipmentMaintenance(
+                        4L,
+                        new AdminController.MaintenanceRequest(
+                                start, start.plusSeconds(3600), "Inspection", "")
+                ));
+
+        assertEquals(409, error.getStatusCode().value());
+        verify(jdbc, never()).update(contains("INSERT INTO equipment_maintenance"), any(), any(), any(), any(), any());
     }
 }

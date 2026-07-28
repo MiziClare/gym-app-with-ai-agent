@@ -49,20 +49,48 @@ public class GymMapController {
 
         var equipmentBySpace = new HashMap<Long, List<EquipmentView>>();
         jdbc.query("""
-                SELECT equipment.id, equipment.space_id, equipment.name,
-                       equipment.category, equipment.status
+                SELECT equipment.id, unit.space_id, equipment.name, equipment.category,
+                       COUNT(unit.id) AS total_units,
+                       GREATEST(0,
+                           SUM(CASE WHEN unit.base_status = 'AVAILABLE'
+                                 AND maintenance.id IS NULL THEN 1 ELSE 0 END)
+                           - CASE WHEN equipment.space_id = unit.space_id
+                                  THEN COALESCE(class_usage.required_units, 0) ELSE 0 END
+                       ) AS available_units
                 FROM equipment
-                WHERE equipment.space_id IS NOT NULL
+                JOIN equipment_units unit
+                  ON unit.equipment_id = equipment.id AND unit.base_status <> 'RETIRED'
+                LEFT JOIN equipment_maintenance maintenance
+                  ON maintenance.unit_id = unit.id
+                 AND maintenance.starts_at <= CURRENT_TIMESTAMP
+                 AND maintenance.ends_at > CURRENT_TIMESTAMP
+                LEFT JOIN (
+                    SELECT requirement.equipment_id,
+                           SUM(requirement.required_units) AS required_units
+                    FROM course_session_resources requirement
+                    JOIN course_sessions session ON session.id = requirement.session_id
+                    WHERE session.status = 'OPEN'
+                      AND session.starts_at <= CURRENT_TIMESTAMP
+                      AND session.ends_at > CURRENT_TIMESTAMP
+                    GROUP BY requirement.equipment_id
+                ) class_usage ON class_usage.equipment_id = equipment.id
+                WHERE unit.space_id IS NOT NULL
                   AND equipment.resource_type = 'EQUIPMENT'
                   AND equipment.status <> 'RETIRED'
+                GROUP BY equipment.id, unit.space_id, equipment.name, equipment.category,
+                         equipment.space_id, class_usage.required_units
                 ORDER BY equipment.name
                 """, result -> {
+            var total = result.getInt("total_units");
+            var available = Math.min(total, result.getInt("available_units"));
             equipmentBySpace.computeIfAbsent(result.getLong("space_id"), ignored -> new ArrayList<>())
                 .add(new EquipmentView(
                         result.getLong("id"),
                         result.getString("name"),
                         result.getString("category"),
-                        result.getString("status")
+                        total,
+                        available,
+                        available == 0 ? "UNAVAILABLE" : available < total ? "LIMITED" : "AVAILABLE"
                 ));
         });
 
@@ -152,7 +180,7 @@ public class GymMapController {
         if (closed) return "CLOSED";
         if (sessions.stream().anyMatch(item ->
                 !item.startsAt().isAfter(now) && item.endsAt().isAfter(now))) return "IN_USE";
-        if (equipment.stream().anyMatch(item -> "MAINTENANCE".equals(item.status()))) return "LIMITED_EQUIPMENT";
+        if (equipment.stream().anyMatch(item -> item.availableUnits() < item.totalUnits())) return "LIMITED_EQUIPMENT";
         return "AVAILABLE";
     }
 
@@ -179,7 +207,14 @@ public class GymMapController {
             List<SessionActivity> timeline
     ) {}
 
-    public record EquipmentView(Long id, String name, String category, String status) {}
+    public record EquipmentView(
+            Long id,
+            String name,
+            String category,
+            int totalUnits,
+            int availableUnits,
+            String availabilityStatus
+    ) {}
 
     public record SessionActivity(
             Long id,

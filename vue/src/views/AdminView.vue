@@ -32,19 +32,18 @@ const sessionForm = reactive({
   endsAt: localDateTime(new Date(Date.now() + 2 * 60 * 60_000)),
   capacity: 12,
   spaceId: '' as number | '',
-  resourceIds: [] as number[],
 })
+const sessionResourceUnits = reactive<Record<number, number>>({})
 const sessionOptions = reactive<{ courses: Row[]; coaches: Row[]; resources: Row[] }>({ courses: [], coaches: [], resources: [] })
 const spaceOptions = ref<Row[]>([])
 const names: Record<string, string> = {
   overview: 'Dashboard', admins: 'Administrators', members: 'Members', coaches: 'Coaches',
   notices: 'Notices', courses: 'Courses', bookings: 'Course Bookings', appointments: 'Coach Bookings',
-  coachAssignments: 'Coach Assignments', sessions: 'Class Schedule', visits: 'Gym Visits', equipment: 'Resources',
-  equipmentReservations: 'Equipment Bookings', closedDays: 'Operations Calendar', posts: 'Community Posts', profile: 'My Account',
+  coachAssignments: 'Coach Assignments', sessions: 'Class Schedule', visits: 'Gym Visits',
+  closedDays: 'Operations Calendar', posts: 'Community Posts', profile: 'My Account',
 }
 const columns = computed(() => Object.keys(rows.value[0] || {}).filter(key =>
   (module.value !== 'coachAssignments' || !['coachId', 'memberId'].includes(key))
-  && (module.value !== 'equipment' || key !== 'spaceId')
 ))
 const todayKey = computed(() => localDate(new Date()))
 const selectedClosures = computed(() => dashboardClosedDays.value.filter(item => closedOn(item) === closedDay.closedOn))
@@ -110,14 +109,8 @@ async function load() {
       rows.value = sessions.data
       sessionOptions.courses = courses.data
       sessionOptions.coaches = coaches.data.filter((item: Row) => item.active)
-      sessionOptions.resources = resources.data.filter((item: Row) => item.status === 'AVAILABLE')
-      spaceOptions.value = flattenSpaces(layout.data.floors)
-    } else if (module.value === 'equipment') {
-      const [resources, layout] = await Promise.all([
-        api.get('/admin/resources'),
-        api.get('/admin/gym-layout'),
-      ])
-      rows.value = resources.data
+      sessionOptions.resources = resources.data.filter((item: Row) => item.totalUnits > 0)
+      Object.keys(sessionResourceUnits).forEach(key => delete sessionResourceUnits[Number(key)])
       spaceOptions.value = flattenSpaces(layout.data.floors)
     } else if (module.value === 'coachAssignments') {
       const [assignments, coaches, members] = await Promise.all([
@@ -135,8 +128,7 @@ async function load() {
     } else {
       const paths: Record<string, string> = {
         notices: '/admin/notices', courses: '/courses', bookings: '/admin/bookings',
-        appointments: '/admin/coach-appointments', equipment: '/admin/resources',
-        equipmentReservations: '/admin/equipment-reservations',
+        appointments: '/admin/coach-appointments',
         visits: '/admin/member-visits', posts: '/admin/posts',
       }
       rows.value = (await api.get(paths[module.value])).data
@@ -148,7 +140,6 @@ async function load() {
 async function create() {
   try {
     if (module.value === 'notices') await api.post('/admin/notices', { title: form.title, content: form.content })
-    if (module.value === 'equipment') await api.post('/admin/equipment', { ...form, spaceId: form.spaceId || null })
     if (module.value === 'courses') await api.post('/admin/courses', form)
     if (module.value === 'sessions') {
       await api.post('/admin/course-sessions', {
@@ -157,8 +148,11 @@ async function create() {
         spaceId: sessionForm.spaceId || null,
         startsAt: new Date(sessionForm.startsAt).toISOString(),
         endsAt: new Date(sessionForm.endsAt).toISOString(),
+        resources: sessionOptions.resources
+          .filter(item => (sessionResourceUnits[item.id] ?? 0) > 0)
+          .map(item => ({ equipmentId: item.id, requiredUnits: sessionResourceUnits[item.id] })),
       })
-      sessionForm.resourceIds = []
+      Object.keys(sessionResourceUnits).forEach(key => delete sessionResourceUnits[Number(key)])
     }
     if (module.value === 'coachAssignments') {
       await api.post('/admin/coach-assignments', { ...assignment, endsOn: assignment.endsOn || null })
@@ -256,21 +250,6 @@ async function remove(item: Row) {
   } catch (error) {
     if (error !== 'cancel' && error !== 'close') ElMessage.error(messageOf(error))
   }
-}
-
-async function equipmentStatus(item: Row, status: string) {
-  try {
-    await api.patch(`/admin/equipment/${item.id}/status`, { status })
-    await load()
-  } catch (error) { ElMessage.error(messageOf(error)) }
-}
-
-async function equipmentSpace(item: Row, event: Event) {
-  try {
-    const value = (event.target as HTMLSelectElement).value
-    await api.patch(`/admin/equipment/${item.id}/space`, { spaceId: value ? Number(value) : null })
-    await load()
-  } catch (error) { ElMessage.error(messageOf(error)) }
 }
 
 async function setActive(kind: 'users' | 'courses', item: Row) {
@@ -404,9 +383,6 @@ function timeText(value: unknown) {
     <form v-else-if="module === 'notices'" class="admin-panel admin-form" @submit.prevent="create">
       <input v-model.trim="form.title" maxlength="120" placeholder="Notice title" required><input v-model.trim="form.content" maxlength="1000" placeholder="Notice content" required><button type="submit">Publish</button>
     </form>
-    <form v-else-if="module === 'equipment'" class="admin-panel admin-form equipment-form" @submit.prevent="create">
-      <input v-model.trim="form.name" maxlength="120" placeholder="Equipment name" required><input v-model.trim="form.category" maxlength="80" placeholder="Category" required><select v-model.number="form.spaceId" aria-label="Equipment location"><option value="">No location</option><option v-for="space in spaceOptions" :key="space.id" :value="space.id">{{ space.label }}</option></select><input v-model.trim="form.description" maxlength="1000" placeholder="Description" required><button type="submit">Add equipment</button>
-    </form>
     <form v-else-if="module === 'courses'" class="admin-panel admin-form course-form" @submit.prevent="create">
       <input v-model.trim="form.name" maxlength="120" placeholder="Course name" required><input v-model.trim="form.description" maxlength="1000" placeholder="Description" required><input v-model.number="form.durationMinutes" type="number" min="10" max="240" aria-label="Duration in minutes" required><input v-model.number="form.defaultCapacity" type="number" min="1" max="200" aria-label="Capacity" required><button type="submit">Add course</button>
     </form>
@@ -424,14 +400,19 @@ function timeText(value: unknown) {
       <input v-model="sessionForm.endsAt" type="datetime-local" :min="sessionForm.startsAt" aria-label="Ends at" required>
       <input v-model.number="sessionForm.capacity" type="number" min="1" max="200" aria-label="Capacity" required>
       <select v-model.number="sessionForm.spaceId" aria-label="Class location"><option value="">No location</option><option v-for="space in spaceOptions" :key="space.id" :value="space.id">{{ space.label }}</option></select>
-      <select v-model="sessionForm.resourceIds" multiple aria-label="Required equipment"><option v-for="resource in sessionOptions.resources" :key="resource.id" :value="resource.id">{{ resource.name }}</option></select>
+      <div class="session-resource-quantities" aria-label="Required equipment">
+        <label v-for="resource in sessionOptions.resources" :key="resource.id">
+          <span>{{ resource.name }}</span>
+          <input v-model.number="sessionResourceUnits[resource.id]" type="number" min="0" :max="resource.totalUnits" :aria-label="`${resource.name} required units`">
+        </label>
+      </div>
       <button type="submit">Schedule class</button>
     </form>
 
     <section v-if="!['overview', 'closedDays'].includes(module) && !loading" class="admin-panel table-wrap">
       <table v-if="rows.length">
-        <thead><tr><th v-for="key in columns" :key="key">{{ label(key) }}</th><th v-if="['notices','equipment','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)">Actions</th></tr></thead>
-        <tbody><tr v-for="item in rows" :key="item.id || item.username"><td v-for="key in columns" :key="key">{{ show(item[key]) }}</td><td v-if="['notices','equipment','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)" class="table-actions"><template v-if="module === 'equipment'"><select :value="item.spaceId ?? ''" aria-label="Equipment location" @change="equipmentSpace(item, $event)"><option value="">No location</option><option v-for="space in spaceOptions" :key="space.id" :value="space.id">{{ space.label }}</option></select><button type="button" @click="equipmentStatus(item, 'AVAILABLE')">Available</button><button type="button" @click="equipmentStatus(item, 'MAINTENANCE')">Maintenance</button></template><button v-else-if="module === 'courses'" type="button" @click="setActive('courses', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="['members','coaches'].includes(module)" type="button" @click="setActive('users', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><template v-else-if="module === 'sessions'"><button v-if="item.status === 'OPEN'" type="button" @click="remove(item)">Cancel</button></template><button v-else-if="module !== 'coachAssignments' || item.status === 'ACTIVE'" type="button" @click="remove(item)">{{ module === 'coachAssignments' ? 'End' : 'Delete' }}</button></td></tr></tbody>
+        <thead><tr><th v-for="key in columns" :key="key">{{ label(key) }}</th><th v-if="['notices','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)">Actions</th></tr></thead>
+        <tbody><tr v-for="item in rows" :key="item.id || item.username"><td v-for="key in columns" :key="key">{{ show(item[key]) }}</td><td v-if="['notices','posts','courses','members','coaches','coachAssignments','closedDays','sessions'].includes(module)" class="table-actions"><button v-if="module === 'courses'" type="button" @click="setActive('courses', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><button v-else-if="['members','coaches'].includes(module)" type="button" @click="setActive('users', item)">{{ item.active ? 'Disable' : 'Enable' }}</button><template v-else-if="module === 'sessions'"><button v-if="item.status === 'OPEN'" type="button" @click="remove(item)">Cancel</button></template><button v-else-if="module !== 'coachAssignments' || item.status === 'ACTIVE'" type="button" @click="remove(item)">{{ module === 'coachAssignments' ? 'End' : 'Delete' }}</button></td></tr></tbody>
       </table>
       <p v-else class="empty">No records found.</p>
     </section>

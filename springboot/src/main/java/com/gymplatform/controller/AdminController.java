@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class AdminController {
                 "courseCount", count("SELECT COUNT(*) FROM courses WHERE active = TRUE"),
                 "bookingCount", count("SELECT COUNT(*) FROM bookings WHERE status = 'CONFIRMED'"),
                 "currentOccupancy", count("SELECT COUNT(*) FROM member_visits WHERE checked_out_at IS NULL"),
-                "equipmentCount", count("SELECT COUNT(*) FROM equipment WHERE status <> 'RETIRED'"),
+                "equipmentCount", count("SELECT COUNT(*) FROM equipment_units WHERE base_status <> 'RETIRED'"),
                 "postCount", count("SELECT COUNT(*) FROM posts"),
                 "bookingByCourse", jdbc.queryForList("""
                         SELECT c.name, COUNT(b.id) AS total
@@ -51,8 +52,17 @@ public class AdminController {
                         ORDER BY total DESC, c.name
                         """),
                 "equipmentByStatus", jdbc.queryForList("""
-                        SELECT status, COUNT(*) AS total
-                        FROM equipment
+                        SELECT CASE
+                                   WHEN maintenance.id IS NOT NULL THEN 'MAINTENANCE'
+                                   ELSE unit.base_status
+                               END AS status,
+                               COUNT(*) AS total
+                        FROM equipment_units unit
+                        LEFT JOIN equipment_maintenance maintenance
+                          ON maintenance.unit_id = unit.id
+                         AND maintenance.starts_at <= CURRENT_TIMESTAMP
+                         AND maintenance.ends_at > CURRENT_TIMESTAMP
+                        WHERE unit.base_status <> 'RETIRED'
                         GROUP BY status
                         """)
         );
@@ -132,52 +142,226 @@ public class AdminController {
 
     @PostMapping("/equipment")
     @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
     void createEquipment(@Valid @RequestBody EquipmentRequest body) {
         requireSpace(body.spaceId());
         jdbc.update("""
-                INSERT INTO equipment (name, category, description, cover_key, resource_type, space_id)
-                VALUES (?, ?, ?, ?, 'EQUIPMENT', ?)
+                INSERT INTO equipment
+                    (name, category, description, unit_label, cover_key, resource_type, space_id)
+                VALUES (?, ?, ?, ?, 'equipment', 'EQUIPMENT', ?)
                 """, body.name().trim(), body.category().trim(), body.description().trim(),
-                body.coverKey().trim(), body.spaceId());
+                body.unitLabel().trim(), body.spaceId());
+        var equipmentId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
+        createUnits(equipmentId, body.initialUnits(), body.spaceId());
     }
 
-    @PatchMapping("/equipment/{id}/status")
+    @PatchMapping("/equipment/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateEquipmentStatus(
-            @PathVariable Long id,
-            @Valid @RequestBody EquipmentStatusRequest body
-    ) {
-        if (!Set.of("AVAILABLE", "MAINTENANCE", "RETIRED").contains(body.status())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported equipment status");
-        }
-        if (jdbc.update("UPDATE equipment SET status = ? WHERE id = ?", body.status(), id) == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
-        }
-    }
-
-    @PatchMapping("/equipment/{id}/space")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void updateEquipmentSpace(@PathVariable Long id, @Valid @RequestBody SpaceAssignmentRequest body) {
-        requireSpace(body.spaceId());
+    void updateEquipment(@PathVariable Long id, @Valid @RequestBody EquipmentUpdateRequest body) {
         if (jdbc.update("""
-                UPDATE equipment SET space_id = ?
-                WHERE id = ? AND resource_type = 'EQUIPMENT'
-                """, body.spaceId(), id) == 0) {
+                UPDATE equipment
+                SET name = ?, category = ?, description = ?, unit_label = ?
+                WHERE id = ? AND status <> 'RETIRED' AND resource_type = 'EQUIPMENT'
+                """, body.name().trim(), body.category().trim(), body.description().trim(),
+                body.unitLabel().trim(), id) == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
         }
+    }
+
+    @DeleteMapping("/equipment/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    void archiveEquipment(@PathVariable Long id) {
+        if (jdbc.update("""
+                UPDATE equipment SET status = 'RETIRED'
+                WHERE id = ? AND status <> 'RETIRED' AND resource_type = 'EQUIPMENT'
+                """, id) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
+        }
+        jdbc.update("UPDATE equipment_units SET base_status = 'RETIRED' WHERE equipment_id = ?", id);
     }
 
     @GetMapping("/resources")
     List<Map<String, Object>> resources() {
         return jdbc.queryForList("""
-                SELECT equipment.id, equipment.name, equipment.category, equipment.status,
-                       equipment.space_id AS spaceId, space.name AS spaceName, floor.name AS floorName
+                SELECT equipment.id, equipment.name, equipment.category,
+                       equipment.description, equipment.unit_label AS unitLabel,
+                       COUNT(unit.id) AS totalUnits,
+                       SUM(CASE WHEN unit.base_status = 'AVAILABLE'
+                                 AND maintenance.id IS NULL THEN 1 ELSE 0 END) AS availableUnits,
+                       SUM(CASE WHEN unit.base_status = 'IN_USE' THEN 1 ELSE 0 END) AS inUseUnits,
+                       SUM(CASE WHEN maintenance.id IS NOT NULL THEN 1 ELSE 0 END) AS maintenanceUnits,
+                       SUM(CASE WHEN unit.base_status = 'OUT_OF_SERVICE'
+                                 AND maintenance.id IS NULL THEN 1 ELSE 0 END) AS outOfServiceUnits,
+                       MAX(unit.updated_at) AS updatedAt
                 FROM equipment
-                LEFT JOIN gym_spaces space ON space.id = equipment.space_id
-                LEFT JOIN gym_floors floor ON floor.id = space.floor_id
+                LEFT JOIN equipment_units unit
+                    ON unit.equipment_id = equipment.id AND unit.base_status <> 'RETIRED'
+                LEFT JOIN equipment_maintenance maintenance
+                    ON maintenance.unit_id = unit.id
+                   AND maintenance.starts_at <= CURRENT_TIMESTAMP
+                   AND maintenance.ends_at > CURRENT_TIMESTAMP
                 WHERE equipment.status <> 'RETIRED' AND equipment.resource_type = 'EQUIPMENT'
-                ORDER BY equipment.name
+                GROUP BY equipment.id, equipment.name, equipment.category,
+                         equipment.description, equipment.unit_label
+                ORDER BY equipment.category, equipment.name
                 """);
+    }
+
+    @GetMapping("/equipment/{id}/units")
+    List<Map<String, Object>> equipmentUnits(@PathVariable Long id) {
+        requireEquipment(id);
+        return jdbc.queryForList("""
+                SELECT unit.id, unit.asset_code AS assetCode, unit.serial_number AS serialNumber,
+                       unit.purchased_on AS purchasedOn, unit.notes,
+                       CASE WHEN maintenance.id IS NULL THEN unit.base_status ELSE 'MAINTENANCE' END AS status,
+                       unit.base_status AS baseStatus, unit.space_id AS spaceId,
+                       space.name AS spaceName, floor.name AS floorName,
+                       maintenance.id AS maintenanceId, maintenance.starts_at AS maintenanceStartsAt,
+                       maintenance.ends_at AS maintenanceEndsAt, maintenance.reason AS maintenanceReason,
+                       unit.updated_at AS updatedAt
+                FROM equipment_units unit
+                LEFT JOIN gym_spaces space ON space.id = unit.space_id
+                LEFT JOIN gym_floors floor ON floor.id = space.floor_id
+                LEFT JOIN equipment_maintenance maintenance
+                    ON maintenance.unit_id = unit.id
+                   AND maintenance.starts_at <= CURRENT_TIMESTAMP
+                   AND maintenance.ends_at > CURRENT_TIMESTAMP
+                WHERE unit.equipment_id = ? AND unit.base_status <> 'RETIRED'
+                ORDER BY unit.asset_code
+                """, id);
+    }
+
+    @PostMapping("/equipment/{id}/units")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    void addEquipmentUnits(@PathVariable Long id, @Valid @RequestBody UnitBatchCreateRequest body) {
+        requireEquipment(id);
+        requireSpace(body.spaceId());
+        createUnits(id, body.count(), body.spaceId());
+    }
+
+    @PatchMapping("/equipment-units/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateEquipmentUnit(@PathVariable Long id, @Valid @RequestBody EquipmentUnitRequest body) {
+        requireSpace(body.spaceId());
+        requireUnitStatus(body.status());
+        try {
+            if (jdbc.update("""
+                    UPDATE equipment_units
+                    SET asset_code = ?, space_id = ?, serial_number = ?, purchased_on = ?,
+                        base_status = ?, notes = ?
+                    WHERE id = ? AND base_status <> 'RETIRED'
+                    """, body.assetCode().trim(), body.spaceId(), blankToNull(body.serialNumber()),
+                    body.purchasedOn(), body.status(), body.notes().trim(), id) == 0) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment unit not found");
+            }
+        } catch (org.springframework.dao.DuplicateKeyException error) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Asset code already exists");
+        }
+    }
+
+    @PatchMapping("/equipment-units/batch")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    void updateEquipmentUnits(@Valid @RequestBody UnitBatchUpdateRequest body) {
+        requireUnitStatus(body.status());
+        requireSpace(body.spaceId());
+        var placeholders = String.join(", ", java.util.Collections.nCopies(body.ids().size(), "?"));
+        var parameters = new ArrayList<Object>();
+        parameters.add(body.status());
+        if (body.updateSpace()) parameters.add(body.spaceId());
+        parameters.addAll(body.ids());
+        var updated = jdbc.update("""
+                UPDATE equipment_units SET base_status = ? %s
+                WHERE id IN (%s) AND base_status <> 'RETIRED'
+                """.formatted(body.updateSpace() ? ", space_id = ?" : "", placeholders), parameters.toArray());
+        if (updated != body.ids().size()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more equipment units were not found");
+        }
+    }
+
+    @DeleteMapping("/equipment-units/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void archiveEquipmentUnit(@PathVariable Long id) {
+        if (jdbc.update("""
+                UPDATE equipment_units SET base_status = 'RETIRED'
+                WHERE id = ? AND base_status <> 'RETIRED'
+                """, id) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment unit not found");
+        }
+    }
+
+    @GetMapping("/equipment-units/{id}/maintenance")
+    List<Map<String, Object>> equipmentMaintenance(@PathVariable Long id) {
+        requireUnit(id);
+        return jdbc.queryForList("""
+                SELECT id, starts_at AS startsAt, ends_at AS endsAt, reason, notes,
+                       created_at AS createdAt, updated_at AS updatedAt
+                FROM equipment_maintenance
+                WHERE unit_id = ?
+                ORDER BY starts_at DESC
+                """, id);
+    }
+
+    @PostMapping("/equipment-units/{id}/maintenance")
+    @ResponseStatus(HttpStatus.CREATED)
+    void createEquipmentMaintenance(
+            @PathVariable Long id,
+            @Valid @RequestBody MaintenanceRequest body
+    ) {
+        requireUnit(id);
+        validateMaintenance(id, null, body);
+        jdbc.update("""
+                INSERT INTO equipment_maintenance (unit_id, starts_at, ends_at, reason, notes)
+                VALUES (?, ?, ?, ?, ?)
+                """, id, body.startsAt(), body.endsAt(), body.reason().trim(), body.notes().trim());
+    }
+
+    @PostMapping("/equipment-units/batch-maintenance")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    void createEquipmentMaintenanceBatch(@Valid @RequestBody BatchMaintenanceRequest body) {
+        for (var id : body.ids()) {
+            requireUnit(id);
+            validateMaintenance(id, null, body.maintenance());
+        }
+        for (var id : body.ids()) {
+            jdbc.update("""
+                    INSERT INTO equipment_maintenance (unit_id, starts_at, ends_at, reason, notes)
+                    VALUES (?, ?, ?, ?, ?)
+                    """, id, body.maintenance().startsAt(), body.maintenance().endsAt(),
+                    body.maintenance().reason().trim(), body.maintenance().notes().trim());
+        }
+    }
+
+    @PutMapping("/equipment-units/{unitId}/maintenance/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateEquipmentMaintenance(
+            @PathVariable Long unitId,
+            @PathVariable Long id,
+            @Valid @RequestBody MaintenanceRequest body
+    ) {
+        validateMaintenance(unitId, id, body);
+        if (jdbc.update("""
+                UPDATE equipment_maintenance
+                SET starts_at = ?, ends_at = ?, reason = ?, notes = ?
+                WHERE id = ? AND unit_id = ? AND ends_at > CURRENT_TIMESTAMP
+                """, body.startsAt(), body.endsAt(), body.reason().trim(),
+                body.notes().trim(), id, unitId) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Editable maintenance record not found");
+        }
+    }
+
+    @DeleteMapping("/equipment-units/{unitId}/maintenance/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteEquipmentMaintenance(@PathVariable Long unitId, @PathVariable Long id) {
+        if (jdbc.update("""
+                DELETE FROM equipment_maintenance
+                WHERE id = ? AND unit_id = ? AND ends_at > CURRENT_TIMESTAMP
+                """, id, unitId) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Editable maintenance record not found");
+        }
     }
 
     @GetMapping("/course-sessions")
@@ -209,7 +393,10 @@ public class AdminController {
     Map<String, Long> createCourseSession(@Valid @RequestBody CourseSessionRequest body) {
         var id = sessionSchedulingService.schedule(new SessionSchedulingService.ScheduleRequest(
                 body.courseId(), body.coachId(), body.startsAt(), body.endsAt(),
-                body.capacity(), body.spaceId(), body.resourceIds()
+                body.capacity(), body.spaceId(), body.resources().stream()
+                        .map(item -> new SessionSchedulingService.ResourceRequirement(
+                                item.equipmentId(), item.requiredUnits()))
+                        .toList()
         ));
         return Map.of("id", id);
     }
@@ -223,18 +410,6 @@ public class AdminController {
                 """, id) == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Open future session not found");
         }
-    }
-
-    @GetMapping("/equipment-reservations")
-    List<Map<String, Object>> equipmentReservations() {
-        return jdbc.queryForList("""
-                SELECT r.id, e.name AS equipmentName, u.display_name AS memberName,
-                       r.starts_at AS startsAt, r.ends_at AS endsAt, r.status
-                FROM equipment_reservations r
-                JOIN equipment e ON e.id = r.equipment_id
-                JOIN users u ON u.id = r.member_id
-                ORDER BY r.starts_at DESC
-                """);
     }
 
     @GetMapping("/coach-appointments")
@@ -454,6 +629,61 @@ public class AdminController {
         }
     }
 
+    private void requireEquipment(Long id) {
+        if (jdbc.queryForList("""
+                SELECT id FROM equipment
+                WHERE id = ? AND status <> 'RETIRED' AND resource_type = 'EQUIPMENT'
+                """, Long.class, id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
+        }
+    }
+
+    private void requireUnit(Long id) {
+        if (jdbc.queryForList("""
+                SELECT id FROM equipment_units WHERE id = ? AND base_status <> 'RETIRED'
+                """, Long.class, id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment unit not found");
+        }
+    }
+
+    private void requireUnitStatus(String status) {
+        if (!Set.of("AVAILABLE", "IN_USE", "OUT_OF_SERVICE", "RETIRED").contains(status)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported equipment unit status");
+        }
+    }
+
+    private void createUnits(Long equipmentId, int count, Long spaceId) {
+        var next = jdbc.queryForObject("""
+                SELECT COUNT(*) + 1 FROM equipment_units WHERE equipment_id = ?
+                """, Long.class, equipmentId);
+        for (int index = 0; index < count; index++) {
+            var sequence = (next == null ? 1 : next) + index;
+            var code = "EQ-%04d-%03d".formatted(equipmentId, sequence);
+            jdbc.update("""
+                    INSERT INTO equipment_units (equipment_id, asset_code, space_id)
+                    VALUES (?, ?, ?)
+                    """, equipmentId, code, spaceId);
+        }
+    }
+
+    private void validateMaintenance(Long unitId, Long excludedId, MaintenanceRequest body) {
+        if (!body.endsAt().isAfter(body.startsAt()) || !body.endsAt().isAfter(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Maintenance must end in the future");
+        }
+        var conflicts = jdbc.queryForObject("""
+                SELECT COUNT(*) FROM equipment_maintenance
+                WHERE unit_id = ? AND id <> COALESCE(?, -1)
+                  AND starts_at < ? AND ends_at > ?
+                """, Integer.class, unitId, excludedId, body.endsAt(), body.startsAt());
+        if (conflicts != null && conflicts > 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Maintenance periods cannot overlap");
+        }
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+
     public record NoticeRequest(
             @NotBlank @Size(max = 120) String title,
             @NotBlank @Size(max = 1000) String content
@@ -463,11 +693,50 @@ public class AdminController {
             @NotBlank @Size(max = 120) String name,
             @NotBlank @Size(max = 80) String category,
             @NotBlank @Size(max = 1000) String description,
-            @NotBlank @Size(max = 120) String coverKey,
+            @NotBlank @Size(max = 32) String unitLabel,
+            @NotNull @Min(1) @Max(100) Integer initialUnits,
             Long spaceId
     ) {}
 
-    public record EquipmentStatusRequest(@NotBlank String status) {}
+    public record EquipmentUpdateRequest(
+            @NotBlank @Size(max = 120) String name,
+            @NotBlank @Size(max = 80) String category,
+            @NotBlank @Size(max = 1000) String description,
+            @NotBlank @Size(max = 32) String unitLabel
+    ) {}
+
+    public record UnitBatchCreateRequest(
+            @NotNull @Min(1) @Max(100) Integer count,
+            Long spaceId
+    ) {}
+
+    public record EquipmentUnitRequest(
+            @NotBlank @Size(max = 64) String assetCode,
+            Long spaceId,
+            @Size(max = 120) String serialNumber,
+            LocalDate purchasedOn,
+            @NotBlank String status,
+            @NotNull @Size(max = 1000) String notes
+    ) {}
+
+    public record UnitBatchUpdateRequest(
+            @NotNull @Size(min = 1, max = 100) List<@NotNull Long> ids,
+            @NotBlank String status,
+            @NotNull Boolean updateSpace,
+            Long spaceId
+    ) {}
+
+    public record MaintenanceRequest(
+            @NotNull Instant startsAt,
+            @NotNull Instant endsAt,
+            @NotBlank @Size(max = 160) String reason,
+            @NotNull @Size(max = 1000) String notes
+    ) {}
+
+    public record BatchMaintenanceRequest(
+            @NotNull @Size(min = 1, max = 100) List<@NotNull Long> ids,
+            @NotNull @Valid MaintenanceRequest maintenance
+    ) {}
 
     public record SpaceAssignmentRequest(Long spaceId) {}
 
@@ -488,7 +757,12 @@ public class AdminController {
             @NotNull @Future Instant endsAt,
             @NotNull @Min(1) @Max(200) Integer capacity,
             Long spaceId,
-            @NotNull @Size(max = 20) List<@NotNull Long> resourceIds
+            @NotNull @Size(max = 20) List<@Valid ResourceRequirementRequest> resources
+    ) {}
+
+    public record ResourceRequirementRequest(
+            @NotNull Long equipmentId,
+            @NotNull @Min(1) @Max(100) Integer requiredUnits
     ) {}
 
     public record CoachAssignmentRequest(

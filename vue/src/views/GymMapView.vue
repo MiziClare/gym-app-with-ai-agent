@@ -4,7 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { api, messageOf } from '../api'
 import { session } from '../state'
 
-type Equipment = { id: number; name: string; category: string; status: string }
+type Equipment = {
+  id: number
+  name: string
+  category: string
+  totalUnits: number
+  availableUnits: number
+  availabilityStatus: 'AVAILABLE' | 'LIMITED' | 'UNAVAILABLE'
+}
 type Activity = {
   id: number
   courseName: string
@@ -232,7 +239,7 @@ function activityState(item: Activity) {
               <ul v-if="selected.equipment.length" class="space-equipment">
                 <li v-for="item in selected.equipment" :key="item.id">
                   <span><strong>{{ item.name }}</strong><small>{{ item.category }}</small></span>
-                  <em :class="{ maintenance: item.status === 'MAINTENANCE' }">{{ item.status === 'MAINTENANCE' ? 'Maintenance' : 'Available' }}</em>
+                  <em :class="{ maintenance: item.availabilityStatus !== 'AVAILABLE' }">{{ item.availableUnits }} / {{ item.totalUnits }} available</em>
                 </li>
               </ul>
               <p v-else class="detail-empty">No equipment assigned here.</p>

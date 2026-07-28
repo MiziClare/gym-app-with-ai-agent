@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
@@ -91,6 +92,8 @@ public class DemoDataInitializer implements ApplicationRunner {
         seedDemoCoachAssignment();
         seedLegacyFeatures();
         seedGymLayout();
+        seedEquipmentUnits();
+        seedOperationalEquipmentState();
     }
 
     private void seedDemoCoachAssignment() {
@@ -144,23 +147,26 @@ public class DemoDataInitializer implements ApplicationRunner {
     private void seedLegacyFeatures() {
         if (jdbc.queryForObject("SELECT COUNT(*) FROM notices", Integer.class) == 0) {
             jdbc.update("INSERT INTO notices (title, content) VALUES (?, ?)",
-                    "Welcome to Gym Panel", "Book classes, reserve equipment and connect with a coach.");
+                    "Welcome to Gym Panel", "Check walk-in equipment availability and connect with a coach.");
             jdbc.update("INSERT INTO notices (title, content) VALUES (?, ?)",
                     "Training reminder", "Please arrive ten minutes before your scheduled session.");
         }
-        if (jdbc.queryForObject("SELECT COUNT(*) FROM equipment", Integer.class) == 0) {
-            for (var item : List.of(
-                    new DemoEquipment("Treadmill", "Cardio", "Commercial treadmill for indoor running.", "treadmill"),
-                    new DemoEquipment("Spin Bike", "Cardio", "Adjustable bike for interval training.", "spin-bike"),
-                    new DemoEquipment("Rowing Machine", "Cardio", "Full-body low-impact conditioning.", "rowing"),
-                    new DemoEquipment("Cable Machine", "Strength", "Multi-station resistance equipment.", "cable"),
-                    new DemoEquipment("Swimming Pool", "Aquatics", "Indoor pool for lap and recovery sessions.", "pool")
-            )) {
-                jdbc.update("""
-                        INSERT INTO equipment (name, category, description, cover_key)
-                        VALUES (?, ?, ?, ?)
-                        """, item.name(), item.category(), item.description(), item.coverKey());
-            }
+        for (var item : equipmentCatalogue()) {
+            jdbc.update("""
+                    INSERT INTO equipment
+                        (name, category, description, unit_label, cover_key)
+                    SELECT ?, ?, ?, ?, 'equipment'
+                    WHERE NOT EXISTS (
+                        SELECT 1 FROM equipment
+                        WHERE name = ? AND resource_type = 'EQUIPMENT' AND status <> 'RETIRED'
+                    )
+                    """, item.name(), item.category(), item.description(),
+                    item.unitLabel(), item.name());
+            jdbc.update("""
+                    UPDATE equipment
+                    SET category = ?, description = ?, unit_label = ?
+                    WHERE name = ? AND resource_type = 'EQUIPMENT' AND status <> 'RETIRED'
+                    """, item.category(), item.description(), item.unitLabel(), item.name());
         }
         if (jdbc.queryForObject("SELECT COUNT(*) FROM posts", Integer.class) == 0) {
             var memberId = jdbc.queryForObject("SELECT id FROM users WHERE username = 'member'", Long.class);
@@ -170,6 +176,178 @@ public class DemoDataInitializer implements ApplicationRunner {
             jdbc.update("INSERT INTO posts (author_id, title, content) VALUES (?, ?, ?)",
                     memberId, "My first week", "Mobility Flow was a great way to get started.");
         }
+    }
+
+    private void seedEquipmentUnits() {
+        for (var item : equipmentCatalogue()) {
+            var equipmentIds = jdbc.queryForList("""
+                    SELECT id FROM equipment
+                    WHERE name = ? AND resource_type = 'EQUIPMENT' AND status <> 'RETIRED'
+                    ORDER BY id LIMIT 1
+                    """, Long.class, item.name());
+            var spaceIds = jdbc.queryForList("""
+                    SELECT id FROM gym_spaces WHERE name = ? ORDER BY id LIMIT 1
+                    """, Long.class, item.spaceName());
+            if (equipmentIds.isEmpty() || spaceIds.isEmpty()) continue;
+            var equipmentId = equipmentIds.getFirst();
+            var spaceId = spaceIds.getFirst();
+            jdbc.update("UPDATE equipment SET space_id = COALESCE(space_id, ?) WHERE id = ?",
+                    spaceId, equipmentId);
+            var existing = jdbc.queryForObject(
+                    "SELECT COUNT(*) FROM equipment_units WHERE equipment_id = ?",
+                    Integer.class, equipmentId);
+            for (int sequence = (existing == null ? 0 : existing) + 1;
+                 sequence <= item.count(); sequence++) {
+                jdbc.update("""
+                        INSERT INTO equipment_units (equipment_id, asset_code, space_id)
+                        VALUES (?, ?, ?)
+                        """, equipmentId, "DEMO-%04d-%03d".formatted(equipmentId, sequence), spaceId);
+            }
+        }
+    }
+
+    private void seedOperationalEquipmentState() {
+        var catalogue = equipmentCatalogue();
+        for (int equipmentIndex = 0; equipmentIndex < catalogue.size(); equipmentIndex++) {
+            var item = catalogue.get(equipmentIndex);
+            var unitIds = jdbc.queryForList("""
+                    SELECT unit.id
+                    FROM equipment_units unit
+                    JOIN equipment ON equipment.id = unit.equipment_id
+                    WHERE equipment.name = ?
+                      AND unit.asset_code LIKE 'DEMO-%'
+                      AND unit.base_status <> 'RETIRED'
+                    ORDER BY unit.asset_code
+                    """, Long.class, item.name());
+            for (int index = 0; index < unitIds.size(); index++) {
+                var sequence = index + 1;
+                var unitId = unitIds.get(index);
+                var status = demoBaseStatus(equipmentIndex, sequence, unitIds.size());
+                jdbc.update("""
+                        UPDATE equipment_units
+                        SET serial_number = ?,
+                            purchased_on = ?,
+                            base_status = ?,
+                            notes = ?
+                        WHERE id = ?
+                          AND serial_number IS NULL
+                          AND (notes IS NULL OR notes = '')
+                        """,
+                        "GF-%03d-%03d".formatted(equipmentIndex + 1, sequence),
+                        LocalDate.now(ZoneOffset.UTC).minusMonths(6L + (equipmentIndex * 3L + sequence) % 42),
+                        status,
+                        demoUnitNote(status),
+                        unitId);
+
+                if (isActiveMaintenanceUnit(equipmentIndex, sequence, unitIds.size())) {
+                    seedDemoMaintenance(
+                            unitId,
+                            -45,
+                            120,
+                            "Preventive safety inspection",
+                            "Demo operating state: work order PM-%03d is in progress."
+                                    .formatted(equipmentIndex + 1)
+                    );
+                } else if (isUpcomingMaintenanceUnit(equipmentIndex, sequence, unitIds.size())) {
+                    seedDemoMaintenance(
+                            unitId,
+                            24 * 60,
+                            26 * 60,
+                            "Scheduled preventive service",
+                            "Demo operating state: service is planned for tomorrow."
+                    );
+                }
+            }
+        }
+    }
+
+    private void seedDemoMaintenance(
+            Long unitId,
+            int startsInMinutes,
+            int endsInMinutes,
+            String reason,
+            String notes
+    ) {
+        jdbc.update("""
+                INSERT INTO equipment_maintenance (unit_id, starts_at, ends_at, reason, notes)
+                SELECT ?,
+                       TIMESTAMPADD(MINUTE, ?, CURRENT_TIMESTAMP),
+                       TIMESTAMPADD(MINUTE, ?, CURRENT_TIMESTAMP),
+                       ?, ?
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM equipment_maintenance
+                    WHERE unit_id = ? AND ends_at > CURRENT_TIMESTAMP AND notes = ?
+                )
+                """,
+                unitId, startsInMinutes, endsInMinutes, reason, notes,
+                unitId, notes);
+    }
+
+    private String demoBaseStatus(int equipmentIndex, int sequence, int count) {
+        if (count >= 3 && sequence == count && equipmentIndex % 6 == 0) {
+            return "OUT_OF_SERVICE";
+        }
+        if (count >= 2 && sequence == 1 && equipmentIndex % 3 != 2
+                && !isActiveMaintenanceUnit(equipmentIndex, sequence, count)) {
+            return "IN_USE";
+        }
+        if (count >= 6 && sequence == 2 && equipmentIndex % 4 == 0) {
+            return "IN_USE";
+        }
+        return "AVAILABLE";
+    }
+
+    private boolean isActiveMaintenanceUnit(int equipmentIndex, int sequence, int count) {
+        if (equipmentIndex == 24 && sequence == 1) {
+            return true;
+        }
+        var outOfServiceOffset = equipmentIndex % 6 == 0 ? 1 : 0;
+        return count >= 2 && sequence == count - outOfServiceOffset && equipmentIndex % 4 == 1;
+    }
+
+    private boolean isUpcomingMaintenanceUnit(int equipmentIndex, int sequence, int count) {
+        return count >= 3 && sequence == count - 1 && equipmentIndex % 7 == 3;
+    }
+
+    private String demoUnitNote(String status) {
+        return switch (status) {
+            case "IN_USE" -> "Demo operating state: currently in use during staffed hours.";
+            case "OUT_OF_SERVICE" -> "Demo operating state: awaiting a replacement part.";
+            default -> "Demo operating state: opening inspection completed with no issues.";
+        };
+    }
+
+    private List<DemoEquipment> equipmentCatalogue() {
+        return List.of(
+                new DemoEquipment("Treadmill", "Cardio", "Commercial treadmill for walking and running.", "machines", 12, "Cardio Zone"),
+                new DemoEquipment("Elliptical", "Cardio", "Low-impact full-body cardio trainer.", "machines", 6, "Cardio Zone"),
+                new DemoEquipment("Stationary Bike", "Cardio", "Adjustable upright indoor bike.", "bikes", 8, "Cardio Zone"),
+                new DemoEquipment("Rowing Machine", "Cardio", "Full-body low-impact conditioning.", "machines", 4, "Cardio Zone"),
+                new DemoEquipment("Stair Climber", "Cardio", "Continuous stair cardio machine.", "machines", 3, "Cardio Zone"),
+                new DemoEquipment("Cable Station", "Strength", "Adjustable multi-station resistance equipment.", "stations", 4, "Strength Zone"),
+                new DemoEquipment("Chest Press", "Strength", "Selectorized chest press machine.", "machines", 3, "Strength Zone"),
+                new DemoEquipment("Lat Pulldown", "Strength", "Selectorized back training machine.", "machines", 3, "Strength Zone"),
+                new DemoEquipment("Leg Press", "Strength", "Lower-body press machine.", "machines", 3, "Strength Zone"),
+                new DemoEquipment("Leg Extension / Curl", "Strength", "Lower-body extension and curl station.", "machines", 4, "Strength Zone"),
+                new DemoEquipment("Power Rack", "Free Weights", "Rack for barbell strength training.", "racks", 6, "Strength Zone"),
+                new DemoEquipment("Smith Machine", "Free Weights", "Guided barbell training station.", "machines", 3, "Strength Zone"),
+                new DemoEquipment("Adjustable Bench", "Free Weights", "Multi-angle free-weight bench.", "benches", 10, "Strength Zone"),
+                new DemoEquipment("Dumbbell Station", "Free Weights", "Full dumbbell rack and lifting position.", "stations", 4, "Strength Zone"),
+                new DemoEquipment("Kettlebell Set", "Functional", "Range of kettlebells for functional training.", "sets", 4, "Studio A"),
+                new DemoEquipment("Suspension Trainer", "Functional", "Bodyweight suspension training point.", "stations", 4, "Studio A"),
+                new DemoEquipment("Turf / Sled Lane", "Functional", "Indoor lane for sled and agility work.", "lanes", 2, "Studio A"),
+                new DemoEquipment("Group Fitness Studio", "Studios", "Flexible studio for instructor-led classes.", "studios", 1, "Studio A"),
+                new DemoEquipment("Cycle Studio", "Studios", "Dedicated indoor cycling studio.", "studios", 1, "Studio A"),
+                new DemoEquipment("Yoga / Mobility Studio", "Studios", "Quiet studio for yoga and mobility.", "studios", 1, "Studio A"),
+                new DemoEquipment("Lap Pool Lane", "Aquatics & Recovery", "Indoor lane for lap swimming.", "lanes", 6, "Pool & Recovery"),
+                new DemoEquipment("Leisure Pool", "Aquatics & Recovery", "Shallow pool for recreation and recovery.", "pools", 1, "Pool & Recovery"),
+                new DemoEquipment("Hot Tub", "Aquatics & Recovery", "Shared warm-water recovery pool.", "pools", 1, "Pool & Recovery"),
+                new DemoEquipment("Sauna", "Aquatics & Recovery", "Dry heat recovery room.", "rooms", 2, "Pool & Recovery"),
+                new DemoEquipment("Steam Room", "Aquatics & Recovery", "Steam recovery room.", "rooms", 1, "Pool & Recovery"),
+                new DemoEquipment("Gymnasium Court", "Courts", "Full multi-sport gymnasium court.", "courts", 1, "Studio A"),
+                new DemoEquipment("Badminton / Pickleball Court", "Courts", "Convertible racket-sport court.", "courts", 3, "Studio A"),
+                new DemoEquipment("Squash Court", "Courts", "Enclosed squash court.", "courts", 2, "Studio A")
+        );
     }
 
     private void seedGymLayout() {
@@ -251,7 +429,14 @@ public class DemoDataInitializer implements ApplicationRunner {
     ) {
     }
 
-    private record DemoEquipment(String name, String category, String description, String coverKey) {}
+    private record DemoEquipment(
+            String name,
+            String category,
+            String description,
+            String unitLabel,
+            int count,
+            String spaceName
+    ) {}
 
     private record DemoSpace(String name, String type, int x, int y, int width, int height) {}
 }

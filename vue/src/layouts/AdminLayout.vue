@@ -24,7 +24,6 @@ const groups = [
     ['Class schedule', '/sessions', 'icon-courses.png'],
     ['Class bookings', '/orders', 'icon-orders.png'],
     ['Coach bookings', '/reserve', 'icon-reservations.png'],
-    ['Equipment bookings', '/eqReserve', 'icon-barbell.png'],
   ] },
   { label: 'Inventory', links: [
     ['Gym layout', '/gym-layout', 'icon-vr.png'],

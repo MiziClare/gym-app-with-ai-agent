@@ -30,10 +30,11 @@ public class GymLayoutController {
                 SELECT space.id, space.floor_id, space.name, space.type,
                        space.x_percent, space.y_percent,
                        space.width_percent, space.height_percent,
-                       COUNT(DISTINCT equipment.id) AS equipment_count,
+                       COUNT(DISTINCT unit.id) AS equipment_count,
                        COUNT(DISTINCT session.id) AS session_count
                 FROM gym_spaces space
-                LEFT JOIN equipment ON equipment.space_id = space.id
+                LEFT JOIN equipment_units unit
+                    ON unit.space_id = space.id AND unit.base_status <> 'RETIRED'
                 LEFT JOIN course_sessions session ON session.space_id = space.id
                 GROUP BY space.id, space.floor_id, space.name, space.type,
                          space.x_percent, space.y_percent,
@@ -139,9 +140,12 @@ public class GymLayoutController {
                     SELECT (
                         SELECT COUNT(*) FROM equipment WHERE space_id = ?
                     ) + (
+                        SELECT COUNT(*) FROM equipment_units
+                        WHERE space_id = ? AND base_status <> 'RETIRED'
+                    ) + (
                         SELECT COUNT(*) FROM course_sessions WHERE space_id = ?
                     )
-                    """, Integer.class, id, id);
+                    """, Integer.class, id, id, id);
             if (links != null && links > 0) {
                 throw new ResponseStatusException(
                         HttpStatus.CONFLICT,

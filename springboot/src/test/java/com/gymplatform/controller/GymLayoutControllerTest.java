@@ -52,7 +52,7 @@ class GymLayoutControllerTest {
         var jdbc = mock(JdbcTemplate.class);
         when(jdbc.queryForObject(
                 org.mockito.ArgumentMatchers.contains("FROM equipment"),
-                eq(Integer.class), eq(7L), eq(7L)
+                eq(Integer.class), eq(7L), eq(7L), eq(7L)
         )).thenReturn(2);
         var controller = new GymLayoutController(jdbc);
 

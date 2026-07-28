@@ -16,14 +16,14 @@ class GymMapControllerTest {
             new GymMapController.SessionActivity(
                     1L, "Yoga", "Coach", NOW.minusSeconds(60), NOW.plusSeconds(60), 20, 8
             );
-    private static final GymMapController.EquipmentView MAINTENANCE =
-            new GymMapController.EquipmentView(1L, "Bike", "Cardio", "MAINTENANCE");
+    private static final GymMapController.EquipmentView LIMITED =
+            new GymMapController.EquipmentView(1L, "Bike", "Cardio", 4, 2, "LIMITED");
 
     @Test
     void appliesDocumentedStatusPriority() {
-        assertEquals("CLOSED", GymMapController.statusFor(true, NOW, List.of(CURRENT), List.of(MAINTENANCE)));
-        assertEquals("IN_USE", GymMapController.statusFor(false, NOW, List.of(CURRENT), List.of(MAINTENANCE)));
-        assertEquals("LIMITED_EQUIPMENT", GymMapController.statusFor(false, NOW, List.of(), List.of(MAINTENANCE)));
+        assertEquals("CLOSED", GymMapController.statusFor(true, NOW, List.of(CURRENT), List.of(LIMITED)));
+        assertEquals("IN_USE", GymMapController.statusFor(false, NOW, List.of(CURRENT), List.of(LIMITED)));
+        assertEquals("LIMITED_EQUIPMENT", GymMapController.statusFor(false, NOW, List.of(), List.of(LIMITED)));
         assertEquals("AVAILABLE", GymMapController.statusFor(false, NOW, List.of(), List.of()));
     }
 

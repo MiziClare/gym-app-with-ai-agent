@@ -14,12 +14,13 @@ import static org.mockito.Mockito.*;
 
 class SessionSchedulingServiceTest {
     @Test
-    void rejectsAnOverlappingExclusiveResource() {
+    void rejectsAResourceWhenNotEnoughUnitsAreAvailable() {
         var jdbc = mock(JdbcTemplate.class);
         var service = new SessionSchedulingService(jdbc);
         var start = Instant.now().plusSeconds(3600);
         var request = new SessionSchedulingService.ScheduleRequest(
-                2L, null, start, start.plusSeconds(3600), 12, null, List.of(8L)
+                2L, null, start, start.plusSeconds(3600), 12, null,
+                List.of(new SessionSchedulingService.ResourceRequirement(8L, 1))
         );
         when(jdbc.queryForList(
                 contains("FROM courses"), eq(Long.class), eq(2L)
@@ -32,10 +33,10 @@ class SessionSchedulingServiceTest {
                 contains("FROM equipment"), eq(Long.class), eq(8L)
         )).thenReturn(List.of(8L));
         when(jdbc.queryForObject(
-                contains("course_session_resources"), eq(Integer.class),
-                eq(8L), any(Instant.class), any(Instant.class),
+                contains("equipment_units"), eq(Integer.class),
+                eq(8L), eq(8L), any(Instant.class), any(Instant.class),
                 eq(8L), any(Instant.class), any(Instant.class)
-        )).thenReturn(1);
+        )).thenReturn(0);
 
         var error = assertThrows(ResponseStatusException.class, () -> service.schedule(request));
 

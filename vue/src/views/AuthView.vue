@@ -16,6 +16,7 @@ async function submit() {
   error.value = ''
   busy.value = true
   try {
+    await loadSession()
     if (mode.value === 'register') await api.post('/auth/register', form)
     await api.post('/auth/session', { username: form.username, password: form.password })
     await loadSession()

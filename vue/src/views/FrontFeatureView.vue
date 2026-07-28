@@ -13,23 +13,17 @@ const rows = ref<Row[]>([])
 const secondary = ref<Row[]>([])
 const selected = ref<Row | null>(null)
 const loading = ref(false)
-const form = reactive({ coachId: 0, equipmentId: 0, startsAt: '', note: '', title: '', content: '' })
+const form = reactive({ coachId: 0, startsAt: '', note: '', title: '', content: '' })
 const availabilityForm = reactive({ dayOfWeek: 1, startsAt: '09:00', endsAt: '17:00' })
 const appointmentDate = ref(localDate(new Date()))
 const appointmentStart = ref('')
-const reservationDate = ref(localDate(new Date()))
-const reservationDuration = ref(30)
-const selectedStart = ref('')
-const busyPeriods = ref<Row[]>([])
 const closedDays = ref<Row[]>([])
 const operationHours = reactive({ opensAt: '06:00', closesAt: '22:00' })
 const calendarMonthDate = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
 const selectedCalendarDate = ref(localDate(new Date()))
 const coachAvailability = ref<Row[]>([])
-const availabilityLoading = ref(false)
 const reserving = ref(false)
 const qrCodeUrl = ref('')
-let availabilityRequest = 0
 let passRefreshTimer: ReturnType<typeof setTimeout> | undefined
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -84,28 +78,20 @@ const calendarDays = computed(() => {
 })
 const visibleClosedCount = computed(() => calendarDays.value.filter(day => day.closures.length && !day.muted).length)
 const selectedCalendarClosures = computed(() => closedDays.value.filter(item => closedOn(item) === selectedCalendarDate.value))
-
-const timeSlots = computed(() => {
-  const slots = []
-  const day = new Date(`${reservationDate.value}T00:00:00`)
-  const opensAt = timeMinutes(operationHours.opensAt)
-  const closesAt = timeMinutes(operationHours.closesAt)
-  for (let minutes = opensAt; minutes + reservationDuration.value <= closesAt; minutes += 30) {
-    const startsAt = new Date(day)
-    startsAt.setMinutes(minutes)
-    const endsAt = new Date(startsAt.getTime() + reservationDuration.value * 60_000)
-    const available = startsAt.getTime() > Date.now()
-      && !isClosedDuring(reservationDate.value, minutes, minutes + reservationDuration.value)
-      && !busyPeriods.value.some(item =>
-        startsAt < new Date(item.endsAt) && endsAt > new Date(item.startsAt))
-    slots.push({
-      value: startsAt.toISOString(),
-      label: new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit' }).format(startsAt),
-      available,
-    })
-  }
-  return slots
-})
+const reservationGroups = computed(() => [
+  {
+    title: 'Upcoming',
+    subtitle: 'Bookings you can still manage',
+    rows: rows.value.filter(item => !isHistory(item)),
+    history: false,
+  },
+  {
+    title: 'History',
+    subtitle: 'Completed and cancelled bookings',
+    rows: rows.value.filter(isHistory),
+    history: true,
+  },
+].filter(group => group.rows.length))
 
 const appointmentSlots = computed(() => {
   const slots = []
@@ -136,8 +122,6 @@ const titles: Record<string, [string, string]> = {
   profile: ['My Profile', 'Your account information'],
   coaches: ['Our Coaches', 'Find the right support for your goals'],
   appointments: ['Coach Booking', session.user?.role === 'COACH' ? 'Review member appointment requests' : 'Book time with a coach'],
-  equipment: ['Gym Equipment', 'Browse available training equipment'],
-  equipmentReservations: ['Equipment Booking', 'Reserve a time slot and review your bookings'],
   operationCalendar: ['Operations Calendar', 'View regular hours and scheduled closures'],
   community: ['Fitness Community', 'Share experience and learn from other members'],
   myPosts: ['My Posts', 'Manage the experience you have shared'],
@@ -174,16 +158,6 @@ async function load() {
         secondary.value = coaches.data
         form.coachId ||= secondary.value[0]?.id || 0
         await loadCoachAvailability()
-      }
-    }
-    if (feature.value === 'equipment') rows.value = (await api.get('/equipment')).data
-    if (feature.value === 'equipmentReservations') {
-      await loadOperationsCalendar()
-      const [mine, equipment] = await Promise.all([api.get('/equipment-reservations/me'), api.get('/equipment')])
-      rows.value = mine.data
-      secondary.value = equipment.data
-      if (!secondary.value.some(item => item.id === form.equipmentId && item.status === 'AVAILABLE')) {
-        form.equipmentId = secondary.value.find(item => item.status === 'AVAILABLE')?.id || 0
       }
     }
     if (['community', 'myPosts'].includes(feature.value)) {
@@ -269,27 +243,6 @@ async function removeAvailability(id: number) {
   } catch (error) { ElMessage.error(messageOf(error)) }
 }
 
-async function reserveEquipment() {
-  if (!selectedStart.value) return
-  reserving.value = true
-  try {
-    const startsAt = new Date(selectedStart.value)
-    await api.post('/equipment-reservations', {
-      equipmentId: form.equipmentId,
-      startsAt: startsAt.toISOString(),
-      endsAt: new Date(startsAt.getTime() + reservationDuration.value * 60_000).toISOString(),
-    })
-    selectedStart.value = ''
-    ElMessage.success('Equipment reserved')
-    await load()
-  } catch (error) {
-    ElMessage.error(messageOf(error))
-    await loadEquipmentAvailability()
-  } finally {
-    reserving.value = false
-  }
-}
-
 async function createPost() {
   try {
     await api.post('/posts', { title: form.title, content: form.content })
@@ -351,6 +304,19 @@ function closedOn(item: Row) {
 
 function closedReason(item: Row) {
   return item.reason || 'Closed'
+}
+
+function isHistory(item: Row) {
+  return ['COMPLETED', 'CANCELLED'].includes(item.status)
+}
+
+function statusLabel(status: string) {
+  return {
+    PENDING: 'Pending',
+    CONFIRMED: 'Confirmed',
+    COMPLETED: 'Completed',
+    CANCELLED: 'Cancelled',
+  }[status] || status
 }
 
 function closureLabel(item: Row) {
@@ -416,37 +382,6 @@ async function loadCoachAvailability() {
   appointmentStart.value = ''
 }
 
-async function loadEquipmentAvailability() {
-  const request = ++availabilityRequest
-  selectedStart.value = ''
-  if (!form.equipmentId) {
-    busyPeriods.value = []
-    return
-  }
-  availabilityLoading.value = true
-  const from = new Date(`${reservationDate.value}T00:00:00`)
-  const to = new Date(from)
-  to.setDate(to.getDate() + 1)
-  try {
-    const response = await api.get('/equipment-reservations/availability', {
-      params: { equipmentId: form.equipmentId, from: from.toISOString(), to: to.toISOString() },
-    })
-    if (request === availabilityRequest) busyPeriods.value = response.data
-  } catch (error) {
-    if (request === availabilityRequest) ElMessage.error(messageOf(error))
-  } finally {
-    if (request === availabilityRequest) availabilityLoading.value = false
-  }
-}
-
-watch(
-  () => [feature.value, form.equipmentId, reservationDate.value],
-  () => {
-    if (feature.value === 'equipmentReservations') void loadEquipmentAvailability()
-  },
-)
-
-watch(reservationDuration, () => { selectedStart.value = '' })
 watch(() => form.coachId, () => {
   if (feature.value === 'appointments' && session.user?.role === 'MEMBER') void loadCoachAvailability()
 })
@@ -601,94 +536,23 @@ watch(() => form.coachId, () => {
           </div>
         </section>
       </form>
-      <div class="data-list legacy-card">
-        <article v-for="item in rows" :key="item.id">
-          <div><h3>{{ item.coachName || item.memberName }}</h3><p>{{ date(item.startsAt) }} · {{ item.note }}</p></div><span class="pill">{{ item.status }}</span>
-          <button v-if="session.user?.role === 'MEMBER' && ['PENDING','CONFIRMED'].includes(item.status)" type="button" @click="remove(`/coach-appointments/${item.id}`, 'appointment')">Cancel</button>
-          <div v-else-if="session.user?.role === 'COACH' && ['PENDING','CONFIRMED'].includes(item.status)" class="row-actions"><button type="button" @click="updateAppointment(item.id, 'CONFIRMED')">Confirm</button><button type="button" @click="updateAppointment(item.id, 'COMPLETED')">Complete</button></div>
-        </article>
-        <p v-if="!rows.length" class="empty">No appointments yet.</p>
+      <div v-if="rows.length" class="booking-groups">
+        <section v-for="group in reservationGroups" :key="group.title" class="booking-group">
+          <header class="booking-list-head">
+            <div><h2>{{ group.title }}</h2><p>{{ group.subtitle }}</p></div>
+            <span>{{ group.rows.length }}</span>
+          </header>
+          <div class="data-list legacy-card">
+            <article v-for="item in group.rows" :key="item.id" :class="{ historical: group.history }">
+              <div><h3>{{ item.coachName || item.memberName }}</h3><p>{{ date(item.startsAt) }} · {{ item.note }}</p></div>
+              <span class="pill" :class="`status-${item.status.toLowerCase()}`">{{ statusLabel(item.status) }}</span>
+              <button v-if="session.user?.role === 'MEMBER' && ['PENDING','CONFIRMED'].includes(item.status)" type="button" @click="remove(`/coach-appointments/${item.id}`, 'appointment')">Cancel</button>
+              <div v-else-if="session.user?.role === 'COACH' && ['PENDING','CONFIRMED'].includes(item.status)" class="row-actions"><button type="button" @click="updateAppointment(item.id, 'CONFIRMED')">Confirm</button><button type="button" @click="updateAppointment(item.id, 'COMPLETED')">Complete</button></div>
+            </article>
+          </div>
+        </section>
       </div>
-    </template>
-
-    <section v-else-if="feature === 'equipment'" class="legacy-card-grid">
-      <article v-for="item in rows" :key="item.id" class="legacy-card equipment-card">
-        <div class="equipment-art"><img src="../assets/imgs/icon-treadmill.png" alt=""></div>
-        <small>{{ item.category }}</small><h3>{{ item.name }}</h3><p>{{ item.description }}</p><span class="pill">{{ item.status }}</span>
-        <RouterLink
-          v-if="item.spaceId"
-          class="legacy-button"
-          :to="`/front/gym-map?spaceId=${item.spaceId}`"
-        >{{ item.floorName }} · {{ item.spaceName }}</RouterLink>
-        <span v-else class="equipment-unavailable">Location not assigned</span>
-      </article>
-    </section>
-
-    <template v-else-if="feature === 'equipmentReservations'">
-      <form class="reservation-card legacy-card" @submit.prevent="reserveEquipment">
-        <section>
-          <header class="reservation-step"><span>1</span><div><h2>Choose equipment</h2><p>Only ready-to-use equipment can be booked.</p></div></header>
-          <div class="equipment-options" role="radiogroup" aria-label="Equipment">
-            <button
-              v-for="item in secondary"
-              :key="item.id"
-              type="button"
-              :class="{ selected: form.equipmentId === item.id }"
-              :disabled="item.status !== 'AVAILABLE'"
-              :aria-pressed="form.equipmentId === item.id"
-              @click="form.equipmentId = item.id"
-            >
-              <small>{{ item.category }}</small><strong>{{ item.name }}</strong>
-              <span>{{ item.status === 'AVAILABLE' ? 'Ready' : 'Unavailable' }}</span>
-            </button>
-          </div>
-        </section>
-
-        <section>
-          <header class="reservation-step"><span>2</span><div><h2>Pick a day</h2><p>Choose from the next 7 days.</p></div></header>
-          <div class="date-options" role="radiogroup" aria-label="Reservation date">
-            <button
-              v-for="day in reservationDays"
-              :key="day.value"
-              type="button"
-              :class="{ selected: reservationDate === day.value }"
-              :disabled="closedDateSet.has(day.value)"
-              :aria-pressed="reservationDate === day.value"
-              @click="reservationDate = day.value"
-            ><small>{{ day.day }}</small><strong>{{ day.date }}</strong><span v-if="closedDateSet.has(day.value)">Closed</span></button>
-          </div>
-        </section>
-
-        <section class="reservation-time">
-          <header class="reservation-step"><span>3</span><div><h2>Choose a start time</h2><p>Select once; the end time is calculated for you.</p></div></header>
-          <div class="duration-options" role="radiogroup" aria-label="Reservation duration">
-            <span>Duration</span>
-            <button v-for="minutes in [30, 60]" :key="minutes" type="button" :class="{ selected: reservationDuration === minutes }" :aria-pressed="reservationDuration === minutes" @click="reservationDuration = minutes">{{ minutes }} min</button>
-          </div>
-          <p v-if="availabilityLoading" class="slot-message">Checking availability…</p>
-          <div v-else class="time-options" role="radiogroup" aria-label="Available start times">
-            <button
-              v-for="slot in timeSlots"
-              :key="slot.value"
-              type="button"
-              :class="{ selected: selectedStart === slot.value }"
-              :disabled="!slot.available"
-              :aria-pressed="selectedStart === slot.value"
-              @click="selectedStart = slot.value"
-            >{{ slot.label }}</button>
-          </div>
-        </section>
-
-        <footer class="reservation-summary">
-          <div>
-            <small>YOUR RESERVATION</small>
-            <strong v-if="selectedStart">{{ date(selectedStart) }} · {{ reservationDuration }} minutes</strong>
-            <strong v-else>Choose an available start time</strong>
-          </div>
-          <button class="legacy-button" type="submit" :disabled="!selectedStart || reserving">{{ reserving ? 'Reserving…' : 'Confirm reservation' }}</button>
-        </footer>
-      </form>
-      <div class="data-list legacy-card"><article v-for="item in rows" :key="item.id"><div><h3>{{ item.equipmentName }}</h3><p>{{ date(item.startsAt) }} — {{ date(item.endsAt) }}</p></div><span class="pill">{{ item.status }}</span><button v-if="item.status === 'CONFIRMED'" type="button" @click="remove(`/equipment-reservations/${item.id}`, 'reservation')">Cancel</button></article><p v-if="!rows.length" class="empty">No equipment reservations yet.</p></div>
+      <p v-else class="empty legacy-card">No appointments yet.</p>
     </template>
 
     <template v-else-if="['community', 'myPosts'].includes(feature)">

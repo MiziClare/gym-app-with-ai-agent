@@ -31,7 +31,7 @@ const memberGroups = [
   { label: 'Gym', links: [
     ['Gym map', '/front/gym-map', 'icon-info.png'],
     ['Operations calendar', '/front/calendar', 'icon-info.png'],
-    ['Equipment', '/front/equipment', 'icon-treadmill.png'],
+    ['Equipment availability', '/front/equipment', 'icon-treadmill.png'],
     ['Virtual gym', '/front/vr', 'icon-vr.png'],
   ] },
   { label: 'Community', links: [

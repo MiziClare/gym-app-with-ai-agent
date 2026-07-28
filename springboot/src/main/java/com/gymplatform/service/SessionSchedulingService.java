@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 @Service
 public class SessionSchedulingService {
@@ -37,12 +37,13 @@ public class SessionSchedulingService {
             requireAvailableSpace(request.spaceId(), request.startsAt(), request.endsAt());
         }
 
-        var resources = new TreeSet<>(request.resourceIds());
-        if (resources.size() != request.resourceIds().size()) {
+        var resourceIds = new HashSet<Long>();
+        if (request.resources().stream().anyMatch(resource ->
+                resource.requiredUnits() < 1 || !resourceIds.add(resource.equipmentId()))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Resources cannot be repeated");
         }
-        for (var resourceId : resources) {
-            requireAvailableResource(resourceId, request.startsAt(), request.endsAt());
+        for (var resource : request.resources()) {
+            requireAvailableResource(resource, request.startsAt(), request.endsAt());
         }
 
         jdbc.update("""
@@ -52,11 +53,11 @@ public class SessionSchedulingService {
                 """, request.courseId(), request.coachId(), request.startsAt(),
                 request.endsAt(), request.capacity());
         var sessionId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Long.class);
-        for (var resourceId : resources) {
+        for (var resource : request.resources()) {
             jdbc.update("""
-                    INSERT INTO course_session_resources (session_id, equipment_id)
-                    VALUES (?, ?)
-                    """, sessionId, resourceId);
+                    INSERT INTO course_session_resources (session_id, equipment_id, required_units)
+                    VALUES (?, ?, ?)
+                    """, sessionId, resource.equipmentId(), resource.requiredUnits());
         }
         return sessionId;
     }
@@ -100,31 +101,38 @@ public class SessionSchedulingService {
         }
     }
 
-    private void requireAvailableResource(Long resourceId, Instant startsAt, Instant endsAt) {
+    private void requireAvailableResource(ResourceRequirement resource, Instant startsAt, Instant endsAt) {
         if (jdbc.queryForList("""
                 SELECT id FROM equipment
                 WHERE id = ? AND status = 'AVAILABLE' AND resource_type = 'EQUIPMENT'
                 FOR UPDATE
-                """, Long.class, resourceId).isEmpty()) {
+                """, Long.class, resource.equipmentId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource is not available");
         }
-        var conflicts = jdbc.queryForObject("""
-                SELECT (
-                    SELECT COUNT(*)
-                    FROM course_session_resources requirement
-                    JOIN course_sessions session ON session.id = requirement.session_id
-                    WHERE requirement.equipment_id = ? AND session.status = 'OPEN'
-                      AND session.starts_at < ? AND session.ends_at > ?
-                ) + (
-                    SELECT COUNT(*) FROM equipment_reservations
-                    WHERE equipment_id = ? AND status = 'CONFIRMED'
-                      AND starts_at < ? AND ends_at > ?
-                )
+        var available = jdbc.queryForObject("""
+                SELECT
+                    (SELECT COUNT(*) FROM equipment_units
+                     WHERE equipment_id = ?
+                       AND base_status IN ('AVAILABLE', 'IN_USE'))
+                    - (SELECT COUNT(DISTINCT maintenance.unit_id)
+                       FROM equipment_maintenance maintenance
+                       JOIN equipment_units unit ON unit.id = maintenance.unit_id
+                       WHERE unit.equipment_id = ?
+                         AND maintenance.starts_at < ? AND maintenance.ends_at > ?)
+                    - (SELECT COALESCE(SUM(requirement.required_units), 0)
+                       FROM course_session_resources requirement
+                       JOIN course_sessions session ON session.id = requirement.session_id
+                       WHERE requirement.equipment_id = ? AND session.status = 'OPEN'
+                         AND session.starts_at < ? AND session.ends_at > ?)
                 """, Integer.class,
-                resourceId, endsAt, startsAt,
-                resourceId, endsAt, startsAt);
-        if (conflicts != null && conflicts > 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Resource is already booked for that time");
+                resource.equipmentId(),
+                resource.equipmentId(), endsAt, startsAt,
+                resource.equipmentId(), endsAt, startsAt);
+        if (available == null || available < resource.requiredUnits()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Not enough resource units are available for that time"
+            );
         }
     }
 
@@ -144,6 +152,8 @@ public class SessionSchedulingService {
         }
     }
 
+    public record ResourceRequirement(Long equipmentId, int requiredUnits) {}
+
     public record ScheduleRequest(
             Long courseId,
             Long coachId,
@@ -151,6 +161,6 @@ public class SessionSchedulingService {
             Instant endsAt,
             int capacity,
             Long spaceId,
-            List<Long> resourceIds
+            List<ResourceRequirement> resources
     ) {}
 }

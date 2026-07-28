@@ -8,6 +8,8 @@ import FrontFeatureView from './views/FrontFeatureView.vue'
 import AdminView from './views/AdminView.vue'
 import GymLayoutView from './views/GymLayoutView.vue'
 import GymMapView from './views/GymMapView.vue'
+import EquipmentAvailabilityView from './views/EquipmentAvailabilityView.vue'
+import EquipmentAdminView from './views/EquipmentAdminView.vue'
 import ClassesView from './views/ClassesView.vue'
 import BookingsView from './views/BookingsView.vue'
 import AssistantView from './views/AssistantView.vue'
@@ -48,7 +50,7 @@ const router = createRouter({
         feature('coach', 'coaches', 'Coaches', ['MEMBER']),
         feature('coachDetail', 'coaches', 'Coach details', ['MEMBER']),
         feature('reserve', 'appointments', 'Coach bookings'),
-        feature('equipment', 'equipment', 'Equipment', ['MEMBER']),
+        { path: 'equipment', component: EquipmentAvailabilityView, meta: { title: 'Equipment availability', roles: ['MEMBER'] as Role[] } },
         { path: 'eqReserve', redirect: '/front/equipment' },
         feature('calendar', 'operationCalendar', 'Operations calendar'),
         feature('experience', 'community', 'Community'),
@@ -81,8 +83,8 @@ const router = createRouter({
         admin('sessions', 'sessions', 'Class schedule'),
         admin('orders', 'bookings', 'Class bookings'),
         admin('visits', 'visits', 'Gym visits'),
-        admin('equipment', 'equipment', 'Equipment'),
-        admin('eqReserve', 'equipmentReservations', 'Equipment bookings'),
+        { path: 'equipment', component: EquipmentAdminView, meta: { title: 'Equipment availability', roles: ['ADMIN'] as Role[] } },
+        { path: 'eqReserve', redirect: '/equipment' },
         admin('experience', 'posts', 'Community posts'),
       ],
     },

@@ -9,9 +9,9 @@ Gym Panel is a modernized rebuild of my undergraduate final-year project. It kee
 
 ## Restored product scope
 
-- Member portal: home, profile, coaches, coach appointments, courses, class bookings, equipment, equipment reservations, community posts, VR preview, membership e-card, coach chat and AI assistant.
+- Member portal: home, profile, coaches, coach appointments, courses, class bookings, walk-in equipment availability, community posts, VR preview, membership e-card, coach chat and AI assistant.
 - Coach portal: profile, member appointments, courses, community and member chat.
-- Administrator portal: dashboard, users, coaches, notices, courses, bookings, equipment, equipment reservations and post moderation.
+- Administrator portal: dashboard, users, coaches, notices, courses, bookings, per-unit equipment and maintenance management, availability control and post moderation.
 - Original URLs such as `/front/course`, `/front/equipment`, `/home`, `/user` and `/notice` remain available.
 
 ## Modernization

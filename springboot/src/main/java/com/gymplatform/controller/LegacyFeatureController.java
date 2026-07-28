@@ -1,6 +1,7 @@
 package com.gymplatform.controller;
 
 import com.gymplatform.service.CurrentUserService;
+import com.gymplatform.service.EquipmentAvailabilityService;
 import com.gymplatform.service.GymOperations;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
@@ -59,18 +60,8 @@ public class LegacyFeatureController {
     }
 
     @GetMapping("/equipment")
-    List<Map<String, Object>> equipment() {
-        return jdbc.queryForList("""
-                SELECT equipment.id, equipment.name, equipment.category,
-                       equipment.description, equipment.status, equipment.cover_key AS coverKey,
-                       equipment.space_id AS spaceId, space.name AS spaceName,
-                       floor.name AS floorName
-                FROM equipment
-                LEFT JOIN gym_spaces space ON space.id = equipment.space_id
-                LEFT JOIN gym_floors floor ON floor.id = space.floor_id
-                WHERE equipment.status <> 'RETIRED' AND equipment.resource_type = 'EQUIPMENT'
-                ORDER BY equipment.name
-                """);
+    EquipmentAvailabilityService.Snapshot equipment() {
+        return new EquipmentAvailabilityService(jdbc).snapshot();
     }
 
     @GetMapping("/operations/calendar")
@@ -134,120 +125,18 @@ public class LegacyFeatureController {
         }
     }
 
-    @GetMapping("/equipment-reservations/me")
-    List<Map<String, Object>> myEquipmentReservations(Authentication authentication) {
-        return jdbc.queryForList("""
-                SELECT r.id, r.equipment_id AS equipmentId, e.name AS equipmentName,
-                       r.starts_at AS startsAt, r.ends_at AS endsAt, r.status
-                FROM equipment_reservations r
-                JOIN equipment e ON e.id = r.equipment_id
-                WHERE r.member_id = ?
-                ORDER BY r.starts_at DESC
-                """, currentUserService.require(authentication).id());
-    }
-
-    @GetMapping("/equipment-reservations/availability")
-    List<Map<String, Object>> equipmentAvailability(
-            @RequestParam Long equipmentId,
-            @RequestParam Instant from,
-            @RequestParam Instant to
-    ) {
-        if (!to.isAfter(from) || Duration.between(from, to).compareTo(Duration.ofDays(8)) > 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid availability range");
-        }
-        return jdbc.queryForList("""
-                SELECT starts_at AS startsAt, ends_at AS endsAt
-                FROM equipment_reservations
-                WHERE equipment_id = ? AND status = 'CONFIRMED'
-                  AND starts_at < ? AND ends_at > ?
-                UNION ALL
-                SELECT session.starts_at, session.ends_at
-                FROM course_session_resources requirement
-                JOIN course_sessions session ON session.id = requirement.session_id
-                WHERE requirement.equipment_id = ? AND session.status = 'OPEN'
-                  AND session.starts_at < ? AND session.ends_at > ?
-                ORDER BY startsAt
-                """, equipmentId, to, from, equipmentId, to, from);
-    }
-
-    @PostMapping("/equipment-reservations")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Transactional
-    void reserveEquipment(
-            @Valid @RequestBody EquipmentReservationRequest body,
-            Authentication authentication
-    ) {
-        if (!Set.of(Duration.ofMinutes(30), Duration.ofMinutes(60))
-                .contains(Duration.between(body.startsAt(), body.endsAt()))) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Reservation duration must be 30 or 60 minutes"
-            );
-        }
-        var memberId = currentUserService.require(authentication).id();
-        GymOperations.requireOpen(jdbc, body.startsAt(), body.endsAt());
-        jdbc.queryForObject(
-                "SELECT id FROM users WHERE id = ? FOR UPDATE",
-                Long.class, memberId);
-        var available = jdbc.queryForList(
-                "SELECT id FROM equipment WHERE id = ? AND status = 'AVAILABLE' FOR UPDATE",
-                Long.class, body.equipmentId());
-        if (available.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment is not available");
-        }
-        var memberConflicts = jdbc.queryForObject("""
-                SELECT COUNT(*)
-                FROM equipment_reservations
-                WHERE member_id = ? AND status = 'CONFIRMED'
-                  AND starts_at < ? AND ends_at > ?
-                """, Integer.class, memberId, body.endsAt(), body.startsAt());
-        if (memberConflicts != null && memberConflicts > 0) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "You already have equipment reserved for that time"
-            );
-        }
-        var conflicts = jdbc.queryForObject("""
-                SELECT (
-                    SELECT COUNT(*) FROM equipment_reservations
-                    WHERE equipment_id = ? AND status = 'CONFIRMED'
-                      AND starts_at < ? AND ends_at > ?
-                ) + (
-                    SELECT COUNT(*)
-                    FROM course_session_resources requirement
-                    JOIN course_sessions session ON session.id = requirement.session_id
-                    WHERE requirement.equipment_id = ? AND session.status = 'OPEN'
-                      AND session.starts_at < ? AND session.ends_at > ?
-                )
-                """, Integer.class,
-                body.equipmentId(), body.endsAt(), body.startsAt(),
-                body.equipmentId(), body.endsAt(), body.startsAt());
-        if (conflicts != null && conflicts > 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Equipment is already reserved for that time");
-        }
-        jdbc.update("""
-                INSERT INTO equipment_reservations
-                    (equipment_id, member_id, starts_at, ends_at)
-                VALUES (?, ?, ?, ?)
-                """, body.equipmentId(), memberId, body.startsAt(), body.endsAt());
-    }
-
-    @DeleteMapping("/equipment-reservations/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void cancelEquipmentReservation(@PathVariable Long id, Authentication authentication) {
-        if (jdbc.update("""
-                UPDATE equipment_reservations SET status = 'CANCELLED'
-                WHERE id = ? AND member_id = ? AND status = 'CONFIRMED'
-                """, id, currentUserService.require(authentication).id()) == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Active reservation not found");
-        }
-    }
-
     @GetMapping("/coach-appointments/me")
     List<Map<String, Object>> myCoachAppointments(Authentication authentication) {
         return jdbc.queryForList("""
                 SELECT a.id, a.coach_id AS coachId, coach.display_name AS coachName,
-                       a.starts_at AS startsAt, a.note, a.status
+                       a.starts_at AS startsAt,
+                       a.starts_at + INTERVAL 60 MINUTE AS endsAt, a.note,
+                       CASE
+                           WHEN a.status IN ('PENDING', 'CONFIRMED')
+                                AND a.starts_at + INTERVAL 60 MINUTE <= CURRENT_TIMESTAMP
+                               THEN 'COMPLETED'
+                           ELSE a.status
+                       END AS status
                 FROM coach_appointments a
                 JOIN users coach ON coach.id = a.coach_id
                 WHERE a.member_id = ?
@@ -303,6 +192,7 @@ public class LegacyFeatureController {
         if (jdbc.update("""
                 UPDATE coach_appointments SET status = 'CANCELLED'
                 WHERE id = ? AND member_id = ? AND status IN ('PENDING', 'CONFIRMED')
+                  AND starts_at + INTERVAL 60 MINUTE > CURRENT_TIMESTAMP
                 """, id, currentUserService.require(authentication).id()) == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Active appointment not found");
         }
@@ -312,7 +202,14 @@ public class LegacyFeatureController {
     List<Map<String, Object>> coachAppointments(Authentication authentication) {
         return jdbc.queryForList("""
                 SELECT a.id, a.member_id AS memberId, member.display_name AS memberName,
-                       member.email, a.starts_at AS startsAt, a.note, a.status
+                       member.email, a.starts_at AS startsAt,
+                       a.starts_at + INTERVAL 60 MINUTE AS endsAt, a.note,
+                       CASE
+                           WHEN a.status IN ('PENDING', 'CONFIRMED')
+                                AND a.starts_at + INTERVAL 60 MINUTE <= CURRENT_TIMESTAMP
+                               THEN 'COMPLETED'
+                           ELSE a.status
+                       END AS status
                 FROM coach_appointments a
                 JOIN users member ON member.id = a.member_id
                 WHERE a.coach_id = ?
@@ -451,12 +348,6 @@ public class LegacyFeatureController {
     private LocalTime localTime(Instant value) {
         return value.atZone(ZoneId.systemDefault()).toLocalTime();
     }
-
-    public record EquipmentReservationRequest(
-            @NotNull Long equipmentId,
-            @NotNull @Future Instant startsAt,
-            @NotNull @Future Instant endsAt
-    ) {}
 
     public record CoachAppointmentRequest(
             @NotNull Long coachId,

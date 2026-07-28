@@ -66,8 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/staff/scans/**").hasAnyRole("ADMIN", "COACH")
                         .requestMatchers("/api/coach/**").hasRole("COACH")
-                        .requestMatchers("/api/equipment-reservations/**", "/api/coach-appointments/**")
-                                .hasRole("MEMBER")
+                        .requestMatchers("/api/coach-appointments/**").hasRole("MEMBER")
                         .requestMatchers("/api/membership/**").hasRole("MEMBER")
                         .requestMatchers("/api/messages/**", "/api/posts/**").hasAnyRole("MEMBER", "COACH")
                         .requestMatchers("/api/bookings/**", "/api/assistant/**").hasRole("MEMBER")
@@ -79,7 +78,10 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(@Value("${app.cors-origin}") String origin) {
         var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(origin));
+        config.setAllowedOrigins(java.util.Arrays.stream(origin.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Content-Type", "X-XSRF-TOKEN"));
         config.setAllowCredentials(true);
